@@ -62,6 +62,7 @@ import org.dcm4che2.data.TransferSyntax;
 import org.dcm4che2.media.DicomDirReader;
 import org.dcm4che2.media.DirectoryRecordType;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import org.dcm4che2.data.BasicDicomObject;
@@ -85,6 +86,7 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
     DicomDirReader dicomDirReader = null;
     int importedFileCount = 0;
     File importFolder = null;
+    ArrayList<String> absolutePathArray = null;
 
     public ImportDcmDir(File file, boolean isDirectory) {
         this.file = file;
@@ -94,8 +96,14 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
     @Override
     protected Void doInBackground() throws Exception {
         setDicomDir();
+        isLink();
+        if (saveAsLink) {
+            new File(ApplicationContext.appDirectory + File.separator + "tmp").mkdirs();
+        }
+        ApplicationContext.mainScreenObj.setProgressText("Please wait...");
+        ApplicationContext.mainScreenObj.initializeProgressBar(0);
+        absolutePathArray = new ArrayList<String>();
         if (dicomdir != null) {
-            isLink();
             if (!skip) {
                 readDicomDir();
             }
@@ -183,6 +191,8 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
                     }
                 }
             }
+        } else if (file.getName().toLowerCase().contains("dicomdir")) {
+            dicomdir = file;
         }
     }
 
@@ -262,7 +272,7 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
                                         showInvalidDicomDirError();
                                         return;
                                     }
-                                    ApplicationContext.databaseRef.insertSeriesInfo(series, patient.getString(Tags.PatientID), study.getString(Tags.StudyInstanceUID));
+                                    ApplicationContext.databaseRef.insertSeriesInfo(series, patient.getString(Tags.PatientID), study.getString(Tags.StudyInstanceUID), saveAsLink);
                                     DicomObject instance = dicomDirReader.findFirstChildRecord(series);
 
                                     while (instance != null) {
@@ -285,7 +295,7 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
                                             }
 
                                             if (file.exists()) {
-                                                ApplicationContext.databaseRef.insertImageInfo(instance, saveAsLink ? file.getAbsolutePath() : dest + study.getString(Tags.StudyInstanceUID) + File.separator + series.getString(Tags.SeriesInstanceUID) + File.separator + instance.getString(Tags.SOPInstanceUID), saveAsLink, saveAsLink, patient.getString(Tags.PatientID), study.getString(Tags.StudyInstanceUID), series.getString(Tags.SeriesInstanceUID));
+                                                ApplicationContext.databaseRef.insertImageInfo(instance, saveAsLink ? ApplicationContext.appDirectory + File.separator + "tmp" + File.separator + instance.getString(Tags.SOPInstanceUID) : dest + study.getString(Tags.StudyInstanceUID) + File.separator + series.getString(Tags.SeriesInstanceUID) + File.separator + instance.getString(Tags.SOPInstanceUID), patient.getString(Tags.PatientID), study.getString(Tags.StudyInstanceUID), series.getString(Tags.SeriesInstanceUID));
                                                 if (Platform.getCurrentPlatform().equals(Platform.MAC) && !instance.getString(Tags.TransferSyntaxUID).equals(TransferSyntax.ExplicitVRLittleEndian.uid()) && !instance.getString(Tags.TransferSyntaxUID).equals(TransferSyntax.ImplicitVRLittleEndian.uid())) {
                                                     throw new CompressedDcmOnMacException();
                                                 } else {
@@ -294,7 +304,10 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
                                                         if (!destination.exists()) {
                                                             destination.mkdirs();
                                                         }
-                                                        copy(file, destination.getAbsolutePath() + File.separator + instance.getString(Tags.SOPInstanceUID));
+                                                        absolutePathArray.add(file.getAbsolutePath() + "," + destination.getAbsolutePath() + File.separator + instance.getString(Tags.SOPInstanceUID));
+                                                        //copy(file, destination.getAbsolutePath() + File.separator + instance.getString(Tags.SOPInstanceUID));
+                                                    } else {
+                                                        absolutePathArray.add(file.getAbsolutePath() + "," + ApplicationContext.appDirectory + File.separator + "tmp" + File.separator + instance.getString(Tags.SOPInstanceUID));
                                                     }
                                                     ApplicationContext.databaseRef.addInstanceCount(study.getString(Tags.StudyInstanceUID), series.getString(Tags.SeriesInstanceUID));
                                                 }
@@ -314,6 +327,7 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
                 }
                 patient = dicomDirReader.findNextSiblingRecord(patient);
             }
+            copyFiles();
             JOptionPane.showOptionDialog(ApplicationContext.mainScreenObj, importedFileCount + " " + ApplicationContext.currentBundle.getString("MainScreen.import.filesCopied.text"), ApplicationContext.currentBundle.getString("MainScreen.importMenuItem.text"), JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{ApplicationContext.currentBundle.getString("OkButtons.text")}, "default");
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -324,6 +338,19 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
         } catch (IOException ex) {
             Logger.getLogger(ImportDcmDir.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void copyFiles() {
+//        if (!saveAsLink) { //copy files
+        ApplicationContext.mainScreenObj.setProgressText(ApplicationContext.currentBundle.getString("MainScreen.importingProgressLabel.text"));
+        ApplicationContext.mainScreenObj.addMaximum(absolutePathArray.size());
+        for (int i = 0; i < absolutePathArray.size(); i++) {
+            String[] srcDest = absolutePathArray.get(i).split(",");
+            copy(srcDest[0], srcDest[1]);
+            ApplicationContext.mainScreenObj.incrementProgressValue();
+        }
+        ApplicationContext.mainScreenObj.hideProgressBar();
+//        }
     }
 
     private void copy(File src, String destination) {
@@ -368,13 +395,39 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
 
     }
 
+    private void copy(String src, String destination) {
+        //Channel transmission
+        FileChannel source = null;
+        FileChannel destChannel = null;
+
+        try {
+            source = new FileInputStream(src).getChannel();
+            destChannel = new FileOutputStream(destination).getChannel();
+            destChannel.transferFrom(source, 0, source.size());
+            System.out.println("File : " + src + " copied successfully");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (source != null) {
+                    source.close();
+                }
+                if (destChannel != null) {
+                    destChannel.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ImportDcmDir.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     private void readAndUpdateByFolder(File importFolder) {
         if (!skip) {
-            ApplicationContext.mainScreenObj.setProgressText(ApplicationContext.currentBundle.getString("MainScreen.importingProgressLabel.text"));
-            ApplicationContext.mainScreenObj.initializeProgressBar(0);
+//            ApplicationContext.mainScreenObj.setProgressText("Please wait..");
+//            ApplicationContext.mainScreenObj.initializeProgressBar(0);
             readFiles(importFolder);
 
-            ApplicationContext.mainScreenObj.hideProgressBar();
+//            ApplicationContext.mainScreenObj.hideProgressBar();
             JOptionPane.showOptionDialog(ApplicationContext.mainScreenObj, importedFileCount + " " + ApplicationContext.currentBundle.getString("MainScreen.import.filesCopied.text"), ApplicationContext.currentBundle.getString("MainScreen.importMenuItem.text"), JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{ApplicationContext.currentBundle.getString("OkButtons.text")}, "default");
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -401,6 +454,7 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
             }
 
         }
+        copyFiles();
     }
 
     private void readAndImportDicomFile(File dicomFile) {
@@ -413,32 +467,34 @@ public class ImportDcmDir extends SwingWorker<Void, Void> {
                 if (Platform.getCurrentPlatform().equals(Platform.MAC)) {
                     if (data.getString(Tags.TransferSyntaxUID).equalsIgnoreCase(TransferSyntax.ExplicitVRLittleEndian.uid()) || data.getString(Tags.TransferSyntaxUID).equalsIgnoreCase(TransferSyntax.ImplicitVRLittleEndian.uid())) {
                         if (saveAsLink) {
-                            ApplicationContext.databaseRef.writeDatasetInfo(data, saveAsLink, dicomFile.getAbsolutePath());
+                            ApplicationContext.databaseRef.writeDatasetInfo(data, saveAsLink, ApplicationContext.appDirectory + File.separator + "tmp" + File.separator + data.getString(Tags.SOPInstanceUID));
+                            absolutePathArray.add(dicomFile.getAbsolutePath() + "," + ApplicationContext.appDirectory + File.separator + "tmp" + File.separator + data.getString(Tags.SOPInstanceUID));
                         } else {
                             File destination = new File(dest + File.separator + data.getString(Tags.StudyInstanceUID) + File.separator + data.getString(Tags.SeriesInstanceUID));
                             if (!destination.exists()) {
                                 destination.mkdirs();
                             }
-                            copy(dicomFile, destination + File.separator + data.getString(Tags.SOPInstanceUID));
+                            absolutePathArray.add(dicomFile.getAbsolutePath() + File.separator + data.getString(Tags.SOPInstanceUID));
                             ApplicationContext.databaseRef.writeDatasetInfo(data, saveAsLink, destination + File.separator + data.getString(Tags.SOPInstanceUID));
                         }
-                        ApplicationContext.databaseRef.addInstanceCount(data.getString(Tags.StudyInstanceUID), data.getString(Tags.SeriesInstanceUID));
                     } else {
                         throw new CompressedDcmOnMacException();
                     }
                 } else {
                     if (saveAsLink) {
-                        ApplicationContext.databaseRef.writeDatasetInfo(data, saveAsLink, dicomFile.getAbsolutePath());
+                        ApplicationContext.databaseRef.writeDatasetInfo(data, saveAsLink, ApplicationContext.appDirectory + File.separator + "tmp" + File.separator + data.getString(Tags.SOPInstanceUID));
+                        absolutePathArray.add(dicomFile.getAbsolutePath() + "," + ApplicationContext.appDirectory + File.separator + "tmp" + File.separator + data.getString(Tags.SOPInstanceUID));
                     } else {
                         File destination = new File(dest + File.separator + data.getString(Tags.StudyInstanceUID) + File.separator + data.getString(Tags.SeriesInstanceUID));
                         if (!destination.exists()) {
                             destination.mkdirs();
                         }
-                        copy(dicomFile, destination + File.separator + data.getString(Tags.SOPInstanceUID));
+                        // copy(dicomFile, destination + File.separator + data.getString(Tags.SOPInstanceUID));
+                        absolutePathArray.add(dicomFile.getAbsolutePath() + "," + destination + File.separator + data.getString(Tags.SOPInstanceUID));
                         ApplicationContext.databaseRef.writeDatasetInfo(data, saveAsLink, destination + File.separator + data.getString(Tags.SOPInstanceUID));
                     }
-                    ApplicationContext.databaseRef.addInstanceCount(data.getString(Tags.StudyInstanceUID), data.getString(Tags.SeriesInstanceUID));
                 }
+                ApplicationContext.databaseRef.addInstanceCount(data.getString(Tags.StudyInstanceUID), data.getString(Tags.SeriesInstanceUID));
             }
         } catch (IOException ex) {
             System.err.println("Unable to import file " + ex.getMessage());

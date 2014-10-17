@@ -85,4 +85,9 @@ public class Display {
         int cenetrY = scrHeight / 2;
         toBeAligned.setLocation(centerX - (frameWidh / 2), cenetrY - (frameHeight / 2));
     }
+
+    public static void alignScreen(JDialog toBeAligned, JFrame parent) {
+        int centerX = parent.getWidth() / 2, centerY = parent.getHeight() / 2;
+        toBeAligned.setLocation(parent.getX() + (centerX - (toBeAligned.getWidth() / 2)), parent.getY() + (centerY - (toBeAligned.getHeight() / 2)));
+    }
 }

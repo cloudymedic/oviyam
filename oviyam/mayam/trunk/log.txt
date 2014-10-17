@@ -1,2 +1,0 @@
-22 Jul, 2014 3:39:10 PM in.raster.mayam.context.ApplicationContext setAppLocale
-INFO: Locale Information Applied.

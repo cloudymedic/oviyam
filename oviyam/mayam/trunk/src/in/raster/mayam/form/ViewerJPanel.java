@@ -424,7 +424,7 @@ public class ViewerJPanel extends javax.swing.JPanel {
 
     public void doExport() {
         ExportDicom exporter = new ExportDicom(selectedCanvas);
-        Display.alignScreen(exporter);
+//        Display.alignScreen(exporter);
         exporter.setVisible(true);
     }
 

@@ -157,7 +157,7 @@ public class ApplicationContext {
         }
         return dir.delete();
     }
-    
+
     public static void displayPreview(String studyInstanceUID, String seriesInstanceUid) {
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             if (((JPanel) ((JSplitPane) tabbedPane.getComponentAt(i)).getRightComponent()).getName().equals(studyInstanceUID)) {
@@ -190,7 +190,6 @@ public class ApplicationContext {
             logger.log(Level.SEVERE, null, ex);
         }
         Dcm2Xml.main(new String[]{fileToConvert, "-X", "-o", videoFile.getAbsolutePath()});
-
 
         try {
             Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(videoFile);
@@ -343,7 +342,6 @@ public class ApplicationContext {
 //            logger.log(Level.INFO, "Line-465[Viewer Closed.]");
 //        }
 //    }
-
     public static void studyRetirivalCompleted(String studyUid) {
         try {
             for (int i = 0; i < tabbedPane.getTabCount(); i++) {

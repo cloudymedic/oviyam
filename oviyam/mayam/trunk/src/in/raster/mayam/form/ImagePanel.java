@@ -227,7 +227,7 @@ public class ImagePanel extends javax.swing.JPanel {
                 pixelSpacingY = Double.parseDouble(dataset.getString(Tags.PixelSpacing, 0));
                 pixelSpacingX = Double.parseDouble(dataset.getString(Tags.PixelSpacing, 1));
             } catch (NullPointerException e) { //ignore
-                ApplicationContext.logger.log(Level.INFO, "Image Panel - Unable to get Pixel spacing", e);
+                ApplicationContext.logger.log(Level.INFO, "Image Panel - Unable to get Pixel spacing", e.getMessage());
             }
             int nWindow = cmParam.getNumberOfWindows();
             if (nWindow > 0) {
@@ -344,7 +344,7 @@ public class ImagePanel extends javax.swing.JPanel {
                 null, // null for the ImageObserver
                 true, // fill background with white
                 true // block until drawing is done
-                );
+        );
         imageIcon = new ImageIcon();
         imageIcon.setImage(current);
         loadedImage = imageIcon.getImage();
@@ -370,7 +370,7 @@ public class ImagePanel extends javax.swing.JPanel {
                     null, // null for the ImageObserver
                     true, // fill background with white
                     true // block until drawing is done
-                    );
+            );
             imageIcon = new ImageIcon();
             imageIcon.setImage(current);
             Image tempImage = imageIcon.getImage();
@@ -653,16 +653,13 @@ public class ImagePanel extends javax.swing.JPanel {
     public void displayZoomLevel() {
         int currentZoomLevel = (int) Math.floor(scale * 100);
         layeredCanvas.textOverlay.getTextOverlayParam().setZoomLevel(ApplicationContext.currentBundle.getString("ImageView.textOverlay.zoomLabel.text") + currentZoomLevel + "%");
-//        layeredCanvas.textOverlay.getTextOverlayParam().setImageSize((image.getWidth() + "x" + image.getHeight()));
-        layeredCanvas.textOverlay.getTextOverlayParam().setImageSize(dataset.getString(Tags.Rows) + "x" + dataset.getString(Tags.Columns));
+        layeredCanvas.textOverlay.getTextOverlayParam().setImageSize(dataset.getString(Tags.Columns) + "x" + dataset.getString(Tags.Rows));
         layeredCanvas.textOverlay.getTextOverlayParam().setViewSize(getWidth() + "x" + getHeight());
     }
 
     public void calculateCurrentScaleFactor() {
-//        double imageWidth = image.getWidth();
-//        double imageHeight = image.getHeight();
-        double imageWidth = Double.parseDouble(dataset.getString(Tags.Rows));
-        double imageHeight = Double.parseDouble(dataset.getString(Tags.Columns));
+        double imageWidth = Double.parseDouble(dataset.getString(Tags.Columns));
+        double imageHeight = Double.parseDouble(dataset.getString(Tags.Rows));
         double imageRatio = imageWidth / imageHeight;
         if (imageRatio < floatAspectRatio) {
             imageHeight = (imageWidth + 0.00f) / floatAspectRatio;
@@ -1396,7 +1393,7 @@ public class ImagePanel extends javax.swing.JPanel {
             try {
                 layeredCanvas.annotationPanel.setAnnotation(currentSeriesAnnotation.getInstanceAnnotation(currentInstanceNo));
             } catch (NullPointerException ex) {
-                ApplicationContext.logger.log(Level.INFO, "Image Paenl - Unable to update current instance", ex);
+                ApplicationContext.logger.log(Level.INFO, "Image Paenl - Unable to update current instance annotation", ex.getMessage());
             }
             layeredCanvas.textOverlay.getTextOverlayParam().setSlicePosition(currentScoutDetails.getSliceLocation());
         }
@@ -1404,7 +1401,6 @@ public class ImagePanel extends javax.swing.JPanel {
 
     public void updateTextOverlay() {
         layeredCanvas.textOverlay.getTextOverlayParam().setCurrentInstance(currentInstanceNo);
-
     }
 
     public void storeAnnotation() { //Adds new instance's annotaion
@@ -1433,22 +1429,43 @@ public class ImagePanel extends javax.swing.JPanel {
     }
 
     public void setCurrentSeriesAnnotation() { //Sets the annotation for first time
-        currentSeriesAnnotation = ((ViewerJPanel) layeredCanvas.getParent().getParent().getParent().getParent()).getSeriesAnnotaions(dataset.getString(Tags.SeriesInstanceUID));
-        if (!multiframe) {
-            layeredCanvas.annotationPanel.setAnnotation(currentSeriesAnnotation.getInstanceAnnotation(currentInstanceNo));
-        } else {
-            if (!currentSeriesAnnotation.isMultiframeAnnotationsExist()) {
-                currentSeriesAnnotation.initializeMultiframeAnnotations();
+        try {
+            currentSeriesAnnotation = ((ViewerJPanel) layeredCanvas.getParent().getParent().getParent().getParent()).getSeriesAnnotaions(dataset.getString(Tags.SeriesInstanceUID));
+        } catch (NullPointerException ex) {
+            ApplicationContext.logger.log(Level.INFO, "Unable to set annotation on export since the viewer component is missing");
+        }
+        setInstanceAnnotation();
+    }
+
+    private void setInstanceAnnotation() {
+        if (currentSeriesAnnotation != null) {
+            if (!multiframe) {
+                layeredCanvas.annotationPanel.setAnnotation(currentSeriesAnnotation.getInstanceAnnotation(currentInstanceNo));
+            } else {
+                if (!currentSeriesAnnotation.isMultiframeAnnotationsExist()) {
+                    currentSeriesAnnotation.initializeMultiframeAnnotations();
+                }
+                layeredCanvas.annotationPanel.setAnnotation(currentSeriesAnnotation.getMultiframeAnnotation(currentInstanceNo));
             }
-            layeredCanvas.annotationPanel.setAnnotation(currentSeriesAnnotation.getMultiframeAnnotation(currentInstanceNo));
         }
     }
 
+    public void setCurrentSeriesAnnotation(SeriesAnnotations seriesAnnotation) {
+        this.currentSeriesAnnotation = seriesAnnotation;
+        setInstanceAnnotation();
+    }
+
+    public void setCurrentInstanceAnnotation() { //Used for export with Annotations
+        layeredCanvas.annotationPanel.setAnnotation(currentSeriesAnnotation.getInstanceAnnotation(currentInstanceNo));
+    }
+
     public void removeAllAnnotations() {
-        if (!multiframe) {
-            currentSeriesAnnotation.removeInstanceAnnotation(currentInstanceNo);
-        } else {
-            currentSeriesAnnotation.removeMultiframeAnnotation(currentInstanceNo);
+        if (currentSeriesAnnotation != null) {
+            if (!multiframe) {
+                currentSeriesAnnotation.removeInstanceAnnotation(currentInstanceNo);
+            } else {
+                currentSeriesAnnotation.removeMultiframeAnnotation(currentInstanceNo);
+            }
         }
     }
 
@@ -1503,7 +1520,7 @@ public class ImagePanel extends javax.swing.JPanel {
     }
 
     public String getDicomFileUrl() {
-        return dicomFileUrl;
+        return !multiframe ? fileLocation + File.separator + instanceUidList.get(currentInstanceNo) : dicomFileUrl;
     }
 
     public String getStudyUID() {
@@ -1519,7 +1536,7 @@ public class ImagePanel extends javax.swing.JPanel {
     }
 
     public String getInstanceUID() {
-        return dataset.getString(Tags.SOPInstanceUID);
+        return !multiframe ? instanceUidList.get(currentInstanceNo) : dataset.getString(Tags.SOPInstanceUID);
     }
 
     public String getSeriesUID() {
@@ -1631,10 +1648,14 @@ public class ImagePanel extends javax.swing.JPanel {
     }
 
     public void initializeParams() {
-        if (image != null) {
+        if (image != null && isShowing()) {
             double xScale = (double) getWidth() / image.getWidth();
             double yScale = (double) getHeight() / image.getHeight();
             scale = Math.min(xScale, yScale);
+            centerImage();
+            displayZoomLevel();
+        } else { //If not showing, the component is created for export
+            scale = 1;
             centerImage();
             displayZoomLevel();
         }
@@ -1662,8 +1683,20 @@ public class ImagePanel extends javax.swing.JPanel {
         return originY;
     }
 
+    public int getRows() {
+        return dataset.getInteger(Tags.Rows);
+    }
+
+    public int getColumns() {
+        return dataset.getInteger(Tags.Columns);
+    }
+
     public String getFileLocation(int i) {
         return fileLocation + File.separator + instanceUidList.get(i);
+    }
+
+    public double getFrameRate() {
+        return (1000 / Double.parseDouble(dataset.getString(Tags.FrameTime)));
     }
 
     public String get(int i) {

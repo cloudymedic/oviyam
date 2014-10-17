@@ -5,7 +5,7 @@
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  * http://www.mozilla.org/MPL/
- *
+ *in
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
@@ -53,6 +53,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.apache.derby.jdbc.EmbeddedSimpleDataSource;
 import org.dcm4che.dict.Tags;
@@ -316,11 +317,11 @@ public class DatabaseHandler {
     }
 
     public synchronized void writeDatasetInfo(DicomObject dataset, boolean saveAsLink, String filePath) {
-        try {            
+        try {
             insertPatientInfo(dataset);
-            insertStudyInfo(dataset, saveAsLink);
-            insertSeriesInfo(dataset);
-            insertImageInfo(dataset, filePath);
+            insertStudyInfo(dataset, saveAsLink, dataset.getString(Tags.PatientID));
+            insertSeriesInfo(dataset, dataset.getString(Tags.PatientID), dataset.getString(Tags.StudyInstanceUID), saveAsLink);
+            insertImageInfo(dataset, filePath, dataset.getString(Tags.PatientID), dataset.getString(Tags.StudyInstanceUID), dataset.getString(Tags.SeriesInstanceUID));
             if (ApplicationContext.mainScreenObj != null) {
                 if (dataset.getString(Tags.NumberOfFrames) != null) {
                     ApplicationContext.mainScreenObj.setProgressIndeterminate();
@@ -369,26 +370,7 @@ public class DatabaseHandler {
         }
     }
 
-    public void insertStudyInfo(DicomObject dataset, boolean saveAsLink) {
-        if (!(checkRecordExists("study", "StudyInstanceUID", dataset.getString(Tags.StudyInstanceUID)))) {
-            try {
-                String date = (dataset.getDate(Tags.StudyDate) != null && dataset.getString(Tags.StudyDate).length() > 0) ? dateFormat.format(dataset.getDate(Tags.StudyDate)) : "";
-                String time = (dataset.getDate(Tags.StudyTime) != null && dataset.getString(Tags.StudyTime).length() > 0) ? timeFormat.format(dataset.getDate(Tags.StudyTime)) : "";
-                String accessionNo = (dataset.getString(Tags.AccessionNumber) != null && dataset.getString(Tags.AccessionNumber).length() > 0) ? dataset.getString(Tags.AccessionNumber) : "";
-                String refName = (dataset.getString(Tags.ReferringPhysicianName) != null && dataset.getString(Tags.ReferringPhysicianName).length() > 0) ? dataset.getString(Tags.ReferringPhysicianName) : "";
-                String retAe = (dataset.getString(Tags.RetrieveAET) != null && dataset.getString(Tags.RetrieveAET).length() > 0) ? dataset.getString(Tags.RetrieveAET) : "";
-                String studyDesc = (dataset.getString(Tags.StudyDescription) != null && dataset.getString(Tags.StudyDescription).length() > 0) ? dataset.getString(Tags.StudyDescription) : "";
-                conn.createStatement().execute("insert into study values('" + dataset.getString(Tags.StudyInstanceUID) + "','" + date + "','" + time + "','" + accessionNo + "','" + refName + "','" + studyDesc.replace('/', ' ') + "','" + dataset.getString(Tags.Modality) + "'," + 0 + "," + 0 + "," + 0 + "," + 0 + ",'" + retAe + "','" + (!saveAsLink ? "local" : "link") + "'," + "false,'" + dataset.getString(Tags.PatientID) + "')");
-                if (ApplicationContext.isLocal) {
-                    SwingUtilities.invokeLater(refresher);
-                }
-            } catch (SQLException ex) {
-                ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler - Unable to save patient information", ex);
-            }
-        }
-    }
-
-    public void insertSeriesInfo(final DicomObject dataset, String patientId, String studyUid) {
+    public void insertSeriesInfo(final DicomObject dataset, String patientId, String studyUid, boolean saveAsLink) {
         if (!(checkRecordExists("series", "SeriesInstanceUID", dataset.getString(Tags.SeriesInstanceUID)))) {
             String date = (dataset.getString(Tags.SeriesDate) != null && dataset.getString(Tags.SeriesDate).length() > 0) ? dateFormat.format(dataset.getDate(Tags.SeriesDate)) : "";
             String time = (dataset.getString(Tags.SeriesTime) != null && dataset.getString(Tags.SeriesTime).length() > 0) ? timeFormat.format(dataset.getDate(Tags.SeriesTime)) : "";
@@ -403,80 +385,14 @@ public class DatabaseHandler {
             } catch (SQLException ex) {
                 ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler - Unable to save series information", ex);
             }
-            update("study", "NoOfSeries", getStudyLevelSeries(studyUid), "StudyInstanceUID", studyUid);
-            ApplicationContext.updateSeries(studyUid, new SeriesNode(dataset.getString(Tags.StudyInstanceUID), dataset.getString(Tags.SeriesInstanceUID), dataset.getString(Tags.SeriesNumber), dataset.getString(Tags.SeriesDescription), dataset.getString(Tags.BodyPartExamined), dataset.getString(Tags.SeriesDate), dataset.getString(Tags.SeriesTime), dataset.getString(Tags.NumberOfFrames) != null, (dataset.getString(Tags.SOPInstanceUID)), dataset.getInt(Tags.NumberOfSeriesRelatedInstances)));
-        }
-    }
-
-    public void insertSeriesInfo(final DicomObject dataset) {
-        if (!(checkRecordExists("series", "SeriesInstanceUID", dataset.getString(Tags.SeriesInstanceUID)))) {
-            String date = (dataset.getString(Tags.SeriesDate) != null && dataset.getString(Tags.SeriesDate).length() > 0) ? dateFormat.format(dataset.getDate(Tags.SeriesDate)) : "";
-            String time = (dataset.getString(Tags.SeriesTime) != null && dataset.getString(Tags.SeriesTime).length() > 0) ? timeFormat.format(dataset.getDate(Tags.SeriesTime)) : "";
-            int numSeries = (dataset.getString(Tags.NumberOfSeriesRelatedInstances) != null && dataset.getString(Tags.NumberOfSeriesRelatedInstances).length() > 0) ? dataset.getInt(Tags.NumberOfSeriesRelatedInstances) : 0;
-            String institution = (dataset.getString(Tags.InstitutionName) != null && dataset.getString(Tags.InstitutionName).length() > 0) ? dataset.getString(Tags.InstitutionName) : "";
-            String seriesNo = (dataset.getString(Tags.SeriesNumber) != null && dataset.getString(Tags.SeriesNumber).length() > 0) ? dataset.getString(Tags.SeriesNumber) : "";
-            String modality = (dataset.getString(Tags.Modality) != null && dataset.getString(Tags.Modality).length() > 0) ? dataset.getString(Tags.Modality) : "";
-            String seriesDesc = (dataset.getString(Tags.SeriesDescription) != null && dataset.getString(Tags.SeriesDescription).length() > 0) ? dataset.getString(Tags.SeriesDescription) : "";
-            String bodyPartExamined = (dataset.getString(Tags.BodyPartExamined) != null && dataset.getString(Tags.BodyPartExamined).length() > 0) ? dataset.getString(Tags.BodyPartExamined) : "";
-            try {
-                conn.createStatement().execute("insert into series values('" + dataset.getString(Tags.SeriesInstanceUID) + "','" + seriesNo + "','" + date + "','" + time + "','" + modality + "','" + seriesDesc + "','" + bodyPartExamined + "','" + institution + "'," + numSeries + ",'" + dataset.getString(Tags.PatientID) + "','" + dataset.getString(Tags.StudyInstanceUID) + "')");
-            } catch (SQLException ex) {
-                ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler - Unable to save series information", ex);
+            if (saveAsLink) {
+                update("study", "NoOfSeries", getStudyLevelSeries(studyUid), "StudyInstanceUID", studyUid);
+                ApplicationContext.updateSeries(studyUid, new SeriesNode(dataset.getString(Tags.StudyInstanceUID), dataset.getString(Tags.SeriesInstanceUID), dataset.getString(Tags.SeriesNumber), dataset.getString(Tags.SeriesDescription), dataset.getString(Tags.BodyPartExamined), dataset.getString(Tags.SeriesDate), dataset.getString(Tags.SeriesTime), dataset.getString(Tags.NumberOfFrames) != null, (dataset.getString(Tags.SOPInstanceUID)), dataset.getInt(Tags.NumberOfSeriesRelatedInstances)));
             }
         }
     }
 
-    public void insertImageInfo(DicomObject dataset, String filePath) {
-        if (!(checkRecordExists("image", "SopUID", dataset.getString(Tags.SOPInstanceUID)))) {
-            boolean multiframe = false;
-            int totalFrame = 0;
-            boolean encapsulatedPDF = false;
-
-            if (dataset.getString(Tags.SOPClassUID) != null && dataset.getString(Tags.SOPClassUID).equalsIgnoreCase("1.2.840.10008.5.1.4.1.1.104.1")) {
-                encapsulatedPDF = true;
-            }
-            if (dataset.getString(Tags.NumberOfFrames) != null && Integer.parseInt(dataset.getString(Tags.NumberOfFrames)) > 1) {
-                multiframe = true;
-                totalFrame = dataset.getInt(Tags.NumberOfFrames);
-            }
-            String frameOfRefUid = dataset.getString(Tags.FrameOfReferenceUID) != null ? dataset.getString(Tags.FrameOfReferenceUID) : "";
-            String imgPos = dataset.getBytes(Tags.ImagePosition) != null ? new String(dataset.getBytes(Tags.ImagePosition)) : "";
-            String imgOrientation = dataset.getBytes(Tags.ImageOrientation) != null ? new String(dataset.getBytes(Tags.ImageOrientation)) : "null";
-            String pixelSpacing = dataset.getBytes(Tags.PixelSpacing) != null ? new String(dataset.getBytes(Tags.PixelSpacing)) : "";
-            int row = dataset.getInt(Tags.Rows) != 0 ? dataset.getInt(Tags.Rows) : 1;
-            int columns = dataset.getInt(Tags.Columns) != 0 ? dataset.getInt(Tags.Columns) : 1;
-            String referSopInsUid = "", image_type = "";
-            String sliceThickness = dataset.getBytes(Tags.SliceThickness) != null ? new String(dataset.getBytes(Tags.SliceThickness)) : "";
-            //To get the Referenced SOP Instance UID
-            DicomElement refImageSeq = dataset.get(Tag.ReferencedImageSequence);
-            if (refImageSeq != null) {
-                if (refImageSeq.hasItems()) {
-                    DicomObject dcmObj1 = refImageSeq.getDicomObject();
-                    referSopInsUid = dcmObj1.get(Tag.ReferencedSOPInstanceUID) != null ? new String(dcmObj1.get(Tag.ReferencedSOPInstanceUID).getBytes()) : "";
-                }
-            }
-            //To get the Image Type (LOCALIZER / AXIAL / OTHER)
-            image_type = dataset.getBytes(Tags.ImageType) != null ? new String(dataset.getBytes(Tags.ImageType)) : "";
-            String[] imageTypes = image_type.split("\\\\");
-            if (imageTypes.length >= 3) {
-                image_type = imageTypes[2];
-            }
-            String[] imagePosition = dataset.getStrings(Tags.ImagePosition);
-            String sliceLoc = imagePosition != null && imagePosition[2] != null ? imagePosition[2] : "0";
-            try {
-                conn.createStatement().executeUpdate("insert into image(SopUID,SOPClassUID,InstanceNo,multiframe,totalframe,SendStatus,ForwardDateTime,ReceivedDateTime,ReceiveStatus,FileStoreUrl,SliceLocation,EncapsulatedDocument,ThumbnailStatus,FrameOfReferenceUID,ImagePosition,ImageOrientation,ImageType,PixelSpacing,SliceThickness,NoOfRows,NoOfColumns,ReferencedSopUid,PatientId,StudyInstanceUID,SeriesInstanceUID) values('" + dataset.getString(Tags.SOPInstanceUID) + "','" + dataset.getString(Tags.SOPClassUID) + "'," + dataset.getInt(Tags.InstanceNumber) + ",'" + multiframe + "','" + totalFrame + "','" + "partial" + "','" + " " + "','" + " " + "','" + "partial" + "','" + filePath + "'," + sliceLoc + ",'" + encapsulatedPDF + "',false,'" + frameOfRefUid + "','" + imgPos + "','" + imgOrientation + "','" + image_type + "','" + pixelSpacing + "','" + sliceThickness + "'," + row + "," + columns + ",'" + referSopInsUid.trim() + "','" + dataset.getString(Tags.PatientID) + "','" + dataset.getString(Tags.StudyInstanceUID) + "','" + dataset.getString(Tags.SeriesInstanceUID) + "')");
-                conn.commit();
-                if (dataset.getString(Tags.SOPClassUID).equals(UID.VideoEndoscopicImageStorage) || dataset.getString(Tags.SOPClassUID).equals(UID.VideoMicroscopicImageStorage) || dataset.getString(Tags.SOPClassUID).equals(UID.VideoPhotographicImageStorage)) {
-                    String storeLoc = new File(filePath).getParentFile() + File.separator + dataset.getString(Tags.SOPInstanceUID) + "_V";
-                    ApplicationContext.convertVideo(filePath, storeLoc, dataset.getString(Tags.SOPInstanceUID));
-                }
-            } catch (SQLException ex) {
-                ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler - Unable to save instance information", ex);
-            }
-        }
-    }
-
-    public void insertImageInfo(DicomObject dataset, String filePath, boolean isLink, boolean updateMainScreen, String patientID, String studyUid, String seriesUid) {
+    public void insertImageInfo(DicomObject dataset, String filePath, String patientID, String studyUid, String seriesUid) {
         if (!(checkRecordExists("image", "SopUID", dataset.getString(Tags.SOPInstanceUID)))) {
             boolean multiframe = false;
             int totalFrame = 0;
@@ -842,17 +758,6 @@ public class DatabaseHandler {
         return false;
     }
 
-    public int getTotalInstances(String studyUid) {
-        try {
-            ResultSet totalInstancesInfo = conn.createStatement().executeQuery("select NoOfInstances from study where StudyInstanceUID='" + studyUid + "'");
-            totalInstancesInfo.next();
-            return totalInstancesInfo.getInt("NoOfInstances");
-        } catch (SQLException ex) {
-            ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler", ex);
-        }
-        return 0;
-    }
-
     public int getStudyLevelInstances(String studyUid) {
         try {
             ResultSet totalInstancesInfo = conn.createStatement().executeQuery("select count(*) from image where StudyInstanceUID='" + studyUid + "'");
@@ -890,6 +795,7 @@ public class DatabaseHandler {
                 }
                 arr.addAll(getMultiframeSeries(studyUid, series.getSeriesUID(), rs.getString("SeriesNo"), rs.getString("BodyPartExamined"), rs.getString("SeriesDate"), rs.getString("SeriesTime")));
             }
+            rs.close();
         } catch (SQLException ex) {
             ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler", ex);
         }
@@ -914,6 +820,7 @@ public class DatabaseHandler {
                 series.setInstanceUIDIfMultiframe(rs1.getString("SopUID"));
                 arr.add(series);
             }
+            rs1.close();
         } catch (SQLException e) {
             ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler", e);
         }
@@ -1213,20 +1120,6 @@ public class DatabaseHandler {
         return instances;
     }
 
-    public ArrayList<String> getInstancesLocation(String studyUid, String seriesUid) {
-        ArrayList<String> locations = new ArrayList<String>();
-        try {
-            ResultSet instanceInfo = conn.createStatement().executeQuery("select FileStoreUrl from image where StudyInstanceUID='" + studyUid + "' and SeriesInstanceUID='" + seriesUid + "'" + " order by InstanceNo asc");
-            while (instanceInfo.next()) {
-                locations.add(instanceInfo.getString("FileStoreUrl"));
-            }
-            instanceInfo.close();
-        } catch (SQLException ex) {
-            ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler", ex);
-        }
-        return locations;
-    }
-
     public ArrayList<String> getInstancesLoc(String studyUid, String seriesUid) {
         ArrayList<String> locations = new ArrayList<String>();
         try {
@@ -1239,6 +1132,46 @@ public class DatabaseHandler {
             ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler", ex);
         }
         return locations;
+    }
+
+    public ArrayList<String> getSeriesFileURL(String studyUid) {
+        ArrayList<String> seriesFileURLs = new ArrayList<String>();
+        try {
+            ResultSet seriesInfo = conn.createStatement().executeQuery("select SeriesInstanceUID from series where StudyInstanceUID='" + studyUid + "'");
+            while (seriesInfo.next()) { //Series Iteration
+                ResultSet imageInfo = conn.createStatement().executeQuery("select FileStoreUrl from image where StudyInstanceUID='" + studyUid + "' and SeriesInstanceUID='" + seriesInfo.getString("SeriesInstanceUID") + "' and multiframe=false order by InstanceNo");
+                if (imageInfo.next()) {
+                    seriesFileURLs.add(imageInfo.getString("FileStoreUrl"));
+                }
+                imageInfo.close();
+                ResultSet multiframeImageInfo = conn.createStatement().executeQuery("select FileStoreUrl from image where StudyInstanceUID='" + studyUid + "' and SeriesInstanceUID='" + seriesInfo.getString("SeriesInstanceUID") + "' and multiframe=true order by InstanceNo");
+                if (multiframeImageInfo.next()) {
+                    seriesFileURLs.add(multiframeImageInfo.getString("FileStoreUrl"));
+                }
+                multiframeImageInfo.close();
+            }
+            seriesInfo.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return seriesFileURLs;
+    }
+
+    public int getTotalInstances(String studyUid) {
+        int total = 0;
+        try {
+            ResultSet totalInstancesInfo = conn.createStatement().executeQuery("select count(SopUid) from image where StudyInstanceUID='" + studyUid + "' and multiframe=false");
+            totalInstancesInfo.next();
+            total = totalInstancesInfo.getInt(1);
+            totalInstancesInfo = conn.createStatement().executeQuery("select count(SopUid) from image where StudyInstanceUID='" + studyUid + "' and multiframe=true");
+            totalInstancesInfo.next();
+            total += totalInstancesInfo.getInt(1);
+            totalInstancesInfo.close();
+            return total;
+        } catch (SQLException ex) {
+            ApplicationContext.logger.log(Level.SEVERE, "DatabaseHandler", ex);
+        }
+        return 0;
     }
 
     //Updations
@@ -1497,7 +1430,7 @@ public class DatabaseHandler {
     public void deleteLocalStudy(String patientID, String studyInstanceUID) {
         try {
             ResultSet fileInfo = conn.createStatement().executeQuery("select FileStoreUrl from image where StudyInstanceUID='" + studyInstanceUID + "'");
-            if (fileInfo.next() && fileInfo.getString("FileStoreUrl").contains(ApplicationContext.appDirectory)) {
+            if (fileInfo.next() && fileInfo.getString("FileStoreUrl").contains(ApplicationContext.appDirectory) && !fileInfo.getString("FileStoreUrl").contains("tmp")) {
                 ApplicationContext.deleteDir(new File(fileInfo.getString("FileStoreUrl")).getParentFile().getParentFile());
             }
             fileInfo.close();
