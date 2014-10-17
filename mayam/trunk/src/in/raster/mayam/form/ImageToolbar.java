@@ -500,6 +500,7 @@ public class ImageToolbar extends javax.swing.JPanel {
     }//GEN-LAST:event_resetActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
+        stopAutoPlay();
         parent.doExport();
     }//GEN-LAST:event_exportButtonActionPerformed
 

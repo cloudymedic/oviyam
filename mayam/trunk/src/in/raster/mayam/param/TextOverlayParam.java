@@ -43,7 +43,6 @@ import in.raster.mayam.context.ApplicationContext;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  *
@@ -83,8 +82,8 @@ public class TextOverlayParam {
 
     public TextOverlayParam(String patientName, String patientId, String sex, String studyDate, String studyDescription, String seriesDescription, String bodyPartExamined, String institutionName, String windowLevel, String windowWidth, int currentInstance, String totalInstance, boolean isMultiframe) {
         this.patientName = patientName;
-        this.patientID = patientId;
-        this.sex = sex;
+        this.patientID = ApplicationContext.currentBundle.getString("ImageView.textOverlay.patientIdLabel.text") + patientId;
+        this.sex = ApplicationContext.currentBundle.getString("ImageView.textOverlay.patientSexLabel.text") + sex;
         this.studyDate = studyDate;
         this.studyDescription = studyDescription;
         this.seriesDescription = seriesDescription;
@@ -110,7 +109,7 @@ public class TextOverlayParam {
     }
 
     public void setInstitutionName(String institutionName) {
-        this.institutionName = institutionName;
+        this.institutionName = institutionName != null ? institutionName : "";
     }
 
     public String getPatientID() {
@@ -118,7 +117,7 @@ public class TextOverlayParam {
     }
 
     public void setPatientID(String patientID) {
-        this.patientID = patientID;
+        this.patientID = ApplicationContext.currentBundle.getString("ImageView.textOverlay.patientIdLabel.text") + (patientID != null ? patientID : "");
     }
 
     public String getPatientName() {
@@ -126,7 +125,7 @@ public class TextOverlayParam {
     }
 
     public void setPatientName(String patientName) {
-        this.patientName = patientName;
+        this.patientName = patientName != null ? patientName : "";
     }
 
     public String getPatientPosition() {
@@ -134,7 +133,7 @@ public class TextOverlayParam {
     }
 
     public void setPatientPosition(String patientPosition) {
-        this.patientPosition = patientPosition;
+        this.patientPosition = patientPosition != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.positionLabel.text") + patientPosition : "";
     }
 
     public String getPxValue() {
@@ -150,7 +149,7 @@ public class TextOverlayParam {
     }
 
     public void setSex(String sex) {
-        this.sex = sex;
+        this.sex = sex != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.patientSexLabel.text") + sex : "";
     }
 
     public String getSlicePosition() {
@@ -158,7 +157,7 @@ public class TextOverlayParam {
     }
 
     public void setSlicePosition(String slicePosition) {
-        this.slicePosition = slicePosition;
+        this.slicePosition = slicePosition != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.slicePositionLabel.text") + slicePosition : "";
     }
 
     public String getStudyDate() {
@@ -166,11 +165,13 @@ public class TextOverlayParam {
     }
 
     public void setStudyDate(Date studydate) {
-        this.studyDate = DateFormat.getDateInstance(DateFormat.SHORT, ApplicationContext.currentLocale).format(studydate);
+        if (studydate != null) {
+            this.studyDate = DateFormat.getDateInstance(DateFormat.DEFAULT, ApplicationContext.currentLocale).format(studydate);
+        }
     }
 
     public void setStudyDate(String studyDate) {
-        this.studyDate = studyDate;
+        this.studyDate = studyDate != null ? "Study Date: " + studyDate : "Study Date: ";
     }
 
     public String getStudyTime() {
@@ -254,7 +255,7 @@ public class TextOverlayParam {
     }
 
     public void setSeriesDescription(String seriesDescription) {
-        this.seriesDescription = seriesDescription;
+        this.seriesDescription = seriesDescription != null ? seriesDescription : "";
     }
 
     public String getStudyDescription() {
@@ -262,7 +263,7 @@ public class TextOverlayParam {
     }
 
     public void setStudyDescription(String studyDescription) {
-        this.studyDescription = studyDescription;
+        this.studyDescription = studyDescription != null ? studyDescription : "";
     }
 
     public String getImageSize() {
@@ -270,7 +271,7 @@ public class TextOverlayParam {
     }
 
     public void setImageSize(String imageSize) {
-        this.imageSize = imageSize;
+        this.imageSize = imageSize != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.imageSizeLabel.text") + imageSize : "";
     }
 
     public String getViewSize() {
@@ -278,7 +279,23 @@ public class TextOverlayParam {
     }
 
     public void setViewSize(String viewSize) {
-        this.viewSize = viewSize;
+        this.viewSize = viewSize != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.viewSizeLabel.text") + viewSize : "";
+    }
+
+    public String getProbeStr() {
+        return ApplicationContext.currentBundle.getString("ImageView.textOverlay.probeX.text") + xPosition + " " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.probeY.text") + yPosition + " " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.probePx.text") + pxValue;
+    }
+
+    public String getInstanceNoTxt() {
+        if (!isMultiframe) {
+            return ApplicationContext.currentBundle.getString("ImageView.textOverlay.imageLabel.text") + (currentInstance + 1) + "/" + totalInstance;
+        } else {
+            return ApplicationContext.currentBundle.getString("ImageView.textOverlay.frameLable.text") + (currentInstance + 1) + "/" + totalInstance;
+        }
+    }
+
+    public String getWindowingTxt() {
+        return ApplicationContext.currentBundle.getString("ImageView.textOverlay.windowWidth.text") + windowWidth + ApplicationContext.currentBundle.getString("ImageView.textOverlay.windowCenter.text") + windowLevel;
     }
 
     public boolean isMultiframe() {

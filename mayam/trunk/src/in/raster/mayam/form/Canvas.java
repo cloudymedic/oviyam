@@ -41,7 +41,6 @@ package in.raster.mayam.form;
 
 import in.raster.mayam.context.ApplicationContext;
 import in.raster.mayam.delegates.ImageOrientation;
-import in.raster.mayam.delegates.LocalizerDelegate;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -67,6 +66,7 @@ public class Canvas extends javax.swing.JPanel {
     private String columnLeft = "";
     private String rowTop = "";
     private String rowDown = "";
+    private boolean paint = true;
 
     public Canvas(LayeredCanvas canvas) {
         initComponents();
@@ -125,85 +125,89 @@ public class Canvas extends javax.swing.JPanel {
             centerImage();
             repaint();
         }
+
         if (focusGained) {
             g.setColor(new Color(255, 138, 0));
         } else {
             g.setColor(Color.DARK_GRAY);
         }
+
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         if (layeredCanvas.imgpanel != null) {
-            if (layeredCanvas.imgpanel.getPixelSpacingY() != -1 && layeredCanvas.imgpanel.getPixelSpacingY() != 0) {
-                int viewScaleHeight = (int) ((int) (100 / layeredCanvas.imgpanel.getPixelSpacingY()) * layeredCanvas.imgpanel.getScaleFactor());
-                int y1 = (getHeight() - viewScaleHeight) / 2;
-                int hx = 20;
-                int y2 = y1 + viewScaleHeight;
-                g.setColor(Color.YELLOW);
-                g.drawLine(hx, y1, hx, y2);
-                g.drawLine(hx, y1, hx + 12, y1);
-                g.drawLine(hx, y2, hx + 12, y2);
-                double viewScaleHeightUnit = (viewScaleHeight + 0.000f) / 10;
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 1)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 1)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 2)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 2)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 3)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 3)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 4)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 4)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 5)), hx + 12, (int) (y1 + (viewScaleHeightUnit * 5)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 6)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 6)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 7)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 7)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 8)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 8)));
-                g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 9)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 9)));
-                int viewScaleWidth = (int) ((int) (100 / layeredCanvas.imgpanel.getPixelSpacingX()) * layeredCanvas.imgpanel.getScaleFactor());
-                int wx1 = (getWidth() - viewScaleWidth) / 2;
-                int wy = getHeight() - 20;
-                int wx2 = wx1 + viewScaleWidth;
-                g.drawLine(wx1, wy, wx2, wy);
-                g.drawLine(wx1, wy, wx1, wy - 12);
-                g.drawLine(wx2, wy, wx2, wy - 12);
-                double viewScaleWidthUnit = (viewScaleWidth + 0.000f) / 10;
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 5)), wy, (int) (wx1 + (viewScaleWidthUnit * 5)), wy - 12);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 1)), wy, (int) (wx1 + (viewScaleWidthUnit * 1)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 2)), wy, (int) (wx1 + (viewScaleWidthUnit * 2)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 3)), wy, (int) (wx1 + (viewScaleWidthUnit * 3)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 4)), wy, (int) (wx1 + (viewScaleWidthUnit * 4)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 6)), wy, (int) (wx1 + (viewScaleWidthUnit * 6)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 7)), wy, (int) (wx1 + (viewScaleWidthUnit * 7)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 8)), wy, (int) (wx1 + (viewScaleWidthUnit * 8)), wy - 6);
-                g.drawLine((int) (wx1 + (viewScaleWidthUnit * 9)), wy, (int) (wx1 + (viewScaleWidthUnit * 9)), wy - 6);
-            }
-            Graphics2D g2d = (Graphics2D) g;
-            JPanel panel = (JPanel) layeredCanvas.getParent();
-            int gradientHeight = layeredCanvas.imgpanel.getWidth() / 2;
-            int gradientWidth = Math.round((panel.getWidth() / ((JPanel) layeredCanvas.getParent()).getComponentCount()) * (3 / 100f));
-            int fromRight = Math.round((panel.getWidth() / ((JPanel) layeredCanvas.getParent()).getComponentCount()) * (4 / 100f));
-            GradientPaint gp1 = null;
+            if (paint) {
+                if (layeredCanvas.imgpanel.getPixelSpacingY() != -1 && layeredCanvas.imgpanel.getPixelSpacingY() != 0) {
+                    int viewScaleHeight = (int) ((int) (100 / layeredCanvas.imgpanel.getPixelSpacingY()) * layeredCanvas.imgpanel.getScaleFactor());
+                    int y1 = (getHeight() - viewScaleHeight) / 2;
+                    int hx = 20;
+                    int y2 = y1 + viewScaleHeight;
+                    g.setColor(Color.YELLOW);
+                    g.drawLine(hx, y1, hx, y2);
+                    g.drawLine(hx, y1, hx + 12, y1);
+                    g.drawLine(hx, y2, hx + 12, y2);
+                    double viewScaleHeightUnit = (viewScaleHeight + 0.000f) / 10;
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 1)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 1)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 2)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 2)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 3)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 3)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 4)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 4)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 5)), hx + 12, (int) (y1 + (viewScaleHeightUnit * 5)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 6)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 6)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 7)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 7)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 8)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 8)));
+                    g.drawLine(hx, (int) (y1 + (viewScaleHeightUnit * 9)), hx + 6, (int) (y1 + (viewScaleHeightUnit * 9)));
+                    int viewScaleWidth = (int) ((int) (100 / layeredCanvas.imgpanel.getPixelSpacingX()) * layeredCanvas.imgpanel.getScaleFactor());
+                    int wx1 = (getWidth() - viewScaleWidth) / 2;
+                    int wy = getHeight() - 20;
+                    int wx2 = wx1 + viewScaleWidth;
+                    g.drawLine(wx1, wy, wx2, wy);
+                    g.drawLine(wx1, wy, wx1, wy - 12);
+                    g.drawLine(wx2, wy, wx2, wy - 12);
+                    double viewScaleWidthUnit = (viewScaleWidth + 0.000f) / 10;
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 5)), wy, (int) (wx1 + (viewScaleWidthUnit * 5)), wy - 12);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 1)), wy, (int) (wx1 + (viewScaleWidthUnit * 1)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 2)), wy, (int) (wx1 + (viewScaleWidthUnit * 2)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 3)), wy, (int) (wx1 + (viewScaleWidthUnit * 3)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 4)), wy, (int) (wx1 + (viewScaleWidthUnit * 4)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 6)), wy, (int) (wx1 + (viewScaleWidthUnit * 6)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 7)), wy, (int) (wx1 + (viewScaleWidthUnit * 7)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 8)), wy, (int) (wx1 + (viewScaleWidthUnit * 8)), wy - 6);
+                    g.drawLine((int) (wx1 + (viewScaleWidthUnit * 9)), wy, (int) (wx1 + (viewScaleWidthUnit * 9)), wy - 6);
+                }
+                Graphics2D g2d = (Graphics2D) g;
+                JPanel panel = (JPanel) layeredCanvas.getParent();
+                int gradientHeight = layeredCanvas.imgpanel.getWidth() / 2;
+                int gradientWidth = Math.round((panel.getWidth() / ((JPanel) layeredCanvas.getParent()).getComponentCount()) * (3 / 100f));
+                int fromRight = Math.round((panel.getWidth() / ((JPanel) layeredCanvas.getParent()).getComponentCount()) * (4 / 100f));
+                GradientPaint gp1 = null;
 
-            gp1 = new GradientPaint(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), Color.WHITE, (getSize().width - fromRight) + gradientWidth, ((getSize().height / 2) - (gradientHeight / 2)) + gradientHeight, Color.BLACK);
-            g2d.setPaint(gp1);
-            if (layeredCanvas.imgpanel.isInvertFlag()) {
-                gp1 = new GradientPaint(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), Color.BLACK, (getSize().width - fromRight) + gradientWidth, ((getSize().height / 2) - (gradientHeight / 2)) + gradientHeight, Color.WHITE);
+                gp1 = new GradientPaint(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), Color.WHITE, (getSize().width - fromRight) + gradientWidth, ((getSize().height / 2) - (gradientHeight / 2)) + gradientHeight, Color.BLACK);
                 g2d.setPaint(gp1);
-            }
+                if (layeredCanvas.imgpanel.isInvertFlag()) {
+                    gp1 = new GradientPaint(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), Color.BLACK, (getSize().width - fromRight) + gradientWidth, ((getSize().height / 2) - (gradientHeight / 2)) + gradientHeight, Color.WHITE);
+                    g2d.setPaint(gp1);
+                }
 
-            g2d.fillRect(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), gradientWidth, gradientHeight);
-            g.setColor(Color.gray);
-            g.drawRect(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), gradientWidth, gradientHeight);
-            FontMetrics font = g.getFontMetrics();
-            g.setColor(Color.white);
-            int wMin = layeredCanvas.imgpanel.getWindowLevel() - (layeredCanvas.imgpanel.getWindowWidth() / 2);
-            int wMax = layeredCanvas.imgpanel.getWindowLevel() + (layeredCanvas.imgpanel.getWindowWidth() / 2);
-            int windowCenter = layeredCanvas.imgpanel.getWindowLevel();
-            if (layeredCanvas.imgpanel.getWindowLevel() == 0 && layeredCanvas.imgpanel.getWindowWidth() == 0) {
-                wMin = 0;
-                wMax = 255;
-                windowCenter = 128;
+                g2d.fillRect(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), gradientWidth, gradientHeight);
+                g.setColor(Color.gray);
+                g.drawRect(getSize().width - fromRight, ((getSize().height / 2) - (gradientHeight / 2)), gradientWidth, gradientHeight);
+                FontMetrics font = g.getFontMetrics();
+                g.setColor(Color.white);
+                int wMin = layeredCanvas.imgpanel.getWindowLevel() - (layeredCanvas.imgpanel.getWindowWidth() / 2);
+                int wMax = layeredCanvas.imgpanel.getWindowLevel() + (layeredCanvas.imgpanel.getWindowWidth() / 2);
+                int windowCenter = layeredCanvas.imgpanel.getWindowLevel();
+                if (layeredCanvas.imgpanel.getWindowLevel() == 0 && layeredCanvas.imgpanel.getWindowWidth() == 0) {
+                    wMin = 0;
+                    wMax = 255;
+                    windowCenter = 128;
+                }
+                int wlWdith = font.stringWidth(Integer.toString(windowCenter));
+                int wMinWidth = font.stringWidth(Integer.toString(wMin));
+                int wMaxWidth = font.stringWidth(Integer.toString(wMax));
+                g.drawString(Integer.toString(wMax), getSize().width - fromRight - wMaxWidth - 2, ((getSize().height / 2) - (gradientHeight / 2)));
+                g.drawString(Integer.toString(wMin), getSize().width - fromRight - wMinWidth - 2, ((getSize().height / 2) + (gradientHeight / 2)));
+                g.drawString(Integer.toString(windowCenter), getSize().width - fromRight - wlWdith - 2, ((getSize().height / 2)));
             }
-            int wlWdith = font.stringWidth(Integer.toString(windowCenter));
-            int wMinWidth = font.stringWidth(Integer.toString(wMin));
-            int wMaxWidth = font.stringWidth(Integer.toString(wMax));
-            g.drawString(Integer.toString(wMax), getSize().width - fromRight - wMaxWidth - 2, ((getSize().height / 2) - (gradientHeight / 2)));
-            g.drawString(Integer.toString(wMin), getSize().width - fromRight - wMinWidth - 2, ((getSize().height / 2) + (gradientHeight / 2)));
-            g.drawString(Integer.toString(windowCenter), getSize().width - fromRight - wlWdith - 2, ((getSize().height / 2)));
-
             if (layeredCanvas.imgpanel.getImageOrientation() != null) {
+                g.setColor(Color.WHITE);
                 getOrientation(layeredCanvas.imgpanel.getImageOrientation());
                 columnLeft = getOppositeOrientation(columnRight);
                 rowTop = getOppositeOrientation(rowDown);
@@ -372,7 +376,6 @@ public class Canvas extends javax.swing.JPanel {
         focusGained = false;
         repaint();
     }
-
 //    public void setSelection(boolean skip) { //skip is used to skip this block each time on mouse scroll
 //        try {
 //            String seriesUid = ApplicationContext.layeredCanvas.imgpanel.getSeriesUID();
@@ -403,4 +406,9 @@ public class Canvas extends javax.swing.JPanel {
 //    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    public void disablePaint() {
+        this.paint = false;
+        repaint();
+    }
 }

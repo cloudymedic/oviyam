@@ -137,6 +137,7 @@ public class MainScreen extends javax.swing.JFrame {
         queryInfoLabel.setText(ApplicationContext.currentBundle.getString("MainScreen.studiesFoundLabel.text")); // NOI18N
 
         progressLabel.setFont(ApplicationContext.labelFont);
+        progressLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         progressLabel.setText(ApplicationContext.currentBundle.getString("MainScreen.downloadingLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -152,8 +153,8 @@ public class MainScreen extends javax.swing.JFrame {
                         .addComponent(settingsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(buttonsToolbar, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(135, 270, Short.MAX_VALUE)
-                        .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
+                        .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -199,6 +200,7 @@ public class MainScreen extends javax.swing.JFrame {
         ApplicationContext.databaseRef.deleteLinkStudies();
         ApplicationContext.deleteDir(new File(ApplicationContext.getAppDirectory() + File.separator + "Thumbnails"));
         ApplicationContext.deleteDir(new File(ApplicationContext.getAppDirectory() + File.separator + "Videos"));
+        ApplicationContext.deleteDir(new File(ApplicationContext.getAppDirectory() + File.separator + "tmp"));
     }//GEN-LAST:event_formWindowClosing
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonsToolbar;

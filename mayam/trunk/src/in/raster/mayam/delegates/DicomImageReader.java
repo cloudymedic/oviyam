@@ -49,6 +49,9 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import org.dcm4che.data.Dataset;
+import org.dcm4che.dict.Tags;
+import org.dcm4che.imageio.plugins.DcmMetadata;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.image.OverlayUtils;
@@ -91,8 +94,9 @@ public class DicomImageReader {
         g2d.dispose();
         return tempImage;
     }
-
     //Used when export from viewer
+    static String frameTime = null;
+
     public static BufferedImage[] readMultiFrames(File dicomFile) {
         BufferedImage[] bufferedImages = null;
         ImageReader reader = (ImageReader) ImageIO.getImageReadersByFormatName("DICOM").next();
@@ -100,6 +104,7 @@ public class DicomImageReader {
         try {
             iis = ImageIO.createImageInputStream(dicomFile);
             reader.setInput(iis, false);
+            frameTime = ((DcmMetadata) reader.getStreamMetadata()).getDataset().getString(Tags.FrameTime);
             if (reader.getNumImages(true) > 0) {
                 bufferedImages = new BufferedImage[reader.getNumImages(true)];
                 for (int i = 0; i < bufferedImages.length; i++) {
@@ -110,5 +115,9 @@ public class DicomImageReader {
             ApplicationContext.logger.log(Level.INFO, "DicomImageReader", ex);
         }
         return bufferedImages;
+    }
+
+    public static String getCurrentFrameTime() {
+        return frameTime;
     }
 }

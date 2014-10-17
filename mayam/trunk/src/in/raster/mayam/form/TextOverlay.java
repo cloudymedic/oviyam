@@ -42,6 +42,7 @@ package in.raster.mayam.form;
 import in.raster.mayam.context.ApplicationContext;
 import in.raster.mayam.param.TextOverlayParam;
 import java.awt.Graphics;
+import javax.swing.JLabel;
 
 /**
  *
@@ -126,6 +127,10 @@ public class TextOverlay extends javax.swing.JPanel {
         viewSizeLabel = new javax.swing.JLabel();
         imageSizeLabel = new javax.swing.JLabel();
         multiframeStatusText = new javax.swing.JLabel();
+
+        setForeground(new java.awt.Color(255, 255, 255));
+        setFocusCycleRoot(true);
+        setFocusTraversalPolicyProvider(true);
 
         patientNameLabel.setBackground(new java.awt.Color(0, 0, 0));
         patientNameLabel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
@@ -304,35 +309,37 @@ public class TextOverlay extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void setTextOverlay() {
-        patientNameLabel.setText(" " + textOverlayParam.getPatientName() != null ? textOverlayParam.getPatientName() : "");
-        patientIDLabel.setText("" + ApplicationContext.currentBundle.getString("ImageView.textOverlay.patientIdLabel.text") + textOverlayParam.getPatientID());
-        if (textOverlayParam.getSex() != null && !textOverlayParam.getSex().equalsIgnoreCase("")) {
-            patientSexLabel.setText(ApplicationContext.currentBundle.getString("ImageView.textOverlay.patientSexLabel.text") + textOverlayParam.getSex());
-        } else {
-            patientSexLabel.setText("");
-        }
-        patientPositionLabel.setText(textOverlayParam.getPatientPosition() != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.positionLabel.text") + textOverlayParam.getPatientPosition() : "" + " ");
-        studyDateLabel.setText("Study Date: " + textOverlayParam.getStudyDate() != null ? textOverlayParam.getStudyDate() : "" + " ");
-        studyDescLabel.setText("Study Desc: " + textOverlayParam.getStudyDescription() != null ? textOverlayParam.getStudyDescription() : "");
-        seriesDescLabel.setText("Series Desc: " + textOverlayParam.getSeriesDescription() != null ? textOverlayParam.getSeriesDescription() : "");
-        slicePositionLabel.setText(textOverlayParam.getSlicePosition() != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.slicePositionLabel.text") + textOverlayParam.getSlicePosition() : "");
-        imageSizeLabel.setText(textOverlayParam.getImageSize() != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.imageSizeLabel.text") + textOverlayParam.getImageSize() : "");
-        viewSizeLabel.setText(textOverlayParam.getViewSize() != null ? ApplicationContext.currentBundle.getString("ImageView.textOverlay.viewSizeLabel.text") + textOverlayParam.getViewSize() : "");
+        patientNameLabel.setText(textOverlayParam.getPatientName());
+        patientIDLabel.setText(textOverlayParam.getPatientID());
+        patientSexLabel.setText(textOverlayParam.getSex());
+        patientPositionLabel.setText(textOverlayParam.getPatientPosition());
+        studyDateLabel.setText(textOverlayParam.getStudyDate());
+        studyDescLabel.setText(textOverlayParam.getStudyDescription());
+        seriesDescLabel.setText(textOverlayParam.getSeriesDescription());
+        slicePositionLabel.setText(textOverlayParam.getSlicePosition());
+        imageSizeLabel.setText(textOverlayParam.getImageSize());
+        viewSizeLabel.setText(textOverlayParam.getViewSize());
         if (((ViewerJPanel) ApplicationContext.tabbedPane.getSelectedComponent()).getTool().equals("probe")) {
-            huLabel.setText(" " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.probeX.text") + textOverlayParam.getXPosition() + " " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.probeY.text") + textOverlayParam.getYPosition() + " " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.probePx.text") + textOverlayParam.getPxValue());
+            huLabel.setText(textOverlayParam.getProbeStr());
         } else {
             huLabel.setText("");
         }
-        int currentInstanceNo = textOverlayParam.getCurrentInstance() + 1;
-        if (!textOverlayParam.isMultiframe()) {
-            instanceNoLabel.setText(" " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.imageLabel.text") + currentInstanceNo + "/" + textOverlayParam.getTotalInstance());
-        } else {
-            instanceNoLabel.setText(" " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.frameLable.text") + currentInstanceNo + "/" + textOverlayParam.getTotalInstance());
-        }
-        institutionLabel.setText(textOverlayParam.getInstitutionName() != null ? textOverlayParam.getInstitutionName() : "" + " ");
-        windowingLabel.setText(" " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.windowWidth.text") + textOverlayParam.getWindowWidth() + ApplicationContext.currentBundle.getString("ImageView.textOverlay.windowCenter.text") + textOverlayParam.getWindowLevel());
+        instanceNoLabel.setText(textOverlayParam.getInstanceNoTxt());
+//        int currentInstanceNo = textOverlayParam.getCurrentInstance() + 1;
+//        if (!textOverlayParam.isMultiframe()) {
+//            instanceNoLabel.setText(" " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.imageLabel.text") + currentInstanceNo + "/" + textOverlayParam.getTotalInstance());
+//        } else {
+//            instanceNoLabel.setText(" " + ApplicationContext.currentBundle.getString("ImageView.textOverlay.frameLable.text") + currentInstanceNo + "/" + textOverlayParam.getTotalInstance());
+//        }
+        institutionLabel.setText(textOverlayParam.getInstitutionName());
+        windowingLabel.setText(textOverlayParam.getWindowingTxt());
         zoomLabel.setText(textOverlayParam.getZoomLevel());
-        multiframeStatusText.setText(ApplicationContext.currentBundle.getString("ImageView.textOverlay.multiframeLabel.text"));
+        if(textOverlayParam.isMultiframe()) {
+            multiframeStatusText.setText(ApplicationContext.currentBundle.getString("ImageView.textOverlay.multiframeLabel.text"));
+            multiframeStatusText.setVisible(true);
+        } else {
+            multiframeStatusText.setVisible(false);
+        }
     }
 
     private void setTextOverlayToNull() {
@@ -365,17 +372,17 @@ public class TextOverlay extends javax.swing.JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        if (firstTime) {
+            setSize(layeredCanvas.getWidth() - 5, layeredCanvas.getHeight() - 5);
+            firstTime = false;
+//            setTextOverlayToNull();
+//            repaint();
+        }
         if (textOverlay) {
             setTextOverlay();
         } else {
             setTextOverlayToNull();
-        }
-        if (firstTime) {
-            setSize(layeredCanvas.getWidth() - 5, layeredCanvas.getHeight() - 5);
-            firstTime = false;
-            setTextOverlayToNull();
-            repaint();
-        }
+        }        
         showProbeFlag = false;
     }
 
