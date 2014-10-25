@@ -162,7 +162,7 @@
     <!-- A security constraint that restricts access to the
          Archive Web Administration pages to users with the role WebAdmin.
     -->
-    <security-constraint>
+   <security-constraint>
         <web-resource-collection>
             <web-resource-name>dispatcher</web-resource-name>
             <description>Only allows users with the role WebAdmin to access the Archive Web Administration pages</description>
@@ -177,10 +177,8 @@
             <role-name>*</role-name>
         </auth-constraint>
 
-<!--        <auth-constraint>
-            <role-name>WebUser</role-name>
-        </auth-constraint> -->
     </security-constraint>
+    
     <login-config>
         <auth-method>FORM</auth-method>
         <realm-name>Archive Web Admin</realm-name>

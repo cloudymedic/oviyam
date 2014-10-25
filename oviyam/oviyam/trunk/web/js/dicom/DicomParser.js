@@ -11,6 +11,8 @@ function DicomParser(inputBuffer,reader)
     this.parseAll=parseAll;
     this.pixelBuffer;
     this.bitsStored;
+    this.minPix;
+    this.maxPix;
 }
 
 var elementIndex=0;
@@ -124,21 +126,27 @@ DicomParser.prototype.moveToPixelDataTag=function(index)
 
 DicomParser.prototype.readImage=function(index)
 {
+	 this.minPix = 65535;
+     this.maxPix = -32768;
+    
     this.pixelBuffer = new Array();
-    var i=index;  
+    var i=index;     
     var pixelIndex=0;
+    var noOfBytes;
+    
     if(this.bitsStored>8) {
-
-        for(; i<this.inputBuffer.length; i+=2)
-		{
-		    this.pixelBuffer[pixelIndex]=this.reader.readNumber(2,i);
-			pixelIndex++;
-		} 
+    	noOfBytes = 2;      
     } else {
-        for(; i<this.inputBuffer.length; i++)
-		{
-		    this.pixelBuffer[pixelIndex]=this.reader.readNumber(1,i);
-			pixelIndex++;
-		} 
-    }    
+    	i+=8;         
+    	noOfBytes = 1;
+    }  
+    
+    for(; i<this.inputBuffer.length; i+=noOfBytes)
+	{
+    	var pixel = this.reader.readNumber(noOfBytes,i);
+	    this.pixelBuffer[pixelIndex]= pixel;
+	    this.minPix = Math.min(this.minPix,pixel);
+		this.maxPix = Math.max(this.maxPix,pixel);
+		pixelIndex++;
+	}
 }

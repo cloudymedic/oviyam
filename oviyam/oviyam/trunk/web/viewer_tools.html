@@ -163,7 +163,6 @@
     });
     jQuery("#loopSlider").bind("slidechange", function(event, ui) {
         loopSpeed = parseInt(1000 - ui.value);
-        doLoop(jQuery('#loopChkBox').is(':checked'));
     });
 
     jQuery('#containerBox .toolbarButton').hover(function() {
@@ -336,7 +335,7 @@
             </div>            
 
             <div id="loopDiv">
-                <input type="checkbox" id="loopChkBox" style="margin-top:15px" onchange="doLoop(this.checked)">
+                <input type="checkbox" id="loopChkBox" style="margin-top:15px" >
                 <span style="color: #FF8A00; font-weight: bold;">Loop</span>
                 <div id="loopSlider"></div>
             </div>

@@ -382,7 +382,7 @@ function prevImage(iInc) {
         showImage(objectUID + "_" + parseInt(parent.frameNumber), null);
     } else {
         imgInc = iInc-1;
-        var actFrame = getActiveFrame();
+        var actFrame = parent.getActiveFrame();
 
 		var totalInstances = JSON.parse(sessionStorage[getParameter(frmSrc,'seriesUID')]).length;
         if(imgInc < 0) {
@@ -428,7 +428,7 @@ function nextImage(iInc) {
         showImage(objectUID + "_" + parseInt(parent.frameNumber), null);
     } else {
         imgInc = iInc + 1;
-        var actFrame = getActiveFrame();
+        var actFrame = parent.getActiveFrame();
         
         var totalInstances = JSON.parse(sessionStorage[getParameter(frmSrc,'seriesUID')]).length;
         if(imgInc == totalInstances) {
@@ -445,7 +445,7 @@ function nextImage(iInc) {
     parent.imgNo = imgInc;
 }
 
-function getActiveFrame() {
+/*function getActiveFrame() {
     var frames = jQuery(parent.document).find('iframe');
     var activeFrame = null;
     if(frames.length <= 1) {
@@ -458,7 +458,7 @@ function getActiveFrame() {
         }
     }
     return activeFrame;
-}
+}*/
 
 function showNextImage(imgNo) {
     imgInc = imgNo;
@@ -679,7 +679,7 @@ function windowLevelHandler(data, totalInstances) {
         }
         
         if(jQuery('#trackbar1').length == 0) {
-            var actIframe = getActiveFrame();
+            var actIframe = parent.getActiveFrame();
 
             if(actIframe.contentWindow.isSlider) {
                 var trackBar = jQuery(actIframe).contents().find('#trackbar1');
