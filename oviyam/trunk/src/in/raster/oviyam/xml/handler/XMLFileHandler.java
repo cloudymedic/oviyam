@@ -47,6 +47,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import javax.imageio.ImageIO;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -58,28 +61,30 @@ public class XMLFileHandler {
 	// Initialize logger
 	private static Logger log = Logger.getLogger(XMLFileHandler.class);
 
-	public String getXMLFilePath(String tmpDir) {		
-		String xmlFilePath = this.getClass().getResource("/conf/oviyam2-1-config.xml").getPath();
-        String fname = "oviyam2-1-config.xml";
-        String retValue = null;
-        
-       // if(xmlFilePath.indexOf("default") > 0) {
-            try {
-                File srcFile = new File(this.getClass().getResource("/conf/oviyam2-1-config.xml").toURI());
-                //retValue = xmlFilePath.substring(0, xmlFilePath.indexOf("default")) + "default" + File.separator + fname;
-                retValue = tmpDir + File.separator + fname;
-                File destFile = new File(retValue);
-                //check the exists of XML file. If not exists, copy the file to default folder.
-                if (!destFile.exists()) {
-                    copyFile(srcFile, destFile);
-                }
-            } catch (URISyntaxException ex) {
-                log.error("Error while getting XML file path",ex);
-                return "";
-            }
-        //}
-                
-        return retValue;
+	public String getXMLFilePath(String tmpDir) {
+
+		String retValue = null;
+
+		try {
+			File srcFile = new File(this.getClass()
+					.getResource("/conf/oviyam2-1-config.xml").toURI());
+			retValue = tmpDir + File.separator + "oviyam2-1-config.xml";
+			File destFile = new File(retValue);
+			// check the exists of XML file. If not exists, copy the file to
+			// default folder.
+			if (!destFile.exists()) {
+				copyFile(srcFile, destFile);
+			}
+		} catch (URISyntaxException ex) {
+			log.error("Error while getting XML file path", ex);
+			return "";
+		}
+		scanForPlugins();
+		return retValue;
+	}
+
+	private void scanForPlugins() {
+		ImageIO.scanForPlugins();
 	}
 
 	private void copyFile(File src, File dest) {
@@ -106,7 +111,7 @@ public class XMLFileHandler {
 	}
 
 	public void createXMLFile(String tmpDir) {
-		try {			
+		try {
 			// Version 2.0 configuration file
 			File config2_0 = new File(tmpDir + File.separator
 					+ "oviyam2-config.xml");
@@ -133,40 +138,14 @@ public class XMLFileHandler {
 					+ File.separator + "oviyam2-1-config.xml");
 		}
 	}
-	
-	public boolean isInstallationRequired(String tmpDir) {
-		File config2_1 = new File(tmpDir + File.separator + "oviyam2-1-config.xml");
-		if(!config2_1.exists()) {
-			return true;
-		}
-		LanguageHandler.source = config2_1;
-		return false;
-	}
-	
-	public boolean isUpgrade(String tmpDir) {
-		File config2_0 = new File(tmpDir + File.separator + "oviyam2-config.xml");
-		if(config2_0.exists()) {
-			return true;
-		}
-		return false;
-	}
-	
-	public void installNew(String tmpDir) {
-		try {			
-			File srcFile = new File(this.getClass().getResource("/conf/oviyam2-1-config.xml").toURI());
-			File destFile = new File(tmpDir + File.separator + "oviyam2-1-config.xml");
-			copyFile(srcFile, destFile);
-			LanguageHandler.source = destFile;			
-		} catch (URISyntaxException e) {
-			System.out.println("Unable to install new version");
-			e.printStackTrace();
-		}
-	}
 
-	public void upgrade(String tmpDir) {
-		File config2_0 = new File(tmpDir + File.separator + "oviyam2-config.xml");
-		File config2_1 = new File(tmpDir + File.separator + "oviyam2-1-config.xml");
-		copyFile(config2_0, config2_1);
+	public boolean isInstallationRequired(String tmpDir) {
+		File config2_1 = new File(tmpDir + File.separator
+				+ "oviyam2-1-config.xml");
+		if (!config2_1.exists()) {
+			return true;
+		}
 		LanguageHandler.source = config2_1;
+		return false;
 	}
 }
