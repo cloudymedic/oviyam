@@ -202,7 +202,7 @@ function moveCanvas(moveDiv) {
 }
 
 function stopMove(moveDiv) {
-	var canvasArr = jQuery(parent.document).find('iframe');
+	var canvasArr = jQuery(document).find('iframe');
 	for(var i=0;i<canvasArr.length;i++) {
 		var canvas = jQuery(canvasArr[i]).contents().find('#canvasLayer2').get(0);		
 		if(canvas!=undefined) {
@@ -219,7 +219,7 @@ function stopMove(moveDiv) {
 }
 
 function startMove() {
-	var canvasArr = jQuery(parent.document).find('iframe');
+	var canvasArr = jQuery(document).find('iframe');
 	for(var i=0;i<canvasArr.length;i++) {
 		var canvas = jQuery(canvasArr[i]).contents().find('#canvasLayer2').get(0);
 		var imgCanvas = jQuery(canvasArr[i]).contents().find('#imageCanvas').get(0);
@@ -369,7 +369,7 @@ function stopZoom(zoomDiv) {
     var kCanvas = jQuery(jcanvas).siblings().get(1);
     kCanvas.removeEventListener('mousedown', mouseDown, false);*/
     
-    var iframes = jQuery(parent.document).find('iframe');
+    var iframes = jQuery(document).find('iframe');
 		for(var i=0;i<iframes.length;i++) {
 			var imgCanvas = jQuery(iframes[i]).contents().find('#imageCanvas').get(0);
 			jQuery(imgCanvas).siblings().get(1).removeEventListener('mousedown', mouseDown, false);			
@@ -474,31 +474,23 @@ function doContainerBoxHOver() {
     });
 }
 
-function doLoop(isChecked) {
-
-    if(isChecked) {
-        /*var qstr = jQuery(jcanvas).parent().parent().find('#frameSrc').html();
-        var serUid = getParameter(qstr, 'seriesUID');
-
-        var sql = "select SopUID from instance where SeriesInstanceUID='" + serUid + "'";
-
-        var myDb = initDB();
-        myDb.transaction(function(tx) {
-            tx.executeSql(sql, [], imageHandler, errorHandler);
-        });*/
-        imageHandler();
-
-        clearInterval(timer);
-
-        timer = setInterval(function() {
-            var iNo = jQuery(jcanvas).parent().parent().find('#totalImages').html();
-            iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
-            nextImage(parseInt(iNo)-1);
-        }, loopSpeed);
-    } else {
-        clearInterval(timer);
-    }
-}
+//function doLoop(isChecked) {
+//
+//    if(isChecked) {      
+//
+//        //imageHandler();
+//
+//        clearInterval(timer);
+//
+//        timer = setInterval(function() {
+//            var iNo = jQuery(jcanvas).parent().parent().find('#totalImages').html();
+//            iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
+//            nextImage(parseInt(iNo)-1);            
+//        }, loopSpeed);
+//    } else {
+//        clearInterval(timer);
+//    }
+//}
 
 function changeLayout(layoutUrl) {
     jQuery('#contentDiv').html('');
@@ -581,7 +573,7 @@ function doTextOverlay() {
 }
 
 function showSyncSeries() {
-    var frames = jQuery(parent.document).find('iframe');
+    var frames = jQuery(document).find('iframe');
     var forUid = '';
     for(var i=0; i<frames.length; i++) {
         if(forUid == '') {
@@ -724,7 +716,7 @@ function start3D(pix_value) {
 
 function doStack(stackDiv) {
     //var stkCanvas = jQuery(jcanvas).siblings().get(1);
-    var stkCanvas = jQuery(jcanvas).parent().children().get(2);
+    //var stkCanvas = jQuery(jcanvas).parent().children().get(2);
     var curr = jQuery('#containerBox').find('.current');
 
     if(!scrollImages) {
@@ -746,7 +738,7 @@ function doStack(stackDiv) {
     		doMeasurement(jQuery('#ruler').get(0));
 	    }
 	    
-        startStack(stkCanvas);
+      //  startStack(stkCanvas);
 
         //jQuery('#containerBox .toolbarButton').unbind('mouseenter').unbind('mouseleave');
         //jQuery(curr).attr('class','toolbarButton current');
@@ -763,7 +755,7 @@ function doStack(stackDiv) {
         jQuery(stackDiv).removeClass('toggleOff');
         jQuery(stackDiv).children().attr('class', 'imgOff');
 
-        jQuery(stkCanvas).unbind('mousedown').unbind('mouseup');
+        //jQuery(stkCanvas).unbind('mousedown').unbind('mouseup');
     }
 }
 
@@ -822,14 +814,14 @@ function showMetaData() {
     var insUID = getParameter(queryString, 'objectUID');
 
     var url = '';
-    if(parent.pat.serverURL.indexOf("wado") >=0) {    
-    	var url = "Image.do?serverURL=" + parent.pat.serverURL;
-    	url += '&contentType=application/dicom&study=' + parent.pat.studyUID;
+    if(pat.serverURL.indexOf("wado") >=0) {    
+    	var url = "Image.do?serverURL=" + pat.serverURL;
+    	url += '&contentType=application/dicom&study=' + pat.studyUID;
     	url += '&series=' + getParameter(queryString,'seriesUID');
     	url += '&object=' + insUID;
     	url += '&transferSyntax=1.2.840.10008.1.2';
     } else {    
-    	url = "Wado.do?study=" + parent.pat.studyUID + "&object=" + insUID + "&contentType=application/dicom";
+    	url = "Wado.do?study=" + pat.studyUID + "&object=" + insUID + "&contentType=application/dicom";
     }
 
     var xhr = new XMLHttpRequest();
@@ -937,6 +929,7 @@ function resetActiveFrame() {
 
     scrollImages = false;
     moveEnabled = false;
+    doMouseWheel = true;
 }
 
 function disableTools() {
@@ -954,4 +947,19 @@ function disableTools() {
     if(measureEnabled) {
     	doMeasurement(jQuery('#ruler').get(0));
     }
+}
+
+function getActiveFrame() {
+    var frames = jQuery(document).find('iframe');    
+    var activeFrame = null;
+    if(frames.length <= 1) {
+        activeFrame = frames[0];
+    } else {
+        for(var k=0; k<frames.length; k++) {
+            if(jQuery(frames[k]).contents().find('html').css('border') == '1px solid rgb(255, 138, 0)') {
+                activeFrame = frames[k];
+            }
+        }
+    }
+    return activeFrame;
 }

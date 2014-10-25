@@ -1,4 +1,7 @@
 var isSlider = false;
+var inc = 5;
+var timer;
+var loopSpeed = 500;
 
 //var instances = new Array();
 
@@ -20,15 +23,7 @@ jQuery(document).ready(function() {
             isSlider = true;
             loadSlider();
         }
-    },'text');
-
-    jQuery("#loopSlider").slider({
-        max:1000,
-        value:500
-    });
-    jQuery("#loopSlider").bind("slidechange", function(event, ui) {
-        loopSpeed = ui.value;
-    });
+    },'text');  
 
     jQuery('#containerBox .toolbarButton').hover(function() {
         var selected = jQuery('#containerBox').find('.current');
@@ -43,27 +38,7 @@ jQuery(document).ready(function() {
         jQuery(selected).children().attr('class', 'imgOff');
         jQuery(this).css('cursor', 'auto');
     });
-
-    /*jQuery('#ImagePane').bind('mousewheel', function(event, delta) {
-        if(parent.doMouseWheel) {
-            var frmBdr = jQuery(event.target).parent().parent().parent().parent().css('border');
-            if(frmBdr.indexOf('none') >= 0) {
-                setBorder(event.target);
-            }
-            var direction = event.originalEvent.wheelDelta > 0 ? 'Up' : 'Down';
-            var iNo = null;
-            if(direction == 'Up') {
-                iNo = jQuery(parent.jcanvas).parent().parent().find('#totalImages').html();
-                iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
-                prevImage(iNo-1);
-            } else {
-                iNo = jQuery(parent.jcanvas).parent().parent().find('#totalImages').html();
-                iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
-                nextImage(iNo-1);
-
-            }
-         }
-    });*/    
+      
 
 	if(window.addEventListener) {
 		jQuery('#ImagePane').get(0).addEventListener('DOMMouseScroll', handleScroll, false);
@@ -71,7 +46,7 @@ jQuery(document).ready(function() {
 	jQuery('#ImagePane').get(0).onmousewheel = handleScroll;	
 
     jQuery(document).bind('keydown', function(e) {
-        var iNo = jQuery(parent.jcanvas).parent().parent().find('#totalImages').html();
+        var iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
         iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
 
         if(e.keyCode == 38 || e.keyCode == 37) {
@@ -81,19 +56,13 @@ jQuery(document).ready(function() {
         }
     });    
 
-   // jQuery('body').css('background-color', parent.pat.bgColor);
-
-    if(parent.scrollImages) {
-        parent.startStack(jQuery('#canvasLayer2').get(0));
-    }
 
     //To disable zooming
-    if(parent.zoomEnabled) {
-        //parent.doZoom(jQuery('#imageCanvas').get(0));
-        parent.zoomEnabled = false;
-        parent.doMouseWheel = true;
-        jQuery('#zoomIn', parent.document).removeClass('toggleOff');
-        jQuery('#zoomIn', parent.document).children().attr('class', 'imgOff');
+    if(window.parent.zoomEnabled) {
+        window.parent.zoomEnabled = false;
+        window.parent.doMouseWheel = true;
+        jQuery('#zoomIn', window.parent.document).removeClass('toggleOff');
+        jQuery('#zoomIn', window.parent.document).children().attr('class', 'imgOff');
     }
 
     jQuery('#applyWLDiv').click(function() {
@@ -101,7 +70,7 @@ jQuery(document).ready(function() {
         var tmp_seruid = getParameter(qryStrTmp, 'seriesUID') + "_1";
         tmp_seruid = tmp_seruid.replace(/\./g, '_');
 
-        var serCont = jQuery('#' + tmp_seruid, parent.document).parent();
+        var serCont = jQuery('#' + tmp_seruid, window.parent.document).parent();
         var wc_ww = jQuery('#windowLevel').html().split('/');
 
         var wind_center = wc_ww[0].match('WL:(.*)')[1].trim();
@@ -110,8 +79,8 @@ jQuery(document).ready(function() {
         var imgSrcTmp = serCont.children().get(0).src;
         if(imgSrcTmp.indexOf('Image.do') == -1) {
             serCont.children().each(function() {
-                var imgSrc = 'Image.do?serverURL=' + parent.pat.serverURL;
-                imgSrc += '&study=' + parent.pat.studyUID;
+                var imgSrc = 'Image.do?serverURL=' + window.parent.pat.serverURL;
+                imgSrc += '&study=' + window.parent.pat.studyUID;
                 imgSrc += '&series=' + jQuery(this).attr('seruid');
                 imgSrc += '&object=' + jQuery(this).attr('sopuid');
 
@@ -135,12 +104,48 @@ jQuery(document).ready(function() {
             });
         }
 
-        parent.wlApplied = true;
-        parent.doMouseWheel = true;
-        parent.stopWLAdjustment();
+        window.parent.wlApplied = true;
+        window.parent.doMouseWheel = true;
+        window.parent.stopWLAdjustment();
     });        
 	initFrame();
-	window.addEventListener('resize', resizeCanvas, false);
+	window.addEventListener('resize', resizeCanvas, false);		
+
+		 jQuery('#canvasLayer2').mousedown(function(e) {		 	
+		 	if(window.parent.scrollImages) {
+				var oy = e.pageY;
+				var mousedown = true;
+				
+				jQuery('#canvasLayer2').mousemove(function(e1) {
+					if(mousedown) {
+						var ny = e1.pageY;
+					
+						if( (oy-ny) >inc) {
+							iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
+					        iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
+					        prevImage(iNo-1);
+						} else if( (oy-ny) < -(inc)) {
+							iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
+							iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
+							nextImage(iNo-1);
+						}
+					}
+				});
+				
+				jQuery('#canvasLayer2').mouseup(function(e2) {
+					mousedown = false;
+				});
+				
+				e.preventDefault();
+			    e.stopPropagation();    
+		    }	    
+	  	  });		  	  
+
+	  	  jQuery('#loopChkBox', window.parent.document).change(function() {	
+  			doLoop(jQuery('#loopChkBox', window.parent.document).attr('checked'));	  	  			
+	  	  }); 	  	 
+  	   doLoop(jQuery('#loopChkBox', window.parent.document).attr('checked'));	  	  			
+   		
 });  //for document.ready
 
 function resizeCanvas() { //To resize the canvas on any screen size change
@@ -151,7 +156,7 @@ function resizeCanvas() { //To resize the canvas on any screen size change
     
     var currCanvas = document.getElementById('imageCanvas');
 	
-	var iNo = jQuery(parent.jcanvas).parent().parent().find('#totalImages').html();
+	var iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
     iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/")).trim();    
 
 	//showImage(getParameter(jQuery('#frameSrc').html(),'seriesUID')+"_"+iNo, currCanvas);   
@@ -169,7 +174,7 @@ function resizeCanvas() { //To resize the canvas on any screen size change
  	var dh = (scaleFac*row); 
  	
  	var src = getParameter(jQuery('#frameSrc').html(),'seriesUID')+"_"+iNo;
- 	var img1 = jQuery('#' + src.replace(/\./g,'_'), window.parent.document).get(0);
+ 	var img1 = jQuery('#' + src.replace(/\./g,'_'), window.window.parent.document).get(0);
  	currCanvas.getContext('2d').drawImage(img1, (width-dw)/2, (height-dh)/2, dw,dh);
 
     jQuery("#zoomPercent").html('Zoom: ' + parseInt(scaleFac * 100) + '%');   
@@ -188,7 +193,7 @@ function loadSlider() {
     var serUID = getParameter(qsTmp, 'seriesUID');
     var noOfInstances = 0;
     
-	var seriesData = JSON.parse(sessionStorage[parent.pat.studyUID]);		
+	var seriesData = JSON.parse(sessionStorage[window.parent.pat.studyUID]);		
 	for(var i=0;i<seriesData.length;i++) {
 		if((seriesData[i])['seriesUID']==serUID) {
 			if((seriesData[i])['totalInstances']>1) {
@@ -241,11 +246,11 @@ function onTick(event, ui) {
 }
 
 function initFrame() {
-	jQuery('#patName').html(parent.pat.pat_Name);
-	jQuery('#patID').html(parent.pat.pat_ID);
-	jQuery("#patGender").html(parent.pat.pat_gender);
-	jQuery("#studyDate").html(parent.pat.studyDate);
-	jQuery("#studyDesc").html(parent.pat.studyDesc);
+	jQuery('#patName').html(window.parent.pat.pat_Name);
+	jQuery('#patID').html(window.parent.pat.pat_ID);
+	jQuery("#patGender").html(window.parent.pat.pat_gender);
+	jQuery("#studyDate").html(window.parent.pat.studyDate);
+	jQuery("#studyDesc").html(window.parent.pat.studyDesc);
 	imageHandler();
 }
 
@@ -270,28 +275,28 @@ function getParameter(queryString, parameterName) {
 }
 
 function setBorder(canvas) {
-    var frames = jQuery(parent.document).find('iframe');
+    var frames = jQuery(window.parent.document).find('iframe');
     for(var i=0; i<frames.length; i++) {
         jQuery(frames[i]).contents().find('#contextmenu1').css('display', 'none');
     }
     frames = null;
 
-    if(parent.selectedFrame != null) {
-        parent.selectedFrame.css('border','none');
+    if(window.parent.selectedFrame != null) {
+        window.parent.selectedFrame.css('border','none');
     }
-    parent.selectedFrame = jQuery('canvas').parent().parent().parent().parent();
-    parent.selectedFrame.css('border','1px solid rgb(255, 138, 0)');
+    window.parent.selectedFrame = jQuery('canvas').parent().parent().parent().parent();
+    window.parent.selectedFrame.css('border','1px solid rgb(255, 138, 0)');
     
-    parent.unBindWindowing();
+    window.parent.unBindWindowing();
     
     var modality = null;
 
     if(jQuery(canvas).attr('id') != 'imageCanvas') {
-        parent.jcanvas = jQuery(canvas).parent().find('#imageCanvas').get(0);
+        window.parent.jcanvas = jQuery(canvas).parent().find('#imageCanvas').get(0);
 
         modality = jQuery('#modalityDiv').html();
 
-        if(parent.displayScout) {
+        if(window.parent.displayScout) {
             if(modality.indexOf("CT") >= 0) {
                 Localizer.hideScoutLine();
                 Localizer.drawScoutLineWithBorder();
@@ -301,28 +306,29 @@ function setBorder(canvas) {
             }
         }
 
-        if(parent.scrollImages) {
-            parent.startStack(jQuery('#canvasLayer2').get(0));
+       /* if(window.parent.scrollImages) {
+            window.parent.startStack(jQuery('#canvasLayer2').get(0));
+        }*/
+        
+        if(window.parent.zoomEnabled) {
+        	window.parent.bindZoom(window.parent.jcanvas);
         }
         
-        if(parent.zoomEnabled) {
-        	parent.bindZoom(parent.jcanvas);
+        if(window.parent.winEnabled) {
+        	window.parent.bindWindowing();
         }
         
-        if(parent.winEnabled) {
-        	parent.bindWindowing();
+        if(window.parent.measureEnabled) {
+        	window.parent.checkInstance();
         }
-        
-        if(parent.measureEnabled) {
-        	parent.checkInstance();
-        }
+        doLoop(jQuery('#loopChkBox', window.parent.document).attr('checked'));	  	  			
         return;
     }
 
-    parent.jcanvas = canvas;
+    window.parent.jcanvas = canvas;
 
-    if(parent.displayScout) {
-        modality = parent.pat.modality;
+    if(window.parent.displayScout) {
+        modality = window.parent.pat.modality;
         if(modality.indexOf("CT") >= 0) {
             Localizer.hideScoutLine();
             Localizer.drawScoutLineWithBorder();
@@ -330,15 +336,15 @@ function setBorder(canvas) {
             MRLocalizer.hideScoutLine();
             MRLocalizer.drawScoutLineWithBorder();
         }
-    }
+    }    
 
-    if(parent.scrollImages) {
-        parent.startStack(jQuery('#canvasLayer2').get(0));
-    }
+    /*if(window.parent.scrollImages) {
+        window.parent.startStack(jQuery('#canvasLayer2').get(0));
+    }*/
 }
 
 function handleScroll(event) {
-	if(parent.doMouseWheel) {
+	if(window.parent.doMouseWheel) {
 		var frmBdr = jQuery(event.target).parent().parent().parent().parent().css('border');
         if(frmBdr.indexOf('none') >= 0) {
             setBorder(event.target);
@@ -354,15 +360,35 @@ function handleScroll(event) {
 		if(delta) {
 			var iNo = null;
 			if(delta>0) {
-				iNo = jQuery(parent.jcanvas).parent().parent().find('#totalImages').html();
+				iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
 		        iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
 		        prevImage(iNo-1);
 			} else {
-				iNo = jQuery(parent.jcanvas).parent().parent().find('#totalImages').html();
+				iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
 		        iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
 		        nextImage(iNo-1);
 			}
 		}
 		event.returnValue = false;
 	}
+}
+
+function doLoop(isChecked) {
+	clearInterval(timer);
+	if(isChecked) {	
+		timer = setInterval(function() {
+			if(jQuery('canvas').parent().parent().parent().parent().css('border')==='1px solid rgb(255, 138, 0)') {
+				if(loopSpeed === window.parent.loopSpeed) {		
+					var iNo = jQuery(window.parent.jcanvas).parent().parent().find('#totalImages').html();
+					iNo = iNo.substring(iNo.indexOf(':')+1, iNo.indexOf("/"));
+					nextImage(iNo-1);
+				} else {
+					loopSpeed = window.parent.loopSpeed;
+					doLoop(isChecked);
+				}
+			} else {
+				clearInterval(timer);
+			}
+		}, window.parent.loopSpeed);		
+	}	
 }

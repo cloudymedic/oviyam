@@ -31,7 +31,12 @@ function syncSeries() {
     		if(cForUid == forUid) {
     			var serUid = getParameter(jQuery(frames[i]).contents().find('#frameSrc').html(),'seriesUID');
     			
-    			var cThick = cThickLoc.match("Thick:(.*)mm Loc")[1];
+    			var cThick = cThickLoc.match("Thick:(.*)mm Loc");
+    			if(cThick!=null) {
+    				cThick = cThick[1];
+    			} else {
+    				cThick = "";
+    			}
                 var cLocation = cThickLoc.match("Loc:(.*)mm")[1];
                 var fromLoc = parseFloat(cLocation) - parseFloat(cThick);
                 var toLoc = parseFloat(cLocation) + parseFloat(cThick);
@@ -152,7 +157,7 @@ function syncSeries() {
 function showHiddenValues(currCanvas,instanceDetails) {
 
     if(typeof instances == 'undefined') {
-        var actFrame = getActiveFrame();
+        var actFrame = window.parent.getActiveFrame();
         instances = actFrame.contentWindow.instances;
     }   
 

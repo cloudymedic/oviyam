@@ -159,4 +159,8 @@ public class ServerHandler {
 
 		return resultObj;
 	}
+	
+	public Server getServer() {		
+		return config.getServersList().get(0);
+	}
 }

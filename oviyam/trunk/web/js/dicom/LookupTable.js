@@ -21,8 +21,9 @@ LookupTable.prototype.setData = function(wc, ww, rs, ri,bitsStored, invert) {
 	this.windowWidth = ww;
 	this.rescaleSlope = rs;
 	this.rescaleIntercept = ri;	
-	this.lutSize = Math.pow(2, bitsStored);	
-	this.invert = invert;
+	this.lutSize = Math.pow(2, bitsStored);		
+	
+	this.invert = invert;	
 }
 
 var setWindowingdata = function(wc, ww) {
@@ -31,16 +32,11 @@ var setWindowingdata = function(wc, ww) {
 }
 
 function calculateHULookup() {
-	this.huLookup = new Array(this.lutSize);
-	for ( var inputValue = 0; inputValue <= parseInt(this.lutSize)-1; inputValue++) {
-		if (this.rescaleSlope == undefined
-				&& this.rescaleIntercept == undefined) {
-			this.huLookup[inputValue] = inputValue;
-		} else {
-			this.huLookup[inputValue] = inputValue * this.rescaleSlope
-					+ this.rescaleIntercept;
-		}
-	}
+	this.huLookup = new Array();	
+
+	for ( var inputValue = 0; inputValue < this.lutSize; inputValue++) {	
+			this.huLookup[inputValue] = inputValue * this.rescaleSlope + this.rescaleIntercept;			
+	}	
 }
 
 function calculateLookup() {
@@ -55,5 +51,4 @@ function calculateLookup() {
        	 
          }
 	}
-
 }

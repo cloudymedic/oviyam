@@ -15,7 +15,7 @@ function loadViewerPage() {
 
 function getStudyDetails() {
 	pat = $.cookies.get('patient');
-	var queryString = window.top.location.search.substring(1);
+	var queryString = document.location.search.substring(1);
 	var patId = getParameter(queryString, "patientID");
 	var studyId = getParameter(queryString, "studyUID");
 	var serverName = getParameter(queryString, "serverName");

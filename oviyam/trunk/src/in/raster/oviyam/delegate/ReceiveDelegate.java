@@ -65,25 +65,29 @@ public class ReceiveDelegate {
             //InetAddress thisIp = InetAddress.getLocalHost();
             ListenerHandler lh = new ListenerHandler();
             Listener listener = lh.getListener();
-            dcmrcv = new DcmRcv();
-            dcmrcv.setAEtitle(listener.getAetitle());
-            dcmrcv.setHostname("0.0.0.0");
-            dcmrcv.setPort(Integer.parseInt(listener.getPort()));
-            //dcmrcv.setDestination(ServerConfigLocator.locate().getServerHomeDir() + File.separator + "data");
-            String dest = LanguageHandler.source.getAbsolutePath();
-            dcmrcv.setDestination(dest.substring(0, dest.indexOf("oviyam2-1-config.xml")-1));
-            dcmrcv.setPackPDV(false);
-            dcmrcv.setTcpNoDelay(false);
-            dcmrcv.initTransferCapability();
-            dcmrcv.setTlsNeedClientAuth(false);
-            MoveScu.maskNull(listener.getAetitle());
+            if(lh!=null) {
+	            dcmrcv = new DcmRcv();
+	            dcmrcv.setAEtitle(listener.getAetitle());
+	            dcmrcv.setHostname("0.0.0.0");
+	            dcmrcv.setPort(Integer.parseInt(listener.getPort()));
+	            //dcmrcv.setDestination(ServerConfigLocator.locate().getServerHomeDir() + File.separator + "data");
+	            String dest = LanguageHandler.source.getAbsolutePath();
+	            dcmrcv.setDestination(dest.substring(0, dest.indexOf("oviyam2-1-config.xml")-1));
+	            dcmrcv.setPackPDV(false);
+	            dcmrcv.setTcpNoDelay(false);
+	            dcmrcv.initTransferCapability();
+	            dcmrcv.setTlsNeedClientAuth(false);
+	            MoveScu.maskNull(listener.getAetitle());
+            }
         } catch (Exception ex) {
             Logger.getLogger(ReceiveDelegate.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void start() throws Exception {
-        dcmrcv.start();        
+    	if(dcmrcv!=null) {
+    		dcmrcv.start();
+    	}
     }
 
     public void stop() {

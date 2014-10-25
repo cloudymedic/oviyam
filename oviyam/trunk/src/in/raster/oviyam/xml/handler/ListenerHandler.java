@@ -63,11 +63,11 @@ public class ListenerHandler {
     //Constructor
     public ListenerHandler() {
         try {
-            serializer = new Persister();         
-
+            serializer = new Persister();
+            
             config = serializer.read(Configuration.class, LanguageHandler.source);
         } catch (Exception ex) {
-            log.error("Unable to read XML document", ex);
+            log.info("Unable to read XML document" + ex.getMessage());
         }
     }
 
@@ -83,6 +83,6 @@ public class ListenerHandler {
     }
 
     public Listener getListener() {
-        return config.getListener();
+        return config!=null ? config.getListener() : null;
     }
 }
