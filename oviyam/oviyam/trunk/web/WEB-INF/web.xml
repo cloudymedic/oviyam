@@ -74,14 +74,6 @@
     	<servlet-name>DirectUrlLaunch</servlet-name>
     	<servlet-class>in.raster.oviyam.servlet.DirectUrlLaunch</servlet-class>
     </servlet>
-    <servlet>
-    	<servlet-name>ConfigServlet</servlet-name>
-    	<servlet-class>in.raster.oviyam.servlet.ConfigServlet</servlet-class>
-    </servlet>
-<!--     <servlet> -->
-<!--     	<servlet-name>ConfigurationServlet</servlet-name> -->
-<!--     	<servlet-class>in.raster.oviyam.servlet.ConfigurationServlet</servlet-class> -->
-<!--     </servlet> -->
         
     <servlet-mapping>
         <servlet-name>EchoServlet</servlet-name>
@@ -138,12 +130,7 @@
     <servlet-mapping>
         <servlet-name>LanguageServlet</servlet-name>
         <url-pattern>/Language.do</url-pattern>
-    </servlet-mapping>
-     <servlet-mapping>
-        <servlet-name>ConfigServlet</servlet-name>
-        <url-pattern>/Config.do</url-pattern>
-    </servlet-mapping>
-    
+    </servlet-mapping>    
     <servlet-mapping>
         <servlet-name>CopyDicomFilesServlet</servlet-name>
         <url-pattern>/CopyDicomFiles.do</url-pattern>
@@ -162,11 +149,7 @@
     	<servlet-name>DirectUrlLaunch</servlet-name>
     	<url-pattern>/oviyam</url-pattern>
     </servlet-mapping>
-<!--     <servlet-mapping> -->
-<!--         <servlet-name>ConfigurationServlet</servlet-name> -->
-<!--         <url-pattern>/configuration.do</url-pattern> -->
-<!--     </servlet-mapping> -->
-    
+        
     <session-config>
         <session-timeout>
             30
