@@ -11,19 +11,22 @@ function LookupTable() {
 	this.windowCenter;
 	this.windowWidth;
 	this.lutSize;
+	this.minPixel;
+	this.maxPixel;
 	this.calculateHULookup = calculateHULookup;
 	this.calculateLookup = calculateLookup;
 	this.setWindowingdata = setWindowingdata;
 }
 
-LookupTable.prototype.setData = function(wc, ww, rs, ri,bitsStored, invert) {
+LookupTable.prototype.setData = function(wc, ww, rs, ri,bitsStored, invert, minPix, maxPix) {
 	this.windowCenter = wc;
 	this.windowWidth = ww;
 	this.rescaleSlope = rs;
 	this.rescaleIntercept = ri;	
-	this.lutSize = Math.pow(2, bitsStored);		
-	
+	this.lutSize = Math.pow(2, bitsStored);			
 	this.invert = invert;	
+	this.minPixel = minPix;
+	this.maxPixel = maxPix;
 }
 
 var setWindowingdata = function(wc, ww) {
@@ -34,14 +37,14 @@ var setWindowingdata = function(wc, ww) {
 function calculateHULookup() {
 	this.huLookup = new Array();	
 
-	for ( var inputValue = 0; inputValue < this.lutSize; inputValue++) {	
+	for ( var inputValue = this.minPixel; inputValue < this.maxPixel; inputValue++) {	
 			this.huLookup[inputValue] = inputValue * this.rescaleSlope + this.rescaleIntercept;			
 	}	
 }
 
 function calculateLookup() {
 	this.ylookup=new Array(this.lutSize);
-	for(var inputValue=0;inputValue<=parseInt(this.lutSize)-1;inputValue++) {
+	for(var inputValue=this.minPixel;inputValue<=this.maxPixel;inputValue++) {
 		var lutVal = (((this.huLookup[inputValue] - (this.windowCenter)) / (this.windowWidth) + 0.5) * 255.0);
          var newVal = Math.min(Math.max(lutVal, 0), 255);
          if(this.invert === true) {

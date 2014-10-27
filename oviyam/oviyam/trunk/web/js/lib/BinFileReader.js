@@ -26,6 +26,7 @@ function BinFileReader(fileURL){
 	{
 		return fileContents;
 	}
+	
 	this.movePointerTo = function(iTo){
 		if(iTo < 0) filePointer = 0;
 		else if(iTo > this.getFileSize()) throwException(_exception.EOFReached);
@@ -52,8 +53,8 @@ function BinFileReader(fileURL){
 		}
 
 		return result;
-	};
-
+	};	
+	
 	this.readString = function(iNumChars, iFrom){
 		iNumChars = iNumChars || 1;
 		iFrom = iFrom || filePointer;
@@ -66,6 +67,20 @@ function BinFileReader(fileURL){
 			result += String.fromCharCode(this.readNumber(1));
 		}
 
+		return result;
+	};
+	
+	this.getBytes = function(iFrom) {
+		this.movePointerTo(iFrom);
+		var tmpTo = fileContents.length;
+		
+		var result = new Uint8Array(tmpTo-iFrom);
+		var index = 0;
+		for(var i=iFrom;i<tmpTo;i++) {
+			result[index] = this.readByteAt(i);
+			index++;
+		}
+		
 		return result;
 	};
 
