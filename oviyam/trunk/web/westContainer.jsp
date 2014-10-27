@@ -212,6 +212,7 @@
 				}
 				clearAnnotations();
 				parent.scrollImages = false;
+				parent.winEnabled = false;
            	}
 
             function storeInstanceInfo(totIns, serId) {

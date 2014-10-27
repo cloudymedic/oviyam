@@ -7,10 +7,12 @@ function DicomParser(inputBuffer,reader)
 {
     this.inputBuffer=inputBuffer;
     this.reader=reader;
-    this.dicomElement = null;
+    this.dicomElement = null;    
     this.parseAll=parseAll;
+    this.index = 0;
     this.pixelBuffer;
     this.bitsStored;
+    this.pixelRepresentation;
     this.minPix;
     this.maxPix;
 }
@@ -25,21 +27,23 @@ function getPixelBuffer()
 function parseAll()
 {
 	//read photometric interpretation value
-    var index=this.readTag(0,40,0,4,0,"photometricInterpretation");
+    this.readTag(40,0,4,0,"photometricInterpretation");
 	//read bits allocated value
-    index=this.readTagAsNumber(index,40,0,1,1,"BitsStored");
+    this.bitsStored = this.readTagAsNumber(40,0,1,1,"BitsStored");
+    //read pixel representation    
+    this.pixelRepresentation = this.readTagAsNumber(40,0,3,1,"PxelRepresentation");
     //read wc value    
-    index=this.readTag(index,40,0,80,16,"windowCenter");
+    this.readTag(40,0,80,16,"windowCenter");
     //read ww value
-    index=this.readTag(index,40,0,81,16,"windowWidth");
+    this.readTag(40,0,81,16,"windowWidth");
     //read rescale slope value
-    index=this.readTag(index,40,0,82,16,"rescaleIntercept");
+    this.readTag(40,0,82,16,"rescaleIntercept");
     //read rescale intercept value
-    index=this.readTag(index,40,0,83,16,"rescaleSlope");
+    this.readTag(40,0,83,16,"rescaleSlope");
     //move to pixel data
-    index=this.moveToPixelDataTag(index);
+    this.moveToPixelDataTag();
     //read pixel data
-    this.readImage(index);    
+    this.readImage();    
 }
 
 DicomParser.prototype.setDicomElement=function(name,vr,vl,group,element,value,offset)
@@ -53,10 +57,10 @@ DicomParser.prototype.setDicomElement=function(name,vr,vl,group,element,value,of
 
 }
 
-DicomParser.prototype.readTag=function(index,firstContent,secondContent,thirdContent,fourthContent,tagName)
+DicomParser.prototype.readTag=function(firstContent,secondContent,thirdContent,fourthContent,tagName)
 {
-    var i=index;
-    var flag = false;
+    var i=this.index;
+
     for(; i<this.inputBuffer.length; i++)
     {
         if(this.reader.readNumber(1,i)==firstContent && this.reader.readNumber(1,i+1)==secondContent&&this.reader.readNumber(1,i+2)==thirdContent&&this.reader.readNumber(1,i+3)==fourthContent)
@@ -68,22 +72,15 @@ DicomParser.prototype.readTag=function(index,firstContent,secondContent,thirdCon
             var tagValue=val.split("\\");
             this.setDicomElement(tagName,vr,vl,firstContent+secondContent,thirdContent+fourthContent,tagValue,i-4);
             i=i+4+vl;
-            flag = true;
+			this.index = i;
             break;
         }    
-    }
-    
-    if(flag) {
-    	return i;
-    } else {
-    	return index;
-    }
+    }  
 }
 
-DicomParser.prototype.readTagAsNumber=function(index,firstContent,secondContent,thirdContent,fourthContent,tagName)
+DicomParser.prototype.readTagAsNumber=function(firstContent,secondContent,thirdContent,fourthContent,tagName)
 {
-    var i=index;
-    var flag = false;
+    var i=this.index;
     for(; i<this.inputBuffer.length; i++)
     {
         if(this.reader.readNumber(1,i)==firstContent && this.reader.readNumber(1,i+1)==secondContent&&this.reader.readNumber(1,i+2)==thirdContent&&this.reader.readNumber(1,i+3)==fourthContent)
@@ -92,61 +89,45 @@ DicomParser.prototype.readTagAsNumber=function(index,firstContent,secondContent,
             var vr= this.reader.readString(2,i);
             var vl=this.reader.readNumber(2,i+2);
             var val=this.reader.readNumber(vl,i+4);
-            if(tagName==="BitsStored") {
-            	this.bitsStored = val;
-            }
             this.setDicomElement(tagName,vr,vl,firstContent+secondContent,thirdContent+fourthContent,val,i-4);
             i=i+4+vl;
-            flag = true;
-            break;
+            this.index = i;
+            return val;
         }    
-    }
-    
-    if(flag) {
-    	return i;
-    } else {
-    	return index;
     }
 }
 
-DicomParser.prototype.moveToPixelDataTag=function(index)
+DicomParser.prototype.moveToPixelDataTag=function()
 {
-    var i=index;
-    var retIndex = 0;
+    var i=this.index;    
     for(; i<this.inputBuffer.length; i++)
     {
         if(this.reader.readNumber(1,i)==224 &&this.reader.readNumber(1,i+1)==127&&this.reader.readNumber(1,i+2)==16&&this.reader.readNumber(1,i+3)==0)
 	{			
             i=i+4;
-            retIndex = i;
+            this.index = i;
 	}    
     }
-   return retIndex;
 }
 
-DicomParser.prototype.readImage=function(index)
+DicomParser.prototype.readImage=function()
 {
 	 this.minPix = 65535;
-     this.maxPix = -32768;
-    
-    this.pixelBuffer = new Array();
-    var i=index;     
-    var pixelIndex=0;
-    var noOfBytes;
-    
-    if(this.bitsStored>8) {
-    	noOfBytes = 2;      
-    } else {
-    	i+=8;         
-    	noOfBytes = 1;
-    }  
-    
-    for(; i<this.inputBuffer.length; i+=noOfBytes)
-	{
-    	var pixel = this.reader.readNumber(noOfBytes,i);
-	    this.pixelBuffer[pixelIndex]= pixel;
-	    this.minPix = Math.min(this.minPix,pixel);
-		this.maxPix = Math.max(this.maxPix,pixel);
-		pixelIndex++;
-	}
+     this.maxPix = -32768;   
+
+	if(this.pixelRepresentation === 0 && this.bitsStored ===8) {
+		this.pixelBuffer = new Uint8Array(this.reader.getBytes(this.index).buffer);
+	} else if(this.pixelRepresentation === 0 && this.bitsStored>8) {
+		this.pixelBuffer = new Uint16Array(this.reader.getBytes(this.index).buffer);
+	} else if(this.pixelRepresentation === 1 && this.bitsStored>8) {
+		this.pixelBuffer = new Int16Array(this.reader.getBytes(this.index).buffer);    
+	} else {
+		this.pixelBuffer = new Array();
+	}	
+	
+    for(var j=0;j<this.pixelBuffer.length;j++) {
+    	var pix = this.pixelBuffer[j];
+		this.minPix = Math.min(this.minPix,pix);
+		this.maxPix = Math.max(this.maxPix,pix);
+	}  
 }

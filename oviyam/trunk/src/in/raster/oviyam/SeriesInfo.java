@@ -55,6 +55,7 @@ import org.dcm4che.util.DcmURL;
 import java.text.ParseException;
 import java.util.HashMap;
 import org.dcm4che.data.Dataset;
+import org.dcm4che.dict.Tags;
 
 /**
  *
@@ -131,9 +132,11 @@ public class SeriesInfo {
         for(int i=0; i<dsVector.size(); i++) {
             try {
                 Dataset dataSet = (Dataset) dsVector.elementAt(i);
-                //Create the SeriesModel instance and adds it to the seriesList
-                SeriesModel sm = new SeriesModel(dataSet);
-                series.put(i, sm);
+                if(!dataSet.getString(Tags.Modality).equals("PR")) {
+	                //Create the SeriesModel instance and adds it to the seriesList
+	                SeriesModel sm = new SeriesModel(dataSet);
+	                series.put(i, sm);
+                }
             } catch(Exception e) {
                 log.error("Error while adding SeriesModel in HashMap series ", e);
                 return;

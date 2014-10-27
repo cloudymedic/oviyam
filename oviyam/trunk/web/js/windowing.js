@@ -10,7 +10,7 @@ var photometric_Interpretation;
 var bits_Stored;
 var lookupTable;
 var huLookupTable;
-var pixelBuffer = new Array();
+var pixelBuffer = null;
 
 var row;
 var column;
@@ -47,18 +47,25 @@ function mouseDownHandler(evt)
     {   
         mouseLocX = evt.pageX;
         mouseLocY = evt.pageY;
+        evt.target.style.cursor = "url(images/wincursor.png), auto";
+    } else {
+    	evt.target.style.cursor = "progress";
     }
 
     evt.preventDefault();
-    evt.stopPropagation();
-    evt.target.style.cursor = "url(images/wincursor.png), auto";
+    evt.stopPropagation();    
 }
 
 function mouseupHandler(evt)
 {
-    mousePressed=0;
-    evt.target.style.cursor = "default";
-    wlApplied = false;
+	mousePressed=0;
+	wlApplied = false;
+		
+	if(imageLoaded == 1) {
+		evt.target.style.cursor = "default";
+	} else {
+		evt.target.style.cursor = "progress";
+	}
 }
 
 function mousemoveHandler(evt)
@@ -203,9 +210,7 @@ function loadDicom() {
     
     var imgSize = jQuery(jcanvas).parent().parent().find('#imageSize').html().substring(11).split("x");
     row = parseInt(imgSize[1]);
-    column = parseInt(imgSize[0]);
-
-    var curr = jQuery('#containerBox').find('.current');
+    column = parseInt(imgSize[0]);    
 
     var queryString = jQuery(jcanvas).parent().parent().find("#frameSrc").html();
 
@@ -213,10 +218,9 @@ function loadDicom() {
     
     var objectUID = getParameter(queryString, 'objectUID');
 
-    var layerCanvas = jQuery(jcanvas).parent().children().get(2);
+    var layerCanvas = jQuery(jcanvas).parent().children().get(2);   	
 
-    if(!winEnabled) {
-    	$('#loadingView').show();
+    if(!winEnabled) {    	
         winEnabled = true;
         doMouseWheel = false;        
         if(pat.serverURL.indexOf("wado")>0) {
@@ -391,9 +395,9 @@ function parseAndLoadDicom()
     	
     	
     	showWindowingValue(wc,ww);
-    } 
-    
-    lookupObj.setData(wc,ww,rescale_Slope,rescale_Intercept, bits_Stored,invert, pixelBuffer);  
+    }     
+
+    lookupObj.setData(wc,ww,rescale_Slope,rescale_Intercept, bits_Stored,invert,minPix,maxPix);  
     
     lookupObj.calculateHULookup();
     
@@ -409,20 +413,10 @@ function parseAndLoadDicom()
 	ctx.fillStyle="black";
     ctx.fillRect(0, 0, column, row);
 
-    /*getWindowingValue();   
-    
-    if(wc==="") {
-		wc = lookupObj.windowCenter;
-		ww = lookupObj.windowWidth;
-		showWindowingValue();
-	}
-    lookupObj.setWindowingdata(wc,ww);*/
-
     jcanvas.width = iNewWidth;
     jcanvas.height = iNewHeight;
 
-    initialize();
-    $('#loadingView').hide();
+    initialize();    
     imageLoaded=1;
 }
 
@@ -484,6 +478,8 @@ function renderImage() {
 	var sy = (sh-dh)/2;	
 
 	ctx.drawImage(tmpCanvas, 0, 0, column, row, sx, sy, dw, dh);
+	    imageLoaded=1;
+    jQuery(jQuery(jcanvas).parent().children().get(2)).css('cursor','default');
 }
 
 function getWindowingValue() {
