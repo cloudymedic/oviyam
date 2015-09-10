@@ -47,6 +47,12 @@
          <localeID>de_DE</localeID>
          <selected>false</selected>
       </language>
+      <language>
+         <lang>Japanese</lang>
+         <country>Japan</country>
+         <localeID>ja_JP</localeID>
+         <selected>false</selected>
+      </language>
    </languages>
    
    <ioviyam-context>/ioviyam2</ioviyam-context>
