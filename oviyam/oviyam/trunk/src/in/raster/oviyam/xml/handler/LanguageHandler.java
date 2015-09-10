@@ -44,8 +44,6 @@ package in.raster.oviyam.xml.handler;
 
 import in.raster.oviyam.xml.model.Configuration;
 import in.raster.oviyam.xml.model.Language;
-import in.raster.oviyam.xml.model.Server;
-
 import java.io.File;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -93,7 +91,9 @@ public class LanguageHandler {
     }
 
     public List<Language> getLanguage() {
-        return config.getLanguagesList();
+    	List<Language> list = config.getLanguagesList();
+    	upgrade(list);
+        return list;
     }
 
     public String getCurrentLanguage() {
@@ -122,4 +122,25 @@ public class LanguageHandler {
 //			}
 //    	}
 //    }
+    
+    
+    public void upgrade(List<Language> list) {
+    	// From version 2.1 to 2.2
+    	for (Language lang : list) {
+    		if(lang.getLocaleID().equals("ja_JP")) {
+    			return;
+    		}
+    	}
+    	Language language = new Language();
+    	language.setCountry("Japan");
+    	language.setLanguage("Japanese");
+    	language.setLocaleID("ja_JP");
+    	language.setSelected(false);
+    	list.add(language);    	
+    	try {
+			serializer.write(config,source);
+		} catch (Exception e) {
+			log.error("Unable to upgrade to version 2.2 : " + e.getMessage());
+		}
+    }
 }
