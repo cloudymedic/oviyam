@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
-import vtk.*;
+//import vtk.*;
 
 /**
  *
@@ -23,7 +23,7 @@ public class surfaceJson extends HttpServlet {
             System.out.println("\n\n Java Version : " + System.getProperty("java.version"));
             System.loadLibrary("vtkCommonJava");
             System.loadLibrary("vtkFilteringJava");
-            System.loadLibrary("vtkIOJava");
+//            System.loadLibrary("vtkIOJava");
             System.loadLibrary("vtkImagingJava");
             System.loadLibrary("vtkGraphicsJava");
             System.loadLibrary("vtkRenderingJava");
@@ -74,7 +74,7 @@ public class surfaceJson extends HttpServlet {
             String inputDirectory = request.getParameter("seriesDirectory");
             int objValue = Integer.parseInt(request.getParameter("pixelValue"));
 
-            System.out.println("Dir Path : " + inputDirectory);
+            /*System.out.println("Dir Path : " + inputDirectory);
             vtkDICOMImageReader reader = new vtkDICOMImageReader();
             File file = new File(inputDirectory.trim());
             System.out.println("Is Path exists : " + file.exists());
@@ -145,9 +145,9 @@ public class surfaceJson extends HttpServlet {
             }
             out.write("]]");
             out.close();
-            System.out.println("Completed...");
+            System.out.println("Completed...");*/
         } finally {
-            out.close();
+           // out.close();
         }
     }
 

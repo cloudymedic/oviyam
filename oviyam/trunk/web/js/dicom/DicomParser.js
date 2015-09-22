@@ -7,7 +7,6 @@ function DicomParser(inputBuffer,reader)
 {
     this.inputBuffer=inputBuffer;
     this.reader=reader;
-    this.dicomElement = null;    
     this.parseAll=parseAll;
     this.index = 0;
     this.pixelBuffer;
@@ -15,9 +14,8 @@ function DicomParser(inputBuffer,reader)
     this.pixelRepresentation;
     this.minPix;
     this.maxPix;
+    this.imgData = null;
 }
-
-var elementIndex=0;
 
 function getPixelBuffer()
 {
@@ -25,36 +23,21 @@ function getPixelBuffer()
 }
 
 function parseAll()
-{
-	//read photometric interpretation value
-    this.readTag(40,0,4,0,"photometricInterpretation");
-	//read bits allocated value
-    this.bitsStored = this.readTagAsNumber(40,0,1,1,"BitsStored");
-    //read pixel representation    
-    this.pixelRepresentation = this.readTagAsNumber(40,0,3,1,"PxelRepresentation");
-    //read wc value    
-    this.readTag(40,0,80,16,"windowCenter");
-    //read ww value
-    this.readTag(40,0,81,16,"windowWidth");
-    //read rescale slope value
-    this.readTag(40,0,82,16,"rescaleIntercept");
-    //read rescale intercept value
-    this.readTag(40,0,83,16,"rescaleSlope");
-    //move to pixel data
-    this.moveToPixelDataTag();
-    //read pixel data
-    this.readImage();    
-}
-
-DicomParser.prototype.setDicomElement=function(name,vr,vl,group,element,value,offset)
-{
-    if(this.dicomElement==null) {
-        this.dicomElement=new Array();
-        elementIndex = 0;
-    }
+{			
+	var monochrome1 = this.readTag(40,0,4,0,"PhotometricInterpretation");
+	var rows = this.readTagAsNumber(40,0,16,0,"Rows");
+	var columns = this.readTagAsNumber(40,0,17,0,"Columns");
+	var pxlSpacing = this.readTag(40,0,48,0,"PixelSpacing");
+	this.bitsStored = this.readTagAsNumber(40,0,1,1,"BitsStored");
+	this.pixelRepresentation = this.readTagAsNumber(40,0,3,1,"PixelRepresentation");
+	var wc = this.readTag(40,0,80,16,"windowCenter");
+	var ww = this.readTag(40,0,81,16,"windowWidth");
+	var rescale_Intercept = this.readTag(40,0,82,16,"rescaleIntercept");
+	var rescale_slope = this.readTag(40,0,83,16,"rescaleSlope");
+	this.imgData={"monochrome1":monochrome1=="MONOCHROME1","BitsStored":this.bitsStored,"PixelRepresentation":this.pixelRepresentation,"windowCenter":wc[0],"windowWidth":ww[0],"rescaleIntercept":rescale_Intercept!=undefined?rescale_Intercept:0.0 ,"rescaleSlope":rescale_slope!=undefined ?rescale_slope:1.0,"nativeRows":rows,"nativeColumns":columns,"pixelSpacing":pxlSpacing};
 	
-    this.dicomElement[elementIndex++]=new DicomElement(name,vr,vl,group,element,value,offset);
-
+    this.moveToPixelDataTag();
+    this.readImage();    
 }
 
 DicomParser.prototype.readTag=function(firstContent,secondContent,thirdContent,fourthContent,tagName)
@@ -70,10 +53,9 @@ DicomParser.prototype.readTag=function(firstContent,secondContent,thirdContent,f
             var vl=this.reader.readNumber(2,i+2);
             var val=this.reader.readString(vl,i+4);
             var tagValue=val.split("\\");
-            this.setDicomElement(tagName,vr,vl,firstContent+secondContent,thirdContent+fourthContent,tagValue,i-4);
             i=i+4+vl;
 			this.index = i;
-            break;
+            return tagValue;
         }    
     }  
 }
@@ -89,7 +71,6 @@ DicomParser.prototype.readTagAsNumber=function(firstContent,secondContent,thirdC
             var vr= this.reader.readString(2,i);
             var vl=this.reader.readNumber(2,i+2);
             var val=this.reader.readNumber(vl,i+4);
-            this.setDicomElement(tagName,vr,vl,firstContent+secondContent,thirdContent+fourthContent,val,i-4);
             i=i+4+vl;
             this.index = i;
             return val;
@@ -98,14 +79,26 @@ DicomParser.prototype.readTagAsNumber=function(firstContent,secondContent,thirdC
 }
 
 DicomParser.prototype.moveToPixelDataTag=function()
-{
+{	
     var i=this.index;    
     for(; i<this.inputBuffer.length; i++)
     {
         if(this.reader.readNumber(1,i)==224 &&this.reader.readNumber(1,i+1)==127&&this.reader.readNumber(1,i+2)==16&&this.reader.readNumber(1,i+3)==0)
 	{			
-            i=i+4;
-            this.index = i;
+        	i+=4;
+	        var vr= this.reader.readString(2,i);		        
+	        i+=4;
+	        
+	        if(vr=="OB") { 
+	        	i+=2;		
+	        } else if(vr=="OW") { 
+	        	i+=4;
+	        } else if(vr=="OF") { 
+	        	i+=8;
+	        } else {
+	        	i+=4;
+	        }
+	        this.index = i;	  
 	}    
     }
 }
@@ -113,8 +106,8 @@ DicomParser.prototype.moveToPixelDataTag=function()
 DicomParser.prototype.readImage=function()
 {
 	 this.minPix = 65535;
-     this.maxPix = -32768;   
-
+     this.maxPix = -32768; 
+          
 	if(this.pixelRepresentation === 0 && this.bitsStored ===8) {
 		this.pixelBuffer = new Uint8Array(this.reader.getBytes(this.index).buffer);
 	} else if(this.pixelRepresentation === 0 && this.bitsStored>8) {

@@ -4,6 +4,8 @@
         <script type="text/javascript" src="js/newSearch.js"></script>
         <script type="text/javascript" src="js/LoadLanguage.js"></script>
         <script type="text/javascript" src="js/lib/jquery-gentleSelect.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/jquery.alerts.css" />
+        <script type="text/javascript" src="js/lib/jquery.alerts.js"></script>
         
         <script type="text/javascript">
             $(document).ready(function() {
@@ -56,18 +58,48 @@
             #newQueryParamDiv label {
                 float: left;
                 width: 10em;
-                margin-right: 1em;
-/*                 font-weight: bold; */
-/*                 font-size: 12px; */
+                font-size: 13px;
+            }            
+            
+/*             .ui-state-default { */
+/*             	border: 2px solid #2A2A2A !important; */
+/*             } */
+            
+            .gentleselect-label {
+            	float: left;
+    			/*font-weight: bold;*/
+    
+    			border: 2px solid #2A2A2A !important;
+    			background-image: url('css/images/expand.png');
+    			display: block;    
+				width: 11em;
+				height: 20px;
+				text-align: center;
+				line-height: 2em;
+				padding: 0px !important;
             }
-
+            
+           /* .gentleselect-dialog > ul {
+            	font-weight: bold;
+            }*/
+            
+            .gentleselect-dialog > ul > li.selected {
+            	color: #fff;
+			    background-color: #0b93d5;
+            }
+            
+            .gentleselect-dialog > ul > li:hover {
+            	 background-color: #0972a5;
+			    color: #fff;
+            }
+           
         </style>
 
     </head>
     <body>
         <div id="newQueryParamDiv" class="ui-widget-content">
 <!--             <table id="findTable" class="ui-widget-content" width="930px" height="90%" cell-spacing="4" style="margin-left: 10px; font-size: 100%;border: none;"> -->
-<table id="findTable" class="ui-widget-content" width="80%" height="90%" cell-spacing="4" style="margin-left: 10px; font-size: 100%;border: none;">
+<table id="findTable" class="ui-widget-content" width="95%" height="90%"  cellspacing="4" style="margin-left: 10px; font-size: 100%;border: none;">
                 <tr>
 <!--                     <td style="width:50px;"> -->
 						<td>
@@ -78,20 +110,15 @@
                         <label for="patName">Patient ID</label>
                         <input type="search" id="patName"/>
                     </td>
-                    <td>
+                   <!-- <td>
                         <label for="accessionNo">Accession Number</label>
                         <input type="search" id="accessionNo" />
                     </td>
                     <td>
                         <label>Birth Date</label>
                         <input type="search" class="bdate" />
-                    </td>
-                    <td>
-                        <label for="studyDesc">Study Description</label>
-                        <input type="search" id="studyDesc" />
-                    </td>
-                </tr>
-                <tr>
+                    </td>-->
+                    
                     <td>
                         <label>Study Date (From)</label>
                         <input type="search" class="fsdate"/>
@@ -100,12 +127,20 @@
                         <label>Study Date (To)</label>
                         <input type="search" class="tsdate"/>
                     </td>
+                </tr>
+                <tr>   
+                	<td>
+                        <label for="studyDesc">Study Description</label>
+                        <input type="search" id="studyDesc" />
+                    </td>
+                                     
                     <td>
                         <label for="referPhysician">Referring Physician</label>
                         <input type="search" id="referPhysician"/>
                     </td>
                     <td>
-                        <div style=" padding-bottom: 4px;">Modality</div>
+                    	<div style="float: left; width: 10em; font-size: 13px; margin-top: 6px;"> Modality </div>
+
                         <select id="<%=request.getParameter("tabName")%>_modalities" multiple="multiple" class="modalitiesList" style="display: none;">
                             <option value="CT">CT</option>
                             <option value="CR">CR</option>
@@ -119,10 +154,12 @@
                             <option value="RF">RF</option>
                             <option value="OT">OT</option>                            
                         </select>    
-                    </td> 
-                    <td><button id="okBtn" onclick="searchClick(this)" style="width:64px;height:27px; font-weight: bold; font-size: 12px;" class="searchBtn">Search</button>
-                        <button id="resetBtn" onclick="resetClick(this, <%=request.getParameter("tabName")%>_modalities);" style="width:57px;height:27px; font-weight: bold; font-size: 12px;" class="clearBtn">Reset</button>
-                    </td>
+
+                    </td>                     
+                    <td colspan="2">   
+                    	<button id="okBtn" onclick="searchClick(this)" style="float: left;width:7em;height:27px; font-size: 14px; margin-right: 10px;" class="searchBtn">Search</button>                                            	
+    	                	<button id="resetBtn" onclick="resetClick(this, <%=request.getParameter("tabName")%>_modalities);" style="float: left;width:7em; height:27px; font-size: 14px;" class="clearBtn">Reset</button>           	                    	
+	                	</td>
                 </tr>
             </table>
         </div>

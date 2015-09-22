@@ -9,7 +9,7 @@ var languages = {
     BirthDate: "Birth Date",
     AccessionNumber: "Accession Number",
     FromStudyDate: "Study Date (From)",
-    ToStudyDate: "Study Date (to)",
+    ToStudyDate: "Study Date (To)",
     StudyDate: "Study Date ",
     StudyDesc: "Study Description",
     ReferPhysician: "Referring Physician",

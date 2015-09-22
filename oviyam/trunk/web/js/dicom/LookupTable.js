@@ -4,7 +4,6 @@
  *  Author: BabuHussain<babuhussain.a@raster.in>
  */
 function LookupTable() {
-	this.huLookup;
 	this.ylookup;
 	this.rescaleSlope;
 	this.rescaleIntercept;
@@ -13,45 +12,40 @@ function LookupTable() {
 	this.lutSize;
 	this.minPixel;
 	this.maxPixel;
-	this.calculateHULookup = calculateHULookup;
+	this.getPixelAt = getPixelAt;
 	this.calculateLookup = calculateLookup;
 	this.setWindowingdata = setWindowingdata;
+	this.setPixelInfo = setPixelInfo;
 }
 
-LookupTable.prototype.setData = function(wc, ww, rs, ri,bitsStored, invert, minPix, maxPix) {
-	this.windowCenter = wc;
-	this.windowWidth = ww;
+LookupTable.prototype.setData = function(wc, ww, rs, ri,bitsStored, invert) {	
 	this.rescaleSlope = rs;
-	this.rescaleIntercept = ri;	
-	this.lutSize = Math.pow(2, bitsStored);			
+	this.rescaleIntercept = ri;
+	this.windowCenter = wc;
+	this.windowWidth = ww;			
+	this.lutSize = Math.pow(2, parseInt(bitsStored));	
 	this.invert = invert;	
-	this.minPixel = minPix;
-	this.maxPixel = maxPix;
 }
+
+var setPixelInfo = function(minPix,maxPix) {
+	this.minPixel = minPix;
+	this.maxPixel = maxPix;	
+};
 
 var setWindowingdata = function(wc, ww) {
 	this.windowCenter = wc;
 	this.windowWidth = ww;
 }
 
-function calculateHULookup() {
-	this.huLookup = new Array();	
-
-	for ( var inputValue = this.minPixel; inputValue < this.maxPixel; inputValue++) {	
-			this.huLookup[inputValue] = inputValue * this.rescaleSlope + this.rescaleIntercept;			
-	}	
-}
-
 function calculateLookup() {
 	this.ylookup=new Array(this.lutSize);
 	for(var inputValue=this.minPixel;inputValue<=this.maxPixel;inputValue++) {
-		var lutVal = (((this.huLookup[inputValue] - (this.windowCenter)) / (this.windowWidth) + 0.5) * 255.0);
+		var lutVal = ((((inputValue * this.rescaleSlope + this.rescaleIntercept) - (this.windowCenter)) / (this.windowWidth) + 0.5) * 255.0);
          var newVal = Math.min(Math.max(lutVal, 0), 255);
-         if(this.invert === true) {
-             this.ylookup[inputValue] = Math.round(255 - newVal);
-         } else {
-             this.ylookup[inputValue] = Math.round(newVal);
-       	 
-         }
+         this.ylookup[inputValue] = this.invert===true ? Math.round(255 - newVal) : Math.round(newVal);
 	}
+}
+
+function getPixelAt(i) {
+	return i!=undefined ? (i * this.rescaleSlope + this.rescaleIntercept) : 0;	
 }

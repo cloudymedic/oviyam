@@ -83,7 +83,7 @@ function BinFileReader(fileURL){
 		
 		return result;
 	};
-
+	
 	this.readUnicodeString = function(iNumChars, iFrom){
 		iNumChars = iNumChars || 1;
 		iFrom = iFrom || filePointer;

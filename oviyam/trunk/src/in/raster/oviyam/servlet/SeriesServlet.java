@@ -45,6 +45,10 @@ package in.raster.oviyam.servlet;
 import in.raster.oviyam.SeriesInfo;
 import in.raster.oviyam.model.SeriesModel;
 import in.raster.oviyam.util.SeriesComparator;
+import in.raster.oviyam.util.core.MoveScu;
+import in.raster.oviyam.xml.handler.LanguageHandler;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -54,6 +58,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.dcm4che2.tool.dcmqr.DcmQR;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -78,7 +83,8 @@ public class SeriesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String patID = request.getParameter("patientID");
         String studyUID = request.getParameter("studyUID");
-        String dcmURL = request.getParameter("dcmURL");
+        String dcmURL = request.getParameter("dcmURL");        
+        
         SeriesInfo series = new SeriesInfo();
 
         series.callFindWithQuery(patID, studyUID, dcmURL);
@@ -101,7 +107,7 @@ public class SeriesServlet extends HttpServlet {
                 jsonObj.put("patientId", patID);
                 jsonObj.put("studyUID", studyUID);
 
-                jsonArray.put(jsonObj);
+                jsonArray.put(jsonObj);              
             }
 
             PrintWriter out = response.getWriter();

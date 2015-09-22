@@ -42,6 +42,8 @@
 
 package in.raster.oviyam.model;
 
+import java.io.Serializable;
+
 import org.dcm4che.data.Dataset;
 import org.dcm4che.dict.Tags;
 
@@ -49,7 +51,7 @@ import org.dcm4che.dict.Tags;
  * 
  * @author asgar
  */
-public class InstanceModel {
+public class InstanceModel implements Serializable{
 
 	// Variables
 	private String sopIUID;
@@ -68,10 +70,17 @@ public class InstanceModel {
 	public InstanceModel(Dataset ds) {
 		sopIUID = ds.getString(Tags.SOPInstanceUID);
 		instanceNumber = ds.getString(Tags.InstanceNumber);
-		sopClassUID = ds.getString(Tags.SOPClassUID);
-		numberOfFrames = ds.getString(Tags.NumberOfFrames);
-		int rows = ds.getInteger(Tags.Rows);
-		int columns = ds.getInteger(Tags.Columns);	
+		sopClassUID = ds.getString(Tags.SOPClassUID)!=null ? ds.getString(Tags.SOPClassUID) : "";
+		numberOfFrames = ds.getString(Tags.NumberOfFrames)!=null ? ds.getString(Tags.NumberOfFrames) : "0";	
+		
+		int rows = 512, columns = 512;
+		
+		try {
+			rows = ds.getInteger(Tags.Rows);
+			columns = ds.getInteger(Tags.Columns);
+		} catch(NullPointerException ex) {
+			rows=columns=512;
+		}
 		
 		if(columns>rows) {			
 			thumbSize = "width: 70px;";

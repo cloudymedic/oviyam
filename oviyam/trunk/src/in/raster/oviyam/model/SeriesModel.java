@@ -42,6 +42,8 @@
 
 package in.raster.oviyam.model;
 
+import java.io.Serializable;
+
 import org.dcm4che.data.Dataset;
 import org.dcm4che.dict.Tags;
 
@@ -49,7 +51,7 @@ import org.dcm4che.dict.Tags;
  *
  * @author asgar
  */
-public class SeriesModel {
+public class SeriesModel implements Serializable {
 
     // variables
     private String seriesIUID;
@@ -71,12 +73,12 @@ public class SeriesModel {
     public SeriesModel(Dataset ds) {
         seriesIUID = ds.getString(Tags.SeriesInstanceUID);
         seriesNumber = ds.getString(Tags.SeriesNumber);
-        seriesDate = ds.getString(Tags.SeriesDate);
-        seriesTime = ds.getString(Tags.SeriesTime);
-        seriesDescription = ds.getString(Tags.SeriesDescription);
+        seriesDate = ds.getString(Tags.SeriesDate)!=null ? ds.getString(Tags.SeriesDate) : "";
+        seriesTime = ds.getString(Tags.SeriesTime)!=null ? ds.getString(Tags.SeriesTime) : "";
+        seriesDescription = ds.getString(Tags.SeriesDescription)!=null? ds.getString(Tags.SeriesDescription) : "";
         modality = ds.getString(Tags.Modality);
-        numberOfInstances = ds.getString(Tags.NumberOfSeriesRelatedInstances);
-        bodyPartExamined = ds.getString(Tags.BodyPartExamined);
+        numberOfInstances = ds.getString(Tags.NumberOfSeriesRelatedInstances)!=null ? ds.getString(Tags.NumberOfSeriesRelatedInstances) : "";
+        bodyPartExamined = ds.getString(Tags.BodyPartExamined)!=null ? ds.getString(Tags.BodyPartExamined) : "";
     }
 
     /**

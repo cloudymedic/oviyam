@@ -6,20 +6,28 @@
 
         <script type="text/javascript" src="js/lib/jquery-latest.js"></script>
         <script type="text/javascript" src="js/lib/jquery-ui-latest.js"></script>
-        <script type="text/javascript" src="js/lib/jquery.sleep.js"></script>
-        <script type="text/javascript" src="js/viewer1.js"></script>
-        <script type="text/javascript" src="js/viewer.js"></script>
-        <!--<script type="text/javascript" src="js/database.js"></script>-->
-        <script type="text/javascript" src="js/sync.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.sleep.js"></script>        
+        <script type="text/javascript" src="js/viewer.js"></script>      
         <script type="text/javascript" src="js/lib/smartslider.js"></script>
 
         <!-- Scout line  -->
-        <script type="text/javascript" src="js/Localizer.js"></script>
-        <script type="text/javascript" src="js/MRLocalizer.js"></script>
+        <script type="text/javascript" src="js/Localizer.js"></script>        
         <script type="text/javascript" src="js/SliceLocator.js"></script>
         <script type="text/javascript" src="js/ScoutLineModel.js"></script>
         <script type="text/javascript" src="js/ImageOrientation.js"></script>
-        <script type="text/javascript" src="js/frameContent.js"></script>
+        
+        <!-- Windowing  -->
+        <script type="text/javascript" src="js/lib/BinFileReader.js"></script>
+        <script type="text/javascript" src="js/dicom/DicomInputStreamReader.js"></script>
+        <script type="text/javascript" src="js/dicom/DicomElement.js"></script>
+        <script type="text/javascript" src="js/dicom/DicomParser.js"></script>
+        <script type="text/javascript" src="js/dicom/LookupTable.js"></script>
+        
+        <script type="text/javascript" src="js/framecontent.js"></script>
+        <script type="text/javascript" src="js/toolactivator.js"></script>
+        <script type="text/javascript" src="js/oviyam.js"></script>
+        <script type="text/javascript" src="js/shape.js"></script>
+        <script type="text/javascript" src="js/measure.js"></script>
 
         <script type="text/javascript" src="js/lib/jqcontextmenu.js">
 
@@ -52,15 +60,18 @@
             <div id="seriesDesc" class="textOverlay" style="right:7px;top:50px"></div>
             <div id="PDFContent" align="center"></div>
             <div id="SRContent"></div>
-            <div style="height:100%; margin:auto;" id="canvasDiv" onclick="setBorder(jQuery(this).children().get(2));">
+            <div style="height:100%; margin:auto;" id="canvasDiv">
                 <canvas id="imageCanvas"  style="z-index:1; position:absolute; margin:auto;">Your browser doesn't support canvas.</canvas>
                 <canvas id="canvasLayer1" style="z-index:2; position:absolute; margin:auto;">Your browser doesn't support canvas.</canvas>
                 <canvas id="canvasLayer2" style="z-index:3; position:absolute; margin:auto;">Your browser doesn't support canvas.</canvas>
+                <canvas id="previewCanvas" class="preview" style="z-index:4; width: 20%; position:absolute; top: 52px; right: 2px; visibility: hidden;"></canvas>
+                <canvas id="highlightCanvas" class="preview" style="z-index:5; width: 20%; position:absolute; top: 52px; right: 2px; visibility: hidden;"></canvas>
             </div>
             <div id="totalImages" class="textOverlay" style="left:5px; bottom:55px"></div>
             <div id="windowLevel" class="textOverlay" style="left:5px; bottom:35px"></div>
             <div id="huDisplayPanel" class="textOverlay" style="left:5px; bottom:15px"></div>
             <div id="thickLocationPanel" class="textOverlay" style="left:5px; bottom:15px"></div>
+            <div id="multiframe" class="textOverlay" style="bottom:75px; right: 7px; background-color:#B76432; visibility:hidden;">Multiframe</div>
             <div id="imageSize" class="textOverlay" style="bottom:55px; right:7px;">Image size: </div>
             <div id="viewSize" class="textOverlay" style="bottom:35px; right:7px;">View size: </div>
             <div id="zoomPercent" class="textOverlay" style="bottom:15px; right:7px;">Zoom: </div>
@@ -77,8 +88,10 @@
             <div id="pixelSpacing" style="visibility:hidden"></div>
             <div id="imgType" style="visibility:hidden"></div>
             <div id="refSOPInsUID" style="visibility:hidden"></div>
-            <div id="modalityDiv" style="visibility:hidden"></div>
-            <div id="applyWLDiv" class="textOverlay" style="bottom:100px; right:7px; cursor:pointer; display:none">Apply All</div>
+            <div id="modalityDiv" style="visibility:hidden"></div>            
+            <div id="applyWLDiv" class="textOverlay" style="bottom:100px; right:7px; cursor:pointer; display:none" divState="false" onclick="applyWL();">Apply All</div>
+            <div id="tool" style="display:none;"></div>           
+            <div id="serId" style="display:none;"></div> 
         </div>
 
         <script type="text/javascript">        	
@@ -89,24 +102,27 @@
             	if(isCompatible()) {
             		for(var i=0;i<seriesData.length;i++) {
             			var series = seriesData[i];
-            			if(series['seriesUID']==getParameter(queryString,'seriesUID')){
-            				jQuery('#seriesDesc').html(series['seriesDesc']);
-            				jQuery("#modalityDiv").html(series['modality']);
+            			var seriesDesc = convertSplChars(series['seriesDesc']);            			
+            			if(seriesDesc== undefined || seriesDesc==='') {
+            				seriesDesc = 'UNKNOWN';
             			}
-						cxtContent+= '<li><a href="frameContent.html?seriesUID=' + series['seriesUID'] + '">' + convertSplChars(series['seriesDesc']) + '</a></li>';						
+						cxtContent+= '<li><a href="frameContent.html?series=' + series['seriesUID'] + '&seriesDesc=' + series['seriesDesc'] + '&images=' + series['totalInstances'] + '&modality='+ series['modality'] + '">' + seriesDesc + '</a></li>';						
             		}   
             		cxtContent+='</ul>';         		
             	} else {
             		for(var i=0;i<seriesData.length;i++) {
 	            		var series = seriesData[i];
-	            		if(series['seriesUID']==getParameter(queryString,'seriesUID')){
-            				jQuery('#seriesDesc').html(series['seriesDesc']);
-            				jQuery("#modalityDiv").html(series['modality']);
+	            		var seriesDesc = convertSplChars(series['seriesDesc']);
+            			if(seriesDesc==undefined || seriesDesc==='') {
+            				seriesDesc = 'UNKNOWN';
             			}
             			cxtContent +='<li><a href="frameContent.html?serverURL=';
             			cxtContent += getParameter(queryString, 'serverURL');
             			cxtContent += '&studyUID=' + parent.pat.studyUID;
-            			cxtContent += '&seriesUID=' + series['seriesUID'] + '">' + convertSplChars(series['seriesDesc']) + '</a></li>';
+            			cxtContent += '&series=' + series['seriesUID'];
+            			cxtContent += '&seriesDesc=' + series['seriesDesc'];
+            			cxtContent += '&images=' + series['totalInstances'];
+            			cxtContent += '&modality=' + series['modality'] + '">' + seriesDesc + '</a></li>';
             		}
             		cxtContent+='</ul>';
             	}

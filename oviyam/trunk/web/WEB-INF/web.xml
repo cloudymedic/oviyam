@@ -15,15 +15,15 @@
     <servlet>
         <servlet-name>InstanceServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.InstanceServlet</servlet-class>
-    </servlet>
+    </servlet>   
     <servlet>
         <servlet-name>DcmImage</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.DcmImage</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DicomRetrieve</servlet-name>
-        <servlet-class>in.raster.oviyam.servlet.DicomRetrieve</servlet-class>
-    </servlet>
+        <servlet-name>PixelData</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.PixelDataServlet</servlet-class>
+    </servlet>  
     <servlet>
         <servlet-name>ServerConfigServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.ServerConfigServlet</servlet-class>
@@ -95,10 +95,10 @@
         <servlet-name>DcmImage</servlet-name>
         <url-pattern>/Image.do</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DicomRetrieve</servlet-name>
-        <url-pattern>/DcmStream.do</url-pattern>
-    </servlet-mapping>
+	<servlet-mapping>
+        <servlet-name>PixelData</servlet-name>
+        <url-pattern>/pixel.do</url-pattern>
+    </servlet-mapping> 
     <servlet-mapping>
         <servlet-name>ServerConfigServlet</servlet-name>
         <url-pattern>/ServerConfig.do</url-pattern>
@@ -122,7 +122,7 @@
     <servlet-mapping>
         <servlet-name>WadoServlet</servlet-name>
         <url-pattern>/Wado.do</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>    
     <servlet-mapping>
         <servlet-name>Listener</servlet-name>
         <url-pattern>/Listener.do</url-pattern>

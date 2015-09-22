@@ -1,4 +1,5 @@
-function searchClick(searchBtn) {
+function searchClick(searchBtn) {	
+	$('#buttonContainer').find('.ui-state-active').removeClass('ui-state-active');
     var inputFields = $(searchBtn).parent().parent().parent().find('input');
     var searchURL = "queryResult.jsp?";
     inputFields.each(function() {
@@ -52,30 +53,37 @@ function searchClick(searchBtn) {
     });
     if(modalities!='') {
         searchURL += '&modality=' + modalities.trim();
-    }
-
-    var dUrl = $('.ui-tabs-selected').find('a').attr('name');
-    searchURL += "&dcmURL=" + dUrl;
-
-    var divContent = $('.ui-tabs-selected').find('a').attr('href');
-    searchURL += '&tabName=' + divContent.replace('#','');
-
-    var tabIndex = $('#tabs_div').data('tabs').options.selected;
-    searchURL += '&tabIndex=' + tabIndex;
-    
-    searchURL += '&preview=' + $('.ui-tabs-selected').find('a').attr('preview');
-
-    divContent += '_content';
-
+    }   
+    var divContent = $('.ui-tabs-selected').find('a').attr('href') + '_content';
     $(divContent).html('');
-    $('#westPane').html('');
-
-    $(divContent).load(encodeURI(searchURL), function() {
-        clearInterval(timer);
-        //checkLocalStudies();
-    });
+    
+    if(searchURL.trim()==('queryResult.jsp?')) {
+    	jConfirm('No filters have been selected. The search may take long time. Do you want to proceed?', 'No search criteria',function(doQry) {
+			if(doQry==true) {
+				doQuery(searchURL,divContent);
+			} 
+	    });   	
+    } else {
+    	doQuery(searchURL,divContent);
+    }  
    
 } // end of searchClick()
+
+function doQuery(searchURL,divContent) {
+	searchURL += "&dcmURL=" + $('.ui-tabs-selected').find('a').attr('name');
+	searchURL += '&tabName=' + $('.ui-tabs-selected').find('a').attr('href').replace('#','');
+	searchURL += '&tabIndex=' + $('#tabs_div').data('tabs').options.selected;
+	searchURL += '&preview=' + $('.ui-tabs-selected').find('a').attr('preview');
+	searchURL += "&search=true";
+
+	$(divContent).html('<div id="loading" style="height: 100%; width: 100%; text-align: center; z-index: 10000;"><div style="position: absolute; left: 45%; top: 45%;"><img src="images/overlay_spinner.gif" alt=""><div style="font-size: 12px; font-weight: bold;">Querying...</div></div></div>');
+	$('#westPane').html('');
+
+	$(divContent).load(encodeURI(searchURL), function() {
+		clearInterval(timer);
+		//checkLocalStudies();
+	});
+}
 
 function resetClick(resetBtn, div) {
     var inputFields = $(resetBtn).parent().parent().parent().find('input');

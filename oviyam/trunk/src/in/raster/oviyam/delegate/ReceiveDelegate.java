@@ -65,7 +65,7 @@ public class ReceiveDelegate {
             //InetAddress thisIp = InetAddress.getLocalHost();
             ListenerHandler lh = new ListenerHandler();
             Listener listener = lh.getListener();
-            if(lh!=null) {
+            if(listener!=null) {            	
 	            dcmrcv = new DcmRcv();
 	            dcmrcv.setAEtitle(listener.getAetitle());
 	            dcmrcv.setHostname("0.0.0.0");
