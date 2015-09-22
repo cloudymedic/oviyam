@@ -63,6 +63,15 @@
 
 <html>
 <head>
+ <style>
+ 	.dataTables_scrollBody {
+ 		height: 88% !important;
+ 	}
+ 	
+ 	.dataTables_wrapper {
+ 		border: 1px solid #2A2A2A;
+ 	}
+ </style>
 
 <script type="text/javascript" src="js/lib/jquery.dataTables.min.js"></script>
 
@@ -78,7 +87,7 @@
                     "oLanguage": {
                         "sSearch": "Filter:"
                     },
-                    "sScrollY": "87%",
+                    "sScrollY": "90%",
                     "bScrollCollapse": true,
                     "bAutoWidth": true,
                     "sScrollX": "100%",
@@ -93,9 +102,12 @@
                                 }
                             }
                         }],
-                    "aoColumns": [ null, null, null, null, null, null, null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}]
+                   /* "aoColumns": [ null, null, null, null, null, null, null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}]*/
+                    "aoColumns": [ null, null, null, null, null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}]
                 });
+				
 
+				
                 $.fn.dataTableInstances[<%=request.getParameter("tabIndex")%>] = dTable;               
 
                 if(<%=request.getParameter("search")%>!=null && !<%=request.getParameter("search")%>) { //For Direct launch
@@ -182,7 +194,7 @@
 				    if( iPos == null ) {
 						return;
 				    }  
-				    if(document.getElementById(iPos[9]).style.visibility == 'hidden') {
+				    if(document.getElementById(iPos[7]).style.visibility == 'hidden') {
 		            	showWestPane(iPos);
 			        } else {
 			            if(!!(window.requestFileSystem || window.webkitRequestFileSystem)) {
@@ -199,7 +211,7 @@
 	<c:choose>
 	<c:when test="${param.preview=='true'}">
 		<div id="<%=tabName%>_westPane"
-			style="width: 250px; visibility: visible; display: block; z-index: 0; float: left;"></div>	
+			style="width: 250px; height: 94%; visibility: visible; display: block; z-index: 0; float: left;"></div>	
 
 		<div id="Toggler" style="position: absolute; top: 13.5%; left: 254px; z-index: 3;">
 
@@ -216,7 +228,17 @@
 			onclick="this.className='ui-state-default'; toggleSearch(this);"></div>
 		</div>	
 
-		<div style="float: left; height: 84%; position: absolute; top: 13%; left:250px; right: 0px; bottom: 0px; padding: 0px'">
+		<c:choose>
+			<c:when test="${param.search=='true'}">
+				<div style="float: left; height: 84%; position: absolute; top: 13%; left:250px; right: 0px; bottom: 0px; padding: 0px'">
+			</c:when>
+		
+			<c:otherwise>
+				<div style="float: left; height: 100%; position: absolute; top: 0px; left:250px; right: 0px; bottom: 0px; padding: 0px'">
+			</c:otherwise>
+		
+		</c:choose>
+		
 	</c:when>
 	
 	<c:otherwise>
@@ -231,8 +253,8 @@
 					<th></th>
 					<th><fmt:message key='patientID' bundle="${lang}" /></th>
 					<th><fmt:message key='patientName' bundle="${lang}" /></th>
-					<th><fmt:message key='dateOfBirth' bundle="${lang}" /></th>
-					<th><fmt:message key='accessionNumber' bundle="${lang}" /></th>
+					<!--<th><fmt:message key='dateOfBirth' bundle="${lang}" /></th>
+					<th><fmt:message key='accessionNumber' bundle="${lang}" /></th>-->
 					<th><fmt:message key='studyDate' bundle="${lang}" /></th>
 					<th><fmt:message key='studyDescription' bundle="${lang}" /></th>
 					<th>Modality</th>
@@ -258,8 +280,8 @@
 							id="${studyIUID}" alt="" /></td>
 						<td>${patientId}</td>
 						<td>${patientName}</td>
-						<td>${birthDate}</td>
-						<td>${accessionNumber}</td>
+						<!--<td>${birthDate}</td>
+						<td>${accessionNumber}</td>-->
 						<td>${studyDate}</td>
 						<td>${studyDescription}</td>
 						<td>${modality}</td>

@@ -155,11 +155,7 @@ public class ImageHandler extends SimpleTagSupport {
 				getJspContext().setAttribute("numberOfFrames",
 						instance.getNumberOfFrames());
 
-				if (instance.getNumberOfFrames() != null) {
-					getJspContext().setAttribute("multiframe", "yes");
-				} else {
-					getJspContext().setAttribute("multiframe", "no");
-				}
+				getJspContext().setAttribute("multiframe", !instance.getNumberOfFrames().equals("0") ? "yes" : "no");
 				
 				getJspContext().setAttribute("thumbSize", instance.getThumbSize());
 

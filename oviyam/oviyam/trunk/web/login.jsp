@@ -54,31 +54,71 @@
             		$('footer').remove();
             	}            		
             	
-		$('#switcher').themeswitcher({
-                    loadTheme: theme,
-                    cookieName:'',
-                    width: 160
+				$('#switcher').themeswitcher({
+		                    loadTheme: theme,
+		                    cookieName:'',
+		                    width: 160
                 });
+		
+				$('#loginButton').button();
+					$(document).attr('title', languages['PageTitle']);
+					$("#loginButton").val(languages['Login']);
+            	});  
 
-		$('#loginButton').button();
-			$(document).attr('title', languages['PageTitle']);
-			$("#loginButton").val(languages['Login']);
-            });           
+            function setCookie(name, value, expires, path, domain, secure) {
+		  		var curCookie = name + "=" + escape(value) +
+			  	((expires) ? "; expires=" + expires.toUTCString() : "") +
+			  	((path) ? "; path=" + path : "") +
+			  	((domain) ? "; domain=" + domain : "") +
+			  	((secure) ? "; secure" : "");
+		  		document.cookie = curCookie;
+			}
+            
+            function validateForm(form) {
+            	if(form.remember_me.checked) {
+        	  		var credentials = {
+        	  			'username' : form.j_username.value,
+        	  			'password' : form.j_password.value,
+        	  			'remember': form.remember_me.checked
+        	  		};
+        	  		setCookie("credentials",JSON.stringify(credentials));
+        	  } else {
+        		  	setCookie("credentials","");
+        	  }
+        	  return true;	
+            }
+            
+            function loadUser() {
+        		var credentials = $.cookies.get("credentials");
+        		if(credentials) {
+        			document.login.j_username.value = credentials['username'];
+        			document.login.j_password.value = credentials['password'];
+        			document.login.remember_me.checked = credentials['remember'];
+        			document.login.login_button.focus();
+        		} else {
+        			document.login.j_username.focus();
+        		}
+        	}
+            
         </script>
         
     </head>
-    <body class="ui-widget-content" style="border:none;" onload="document.login.j_username.focus()">
+    <body class="ui-widget-content" style="border:none;" onload="loadUser();">
     <section>
-        <form name="login" id="login" action="j_security_check" method="POST">
+        <form name="login" id="login" action="j_security_check" method="POST" onsubmit="return validateForm(this);">
             <fieldset>
                 <legend><font>Login</font></legend>
-                <h1><script>document.write(languages['PageTitle'])</script></h1> <h4>DICOM Web Workstation</h4>
+                <h1><script>document.write(languages['PageTitle']) </script></h1> <h4>DICOM Web Workstation - version 2.2</h4>
+                
                 <label><font><script>document.write(languages['UserName'])</script> </font><span class="mandatory"><font>*</font></span><font> :</font></label>
                 <input type="text" name="j_username" class="textInput" required>
 
                 <label><font><script>document.write(languages['Password'])</script> </font><span class="mandatory"><font>*</font></span><font> :</font></label>
                 <input type="password" name="j_password" class="textInput" required>
 
+				<table> <tr> <td> <input type="checkbox" name="remember_me" value="Remember Me"/> </td> 
+                <td style="font-size: 10pt;"> Remember Me </td> </tr> </table> </td>			
+                
                 <input type="submit" name="submit" id="loginButton" value="" class="button disabled">
             </fieldset>
         </form>
@@ -88,7 +128,7 @@
 <div style="width: 100%; position: absolute; bottom: 0px;">
 <table style="width:100%">
 <tr>
-<td><a href="http://dcm4che.org" target="_blank"><img src="images/dcm4che.gif" alt="dcm4che.org" style="width: 132px; background: #FFF;" /></a></td> 
+<td><a href="http://dcm4che.org" target="_blank"><img src="images/dcm4che.png" alt="dcm4che.org" style="width: 132px;" /></a></td> 
 <td style="text-align: center"><img src="images/html5.png" alt="" style="width: 132px" /> </td>
 <td style="text-align: right"><a href="http://oviyam.raster.in" target="_blank"><img src="images/raster.png" alt="Raster Images" style="width: 132px" /></a></td>
 </tr>

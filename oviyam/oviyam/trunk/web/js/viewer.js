@@ -1,13 +1,6 @@
 var pat = null;
-var firstSeries;
-var imgLoaded = false;
 
-function loadViewerPage() {
-	/*myLayout = $('#optional-container').layout({
-		west: {
-	    	size: 205
-	    }
-	});*/
+function loadViewerPage() {	
 	initPage();
 
 	$("#toolbarContainer").load("viewer_tools.html");
@@ -41,12 +34,10 @@ function getStudyDetails() {
 					return;
 				}
 			}
-			pat = data;
-			// $('#westPane').css('background-color', pat.bgColor);
+			pat = data;			
 			loadStudy();
 		}, "json");
 	} else {
-		// $('#westPane').css('background-color', pat.bgColor);
 		loadStudy();
 	}
 }
@@ -135,7 +126,7 @@ function convertDataURIToBinary(dataURI) {
 	return array;
 }
 
-function loadStudy() {
+function loadStudy() {	
 	// load WestPane content
 	var tmpUrl = "westContainer.jsp?patient=" + pat.pat_ID + "&study="
 			+ pat.studyUID + "&patientName=" + pat.pat_Name;
@@ -145,10 +136,9 @@ function loadStudy() {
 	$('#westPane').load(encodeURI(tmpUrl));
 
 	document.title = pat.pat_Name;
-	getSeries(pat.pat_ID, pat.studyUID);
 }
 
-function getSeries(patId, studyUID) {
+/*function getSeries(patId, studyUID) {
 	$.post("Series.do", {
 		"patientID" : patId,
 		"studyUID" : studyUID,
@@ -162,6 +152,23 @@ function getSeries(patId, studyUID) {
 			});
 		}
 	}, "json");
+}*/
+
+function getSeries(patId, studyUID) {	
+	
+	$.post("Series.do", {
+		"patientID" : patId,
+		"studyUID" : studyUID,
+		"dcmURL" : pat.dicomURL,
+		"retrieve" : pat.serverURL
+	}, function(data) {
+		sessionStorage[studyUID] = JSON.stringify(data);
+			if(pat.serverURL!="C-MOVE" && pat.serverURL!="C-GET") {
+				$.each(data, function(i, series) {
+					getInstances(patId, studyUID, series['seriesUID']);
+				});
+			}
+	}, "json");	
 }
 
 function getInstances(patId, studyUID, seriesUID) {
@@ -173,21 +180,25 @@ function getInstances(patId, studyUID, seriesUID) {
 		"serverURL" : pat.serverURL
 	}, function(data) {
 		sessionStorage[seriesUID] = JSON.stringify(data);
-		if (!imgLoaded && firstSeries === seriesUID) {
-			loadFirstImage(seriesUID);
-		}
 	}, "json");
 }
 
-function loadFirstImage(serUID) {
-	imgLoaded = true;
-	var link = '';
-	if (isCompatible()) {
-		link = "frameContent.html?seriesUID=" + serUID;
-	} else {
-		link = 'frameContent.html?studyUID=' + pat.studyUID + '&seriesUID='
-				+ serUID + '&serverURL=' + pat.serverURL;
-	}
-	jQuery("iframe").attr('src', link);
-	jQuery('#loadingView').hide();
+function storeSer(data) {	
+	$.each(data, function(i, series) {
+		getInstances(pat.pat_ID, pat.studyUID, series['seriesUID']);
+	});
+}
+
+function getIns(seriesUID) {
+	jQuery.ajax({
+		url: "Instance.do?patientId=" + pat.pat_ID + "&studyUID=" + pat.studyUID + "&seriesUID=" + seriesUID + "&dcmURL=" + pat.dicomURL + "&serverURL=" + pat.serverURL,
+		dataType: 'json',
+		cache: false,
+		success: function(data) {
+			sessionStorage[seriesUID] = JSON.stringify(data);
+		}, 
+		error: function(request) {
+			console.log('error');
+		}
+	});
 }

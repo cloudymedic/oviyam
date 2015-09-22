@@ -106,7 +106,7 @@ $(document).ready(function() {
             id = 'btn-' + new Date().valueOf().toString();
         }
 
-        $('#buttonContainer').append('<input type="radio" id="' + id + '" name="radio" /><label for="' + id + '">' + txt + '</label>');
+        $('#buttonContainer').append('<input type="radio" id="' + id + '" name="radio" /><label for="' + id + '" style="font-size:13px;">' + txt + '</label>');
         jQuery('#' + id).click(function() {
             var dUrl = $('.ui-tabs-selected').find('a').attr('name');
 
@@ -180,11 +180,13 @@ $(document).ready(function() {
                         searchURL += '&tabIndex=' + tabIndex;
                         
                         searchURL += "&preview=" + $('.ui-tabs-selected').find('a').attr('preview');
+                        
+                        searchURL += "&search=" + (!location.search ? 'true' : 'false');
                                             
                         divContent += '_content';
 
-                        $('#westPane').html('');
-                        $(divContent).html('');
+                        $(divContent).html('<div id="loading" style="height: 100%; width: 100%; text-align: center; z-index: 10000;"><div style="position: absolute; left: 45%; top: 45%;"><img src="images/overlay_spinner.gif" alt=""><div style="font-size: 12px; font-weight: bold;">Querying...</div></div></div>');
+                        $('#westPane').html('');                       
 
                         $(divContent).load(encodeURI(searchURL), function() {
                             clearInterval(timer);
@@ -312,19 +314,19 @@ $(document).ready(function() {
                 	preview = node.previews;
                 }
 
-                var li = '<li class="ui-state-default ui-corner-top"><a href="#' + node.aetitle + '" name="' + dcmUrl + '" wadoUrl="' + wadoUrl + '" preview="' + preview + '"><span>' + node.logicalname + '</span></a></li>';
+                var li = '<li class="ui-state-default ui-corner-top"><a href="#' + node.logicalname + '" name="' + dcmUrl + '" wadoUrl="' + wadoUrl + '" preview="' + preview + '"><span>' + node.logicalname + '</span></a></li>';
                 $('#tabUL').append(li);
                 
                 var div = '';
                 if( !location.search ) {
-                	div = '<div id="' + node.aetitle + '" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" style="padding: 0; width: 100%;">';
-                	div += '<div id="' + node.aetitle + '_search" style="height:13%; width:100%;"></div>';
-                	div += '<div id="' + node.aetitle + '_content" style="height:85%; width:100%; cursor: pointer;"></div></div>';
+                	div = '<div id="' + node.logicalname + '" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" style="padding: 0; width: 100%;">';
+                	div += '<div id="' + node.logicalname + '_search" style="height:13%; width:100%;"></div>';
+                	div += '<div id="' + node.logicalname + '_content" style="height:85%; width:100%; cursor: pointer;"></div></div>';
                 	$('#tabContent').append(div);                	
-                	$('#' + node.aetitle + '_search').load('newSearch.jsp?tabName=' + node.aetitle);
+                	$('#' + node.logicalname + '_search').load('newSearch.jsp?tabName=' + node.logicalname);
                 } else {        		              
-                	div = '<div id="' + node.aetitle + '" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" style="padding: 0; width: 100%">';                	                	
-                	div += '<div id="' + node.aetitle + '_content" style="height:99%; width:100%; cursor: pointer;"></div></div>';
+                	div = '<div id="' + node.logicalname + '" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" style="padding: 0; width: 100%">';                	                	
+                	div += '<div id="' + node.logicalname + '_content" style="height:99%; width:100%; cursor: pointer;"></div></div>';
                 	$('#tabContent').append(div);
                 	
                 	//load studies in data table.
@@ -332,12 +334,12 @@ $(document).ready(function() {
                 		var searchURL = "queryResult.jsp?";
                 		searchURL += 'patientId=' + patId;
                 		searchURL += "&dcmURL=" + dcmUrl;
-                		searchURL += '&tabName=' + node.aetitle;
+                		searchURL += '&tabName=' + node.logicalname;
                 		searchURL += '&tabIndex=' + tabIndex;
                 		searchURL += '&preview=' + preview;
                 		searchURL += '&search=' + showSearch;
                 		                   
-                		var divContent = '#' + node.aetitle + '_content';
+                		var divContent = '#' + node.logicalname + '_content';
 
                 		$(divContent).html('');
                 		$('#westPane').html('');
@@ -400,14 +402,14 @@ $(document).ready(function() {
                 var url = 'Echo.do?dicomURL=' + el.find('a').attr('name');
                 $.get(url, function(data) {
                     if(data == "EchoSuccess") {
-                        var msg = 'Echo ' + el.find('a').attr('name') + ' successfully!';
+                        var msg = 'Echo ' + el.find('a').text() + ' is successful!';
                         noty({
                             text: msg,
                             layout: 'topRight',
                             type: 'success'
                         });
                     } else {
-                        var msg = 'Echo ' + el.find('a').attr('name') + ' not successfully!';
+                        var msg = 'Echo ' + el.find('a').text() + ' is failed!';
                         noty({
                             text: msg,
                             layout: 'topRight',
@@ -453,7 +455,7 @@ $(document).ready(function() {
 	        }       
 
        // if(selTabText != 'Local') {
-            if(document.getElementById(iPos[9]).style.visibility == 'hidden') {
+            if(document.getElementById(iPos[7]).style.visibility == 'hidden') {
                 showWestPane(iPos);
             } else {
                 if(!!(window.requestFileSystem || window.webkitRequestFileSystem)) {
@@ -501,7 +503,7 @@ $(document).ready(function() {
        
         var ser_url = $('.ui-tabs-selected').find('a').attr('wadoUrl');
         if(typeof ser_url == 'undefined') {
-            var lSql = "select DicomURL, ServerURL from study where StudyInstanceUID='" + nTrContent[9] + "'";
+            var lSql = "select DicomURL, ServerURL from study where StudyInstanceUID='" + nTrContent[7] + "'";
             var myDb = initDB();
             myDb.transaction(function(tx) {
                 tx.executeSql(lSql, [], function(trans, results) {
@@ -534,16 +536,16 @@ $(document).ready(function() {
             var jsonObj = {
                 "pat_ID" : nTrContent[1],
                 "pat_Name" : nTrContent[2],
-                "pat_Birthdate" : nTrContent[3],
-                "accNumber" : nTrContent[4],
-                "studyDate" : nTrContent[5],
-                "studyDesc" : nTrContent[6],
-                "modality" : nTrContent[7],
-                "totalIns" : nTrContent[8],
-                "studyUID" : nTrContent[9],
-                "refPhysician" : nTrContent[10],
-                "totalSeries" : nTrContent[11],
-                "pat_gender" : nTrContent[12],
+               /* "pat_Birthdate" : nTrContent[3],
+                "accNumber" : nTrContent[4],*/
+                "studyDate" : nTrContent[3],
+                "studyDesc" : nTrContent[4],
+                "modality" : nTrContent[5],
+                "totalIns" : nTrContent[6],
+                "studyUID" : nTrContent[7],
+                "refPhysician" : nTrContent[8],
+                "totalSeries" : nTrContent[9],
+                "pat_gender" : nTrContent[10],
                 "serverURL" : $('.ui-tabs-selected').find('a').attr('wadoUrl'),
                 "dicomURL" : $('.ui-tabs-selected').find('a').attr('name'),
                 "bgColor" : $('.ui-widget-content').css('background-color')
@@ -572,12 +574,12 @@ $(document).ready(function() {
             var selectedTabTxt = $('.ui-tabs-selected').find('span').html();
             if(selectedTabTxt != 'Local') {
                 var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
-                var tmpUrl = "seriesDetails.jsp?patient=" + nTrContent[1] + "&study=" + nTrContent[9] + "&dcmURL=" + urlDcm;
+                var tmpUrl = "seriesDetails.jsp?patient=" + nTrContent[1] + "&study=" + nTrContent[7] + "&dcmURL=" + urlDcm;
                 $.get(tmpUrl, function(series) {
                     oTable.fnOpen(nTr, series, 'details');
                 });
             } else {
-                var sql = "select SeriesNo, SeriesDescription, Modality, BodyPartExamined, NoOfSeriesRelatedInstances from series where StudyInstanceUID='" + nTrContent[9] + "';";
+                var sql = "select SeriesNo, SeriesDescription, Modality, BodyPartExamined, NoOfSeriesRelatedInstances from series where StudyInstanceUID='" + nTrContent[7] + "';";
                 var content = '<head><style>.dataTables_wrapper .fg-toolbar{display: none;}</style>';
                 content += '<script type="text/javascript">$(document).ready(function() {var now = new Date().getTime();';
                 content += '$("#seriesTable").attr("id", now); sTable = $("#" + now).dataTable({"bJQueryUI": true,"bPaginate": false,"bFilter": false});';
@@ -682,8 +684,8 @@ function showWestPane(iPos) {
     var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
     var urlWado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
 
-    var tmpUrl = "westContainer1.jsp?patient=" + iPos[1] + "&study=" + iPos[9] + "&patientName=" + iPos[2];
-    tmpUrl += "&studyDesc=" + iPos[6] + "&studyDate=" + iPos[5].split(" ")[0] + "&totalSeries=" + iPos[11] + "&dcmURL=" + urlDcm;
+    var tmpUrl = "westContainer1.jsp?patient=" + iPos[1] + "&study=" + iPos[7] + "&patientName=" + iPos[2];
+    tmpUrl += "&studyDesc=" + iPos[4] + "&studyDate=" + iPos[3].split(" ")[0] + "&totalSeries=" + iPos[9] + "&dcmURL=" + urlDcm;
     tmpUrl += "&wadoUrl=" + urlWado;
     
     var selTabText = $('.ui-tabs-selected').find('a').attr('href');

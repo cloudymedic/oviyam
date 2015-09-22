@@ -30,6 +30,7 @@ css/jquery.ui.tabs.css
 css/jqcontextmenu.css
 css/smartslider.css
 css/demos.css
+css/jquery.alerts.css
 css/frameContent.css
 
 js/lib/jquery-latest.js
@@ -39,17 +40,14 @@ js/lib/jquery.dataTables.min.js
 js/lib/jquery.cookies.min.js
 js/lib/jquery.contextMenu.js
 js/lib/jquery.sleep.js
+js/lib/jquery.alerts.js
 js/LoadLanguage.js
 js/lib/debug.js
 js/lib/themeswitchertool.js
 js/lib/date.js
 js/lib/jquery.waitforimages.min.js
 js/viewer.js
-js/viewer1.js
-js/database.js
-js/westContainer.js
-js/filehandle.js
-js/sync.js
+js/toolactivator.js
 js/lib/BinFileReader.js
 js/dicom/DicomInputStreamReader.js
 js/dicom/DicomElement.js
@@ -57,32 +55,24 @@ js/dicom/DicomParser.js
 js/dicom/LookupTable.js
 js/fullscreen.js
 js/Localizer.js
-js/MRLocalizer.js
 js/SliceLocator.js
 js/ScoutLineModel.js
 js/ImageOrientation.js
 js/features.js
-js/zoom1.js
-js/windowing.js
 js/lib/jqcombo.js
 js/oviyam.js
 js/dicom/NewDicomParser.js
 js/dicom/NewDictionary.js
 js/html/html.js
 js/utils/string.js
-js/imageMeasure.js
-js/LightBox.js
-js/Ruler.js
+js/measure.js
 js/lib/raphael-min.js
 js/lib/raphaelle.js
-js/viewer_tools.js
-js/frameContent.js
+js/framecontent.js
 js/lib/smartslider.js
 js/lib/jqcontextmenu.js
 js/i18n/Bundle.js
-js/layout.js
-js/Annotation.js
-js/shapes.js
+js/shape.js
 
 images/three.png
 images/all.png
@@ -112,12 +102,19 @@ images/overlay_spinner.gif
 images/favicon.png
 images/hideleft.png
 images/showleft.png
+images/pdf.png
+images/SR_Latest.png
+images/rawdata.png
 css/images/ui-bg_highlight-hard_100_f9f9f9_1x100.png
 css/images/ui-bg_glass_75_dadada_1x400.png
 css/images/ui-icons_454545_256x240.png
 css/images/ui-icons_222222_256x240.png
 css/images/ui-bg_flat_0_aaaaaa_40x100.png
 css/images/ui-bg_highlight-soft_75_cccccc_1x100.png
+css/images/title.gif
+css/images/important.gif
+css/images/info.gif
+
 
 css/images/selected.png
 

@@ -39,8 +39,8 @@ html, body {
 .textOverlay {
     position: absolute;
     color: #FFFFFF;
-    font-weight: bold;
-    font-family: Arial,Helvitica,Serif;
+    /*font-weight: bold;*/
+    font-family: Arial;
     font-size: 14px;
     z-index: 900;
 }

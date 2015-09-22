@@ -48,7 +48,7 @@ ImageOrientation.prototype.makeImageOrientationLabelFromImageOrientationPatient 
     return label;
 }
 
-/*ImageOrientation.prototype.makePatientOrientationFromPatientRelativeDirectionCosine = function(x, y, z) {
+ImageOrientation.prototype.makePatientOrientationFromPatientRelativeDirectionCosine = function(x, y, z) {
     var buffer = "";
 
     var orientationX = x < 0 ? "R" : "L";
@@ -75,7 +75,21 @@ ImageOrientation.prototype.makeImageOrientationLabelFromImageOrientationPatient 
     }
     return buffer;
 }
-*/
+
+
+ImageOrientation.prototype.getImagePlane = function(imageOrientation) {
+    var imageOrientationArray = [];
+    imageOrientationArray = imageOrientation.split("\\");
+    var _imgRowCosx = parseFloat(imageOrientationArray[0]);
+    var _imgRowCosy = parseFloat(imageOrientationArray[1]);
+    var _imgRowCosz = parseFloat(imageOrientationArray[2]);
+    var _imgColCosx = parseFloat(imageOrientationArray[3]);
+    var _imgColCosy = parseFloat(imageOrientationArray[4]);
+    var _imgColCosz = parseFloat(imageOrientationArray[5]);
+
+    var plane = this.makeImageOrientationLabelFromImageOrientationPatient(_imgRowCosx, _imgRowCosy, _imgRowCosz, _imgColCosx, _imgColCosy, _imgColCosz);
+    return plane;
+}
 
 ImageOrientation.prototype.getOrientation = function(imageOrientation) {
     var imageOrientationArray = [];
@@ -88,20 +102,18 @@ ImageOrientation.prototype.getOrientation = function(imageOrientation) {
     var _imgColCosy = parseFloat(imageOrientationArray[4]);
     var _imgColCosz = parseFloat(imageOrientationArray[5]);
 
-    /* imgOrientation = new Array(2);
+     imgOrientation = new Array(2);
     imgOrientation[0] = this.makePatientOrientationFromPatientRelativeDirectionCosine(_imgRowCosx, _imgRowCosy, _imgRowCosz);
     imgOrientation[1] = this.makePatientOrientationFromPatientRelativeDirectionCosine(_imgColCosx, _imgColCosy, _imgColCosz);
-    */
+    
 
     var plane = this.makeImageOrientationLabelFromImageOrientationPatient(_imgRowCosx, _imgRowCosy, _imgRowCosz, _imgColCosx, _imgColCosy, _imgColCosz);
-    return plane;
 
-    /* if(plane == "SAGITTAL") {
+     if(plane == "SAGITTAL") {
         imgOrientation[1] = imgOrientation[1].replace("H", "S");
         imgOrientation[1] = imgOrientation[1].replace("F", "I");
     }
 
-    return(imgOrientation[0].substring(0, Math.min(imgOrientation[0].length, 2)) + "\\" + imgOrientation[1].substring(0, Math.min(imgOrientation[1].length, 2)));
-    */
+    return(imgOrientation[0].substring(0, Math.min(imgOrientation[0].length, 2)) + "\\" + imgOrientation[1].substring(0, Math.min(imgOrientation[1].length, 2)));    
 
 }
