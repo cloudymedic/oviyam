@@ -27,7 +27,8 @@ jQuery('#ImagePane').ready(function() {
     loadImage(); 
     loadTextOverlay();
     
-    jQuery('#canvasDiv').on('mousewheel DOMMouseScroll', function (e) {
+    var canvasDiv = jQuery('#canvasDiv');
+    canvasDiv.on('mousewheel DOMMouseScroll', function (e) {
     	
     	if(jQuery('body').css('border').indexOf('none')>=0){ 
 	    	window.parent.createEvent('selection',{"ImagePane":jQuery('#ImagePane')});
@@ -54,7 +55,7 @@ jQuery('#ImagePane').ready(function() {
     });
     
     var oy,ny;
-    jQuery('#canvasDiv').mousedown(function(e) {
+    canvasDiv.mousedown(function(e) {
 		if(jQuery('#tool').text()==='stackImage' && doMouseWheel) {
 			oy = e.pageY;
 			state.drag = true;			
@@ -81,9 +82,13 @@ jQuery('#ImagePane').ready(function() {
 		}
     }); 
     
-    jQuery('#canvasDiv').click(function(e) {
+    canvasDiv.click(function(e) {
     	window.parent.createEvent('selection',{"ImagePane":jQuery('#ImagePane')});
-    });      
+    });
+    
+    canvasDiv.dblclick(function(e) {
+    	toggleResolution();
+    });
     
     window.addEventListener('resize', resizeCanvas, false);  
    	jQuery('#tool').html('');
@@ -470,6 +475,30 @@ function loadSR(src) {
     jQuery('#canvasDiv').css('height','0px');
     jQuery('#canvasDiv').css('display','none');
     jQuery('.textOverlay:not(#huDisplayPanel)').hide();
+}
+
+function toggleResolution() {
+	if(jQuery('#tool').html()!='measure') {
+		var canvas = document.getElementById('imageCanvas');
+		var image = jQuery('#'+(seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);			
+		
+		if(state.scale==1.0) { 			
+			var scaleFac = Math.min(canvas.width/image.naturalWidth, canvas.height/image.naturalHeight);
+			state.scale = scaleFac;
+			state.translationX = (canvas.width- state.scale * image.naturalWidth)/2;
+			state.translationY = (canvas.height- state.scale * image.naturalHeight)/2;
+			showImg(null,image);
+		} else {
+			state.scale = 1.0;
+			state.translationX = (canvas.width- state.scale * image.naturalWidth)/2;
+			state.translationY = (canvas.height- state.scale * image.naturalHeight)/2;
+			showImg(null,image);
+			if(jQuery('#tool').html()!="move") {
+				activateMove("move");
+			}
+		}
+		jQuery('#zoomPercent').html('Zoom: ' + parseInt(state.scale * 100) + '%');		
+	}
 }
 
 String.prototype.replaceAll = function(pcFrom, pcTo){
