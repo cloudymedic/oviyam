@@ -72,7 +72,9 @@ function mousedownHandler(evt) {
 function mousemoveHandler(evt) {
 	var x = evt.pageX-drawCanvas.offsetLeft;
 	var y = evt.pageY-drawCanvas.offsetTop;
-	jQuery('#huDisplayPanel').html("X :"+x+" Y :"+y+" HU :"+lookupObj.getPixelAt(pixelBuffer[(y*nativeColumns)+x]));
+	var imgX = parseInt((x-state.translationX)/state.scale);
+	var imgY = parseInt((y-state.translationY)/state.scale);
+	jQuery('#huDisplayPanel').html("X :"+imgX+" Y :"+imgY+" HU :"+getPixelValAt(imgX,imgY));
 	if(state.drag) {
 		drawAllShapes();
 		
