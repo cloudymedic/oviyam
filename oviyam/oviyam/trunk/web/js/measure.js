@@ -131,10 +131,12 @@ function mouseupHandler(evt) {
 }
 
 function drawAllShapes() {
-	context.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-	ruler.drawData(context);
-	rect.drawData(context);
-	oval.drawData(context);
+	if(context!=null) {
+		context.clearRect(0,0,drawCanvas.width,drawCanvas.height);
+		ruler.drawData(context);
+		rect.drawData(context);
+		oval.drawData(context);
+	}
 }
 
 function setShape(shape) {

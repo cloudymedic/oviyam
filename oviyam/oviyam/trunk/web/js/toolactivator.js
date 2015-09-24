@@ -227,7 +227,8 @@ function doReset(toolid) {
 	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
 	showImage(seriesUid+"_"+imgInc);	
 
-	loadInstanceText(false);	
+	loadInstanceText(false);
+	drawoutline();
 	
 	doLoop(false);
 	window.parent.document.getElementById('loopChkBox').checked = false;	
@@ -252,17 +253,19 @@ function doMove() {
 	var startCoords = [];	
 	
 	canvasLayer2.onmousedown = function(e) {
-		state.drag = true;
-		 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
-
-        startCoords = [
-        e.pageX - state.translationX,
-        e.pageY - state.translationY
-        ];
-
-        e.preventDefault();
-        e.stopPropagation();
-        e.target.style.cursor = "url(images/move.png), auto";
+		if(e.which==1) {
+			state.drag = true;
+			 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
+	
+	        startCoords = [
+	        e.pageX - state.translationX,
+	        e.pageY - state.translationY
+	        ];
+	
+	        e.preventDefault();
+	        e.stopPropagation();
+	        e.target.style.cursor = "url(images/move.png), auto";
+		}
 	};
 	
 	 canvasLayer2.onmouseup = function(e) {
@@ -279,6 +282,7 @@ function doMove() {
         state.translationY = y-startCoords[1];
         
 		showImg(null,img);
+		drawoutline();
     };	
 }
 
@@ -437,7 +441,7 @@ function synchronize(e) {
 			
 				if(sliceLoc>=fromTo['from'] && sliceLoc<=fromTo['to'] && parseFloat(sliceLoc)-parseFloat(fromTo['sliceLoc'])<128) {
 					imgInc = (i+1);
-					showImg(seriesUid+ '_' + imgInc);
+					showImg(seriesUid+ '_' + imgInc,null,true);
 					loadInstanceText(false);
 					break;
 				}
@@ -673,16 +677,17 @@ function doWindowing(imageData,huDisplay,wlDisplay) {
 		jQuery('.contextMenu').hide();
 		jQuery('.selected').removeClass('selected');
 	}).mousedown(function(evt) {
-		doMouseWheel = false;
-		state.drag = true;		
-		mouseLocX = evt.pageX;
-		mouseLocY = evt.pageY; 
-
-       evt.target.style.cursor = "url(images/wincursor.png), auto";
-       
-       evt.preventDefault();
-       evt.stopPropagation();    
-       
+		if(evt.which==1) {
+			doMouseWheel = false;
+			state.drag = true;		
+			mouseLocX = evt.pageX;
+			mouseLocY = evt.pageY; 
+	
+	       evt.target.style.cursor = "url(images/wincursor.png), auto";
+	       
+	       evt.preventDefault();
+	       evt.stopPropagation();    
+		}
 	}).mousemove(function(evt) {
 		jQuery('.selected',window.parent.document).removeClass('selected');
 		var x = parseInt(evt.pageX/state.scale);
@@ -740,63 +745,61 @@ function getPixelValAt(i,j) {
 }
 
 function doZoom() {
-	var img;
-	var offScreenCanvas = document.createElement('canvas');
+	var img = null;	
 	var canvasLayer2 = document.getElementById('canvasLayer2');	
-	var canvas = document.getElementById('imageCanvas');
-	var ctx = canvas.getContext('2d');	
-	
-	offScreenCanvas.width = canvas.width;
-	offScreenCanvas.height = canvas.height;
-	
-	var lastX,lastY,mY,zoomInc,scaleFac = 1.1,drag = false;
+	var canvas = document.getElementById('imageCanvas');		
+	var lastY = 0,mY = 0,zoomInc = 1,scaleFac = 1.01,originX = 0,originY = 0;
 	
 	
 	jQuery(canvasLayer2).mousedown(function(e) {
-		document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
-		img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
-		lastX = e.offsetX || (e.pageX-canvas.offsetLeft);
-		lastY = e.offsetY || (e.pageY-canvas.offsetTop);
-		mY = lastY;
-		state.drag = true;
-		
-		e.preventDefault();
-   		e.stopPropagation();
-   		e.target.style.cursor = "url(images/zoomin.png), auto";
-	}).mousemove(function(e1) {
-		
-		lastX = e1.offsetX || (e1.pageX-canvas.offsetLeft);
+		if(e.which==1) {
+			document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
+			img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
+			originX = e.offsetX || (e.pageX-canvas.offsetLeft);
+			originY = lastY = e.offsetY || (e.pageY-canvas.offsetTop);
+			mY = lastY;
+			state.drag = true;
+			
+			e.preventDefault();
+	   		e.stopPropagation();
+	   		e.target.style.cursor = "url(images/zoomin.png), auto";
+	   		loadPreview(img);
+		}
+	}).mousemove(function(e1) {	
 		lastY = e1.offsetY || (e1.pageY-canvas.offsetTop);
 		
 		if(state.drag) {
-			if(e1.button==0) {
-				if(lastY<mY) {
-					zoomInc = 1;
-				} else {
-					zoomInc = -1;
-				}
+			if(lastY<mY) {
+				zoomInc = 1;
+			} else {
+				zoomInc = -1;
 			}
-			var imgPosX = (lastX-state.translationX)/state.scale;
-			var imgPosY = (lastY-state.translationY)/state.scale;		
+			
+			var imgPosX = (originX-state.translationX)/state.scale;
+			var imgPosY = (originY-state.translationY)/state.scale;		
 		
 			state.scale*=Math.pow(scaleFac,zoomInc);
 		
 			var newX = (imgPosX * state.scale)+state.translationX;
 			var newY = (imgPosY * state.scale)+state.translationY;
 		
-			state.translationX+=(lastX-newX);
-			state.translationY+=(lastY-newY);			
+			state.translationX+=(originX-newX);
+			state.translationY+=(originY-newY);			
 			
-			renderOffScreenCanvas(offScreenCanvas,img);
+			/*renderOffScreenCanvas(offScreenCanvas,img);
 			ctx.save();
 			ctx.clearRect(0,0,canvas.width,canvas.height);			
 			ctx.drawImage(offScreenCanvas,0,0);
-			ctx.restore();
+			ctx.restore();*/
 			
+			showImg(null,img);
 			jQuery('#zoomPercent').html('Zoom: ' + parseInt(state.scale * 100) + '%');
 			
 		
-			mY = lastY;			
+			mY = lastY;
+			
+			drawoutline();
+			drawAllShapes();
 		}
 	}).mouseup(function(e3) {
 		state.drag = false;
@@ -808,7 +811,7 @@ function stopZoom() {
 	jQuery('#canvasLayer2').unbind('mousedown mousemove mouseup');
 }
 
-function renderOffScreenCanvas(offScreenCanvas,image) {	
+/*function renderOffScreenCanvas(offScreenCanvas,image) {	
 	var ctx = offScreenCanvas.getContext('2d');
 	
 	ctx.save();
@@ -836,7 +839,7 @@ function renderOffScreenCanvas(offScreenCanvas,image) {
 
 	ctx.drawImage(image,0,0);
 	ctx.restore();
-}
+}*/
 
 function applyWL() {
 	windowCenter = modifiedWC;
