@@ -690,8 +690,8 @@ function doWindowing(imageData,huDisplay,wlDisplay) {
 		}
 	}).mousemove(function(evt) {
 		jQuery('.selected',window.parent.document).removeClass('selected');
-		var x = parseInt(evt.pageX/state.scale);
-		var y = parseInt(evt.pageY/state.scale);
+		var x = parseInt((evt.pageX-state.translationX)/state.scale);
+		var y = parseInt((evt.pageY-state.translationY)/state.scale);
 		huDisplay.html("X :"+x+" Y :"+y+" HU :"+lookupObj.getPixelAt(pixelBuffer[(y*imageData['nativeColumns'])+x]));
 
 		if(state.drag) {

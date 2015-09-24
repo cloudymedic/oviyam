@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.UID;
 import org.dcm4che2.io.DicomInputStream;
 
 public class PixelDataServlet extends HttpServlet {
@@ -80,7 +81,7 @@ public class PixelDataServlet extends HttpServlet {
 
 				imageURL = protocol + "://" + host + ":" + port
 						+ "/wado?requestType=WADO&studyUID=" + study + "&seriesUID="
-						+ series + "&objectUID=" + object;
+						+ series + "&objectUID=" + object + "&transferSyntax=" + UID.ExplicitVRLittleEndian;
 
 				if (contentType != null) {
 					imageURL += "&contentType=" + contentType;
