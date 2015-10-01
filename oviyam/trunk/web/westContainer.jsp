@@ -128,82 +128,68 @@
 				});
 			});
 		
-			function changeImgView(but) {
-				//var table = $(but).parent().parent().parent().parent();
-				//console.log(table.children().find('tr:nth-child(2)').children());
-		
-				var imgBut = $(but).attr('src');
-				var imgCount = 0;
-		
-				if (imgBut.indexOf("all.png") >= 0) {
-					$(but).attr('src', 'images/one.png');
-		
-					$(but).parent().prev().children().each(
-							function() {
-								if (imgCount == 0) {
-									$(this).css('background-color', '#00F');
-								} else {
-									$(this).css(
-											'background-color',
-											!$(this).hasClass('waiting') ? '#a6a6a6'
-													: '#464646');
-								}
-								imgCount++;
-							});
-		
-					imgCount = 0;
-		
-					$(but).parent().parent().next().children().children().each(
-							function() {
-								if (imgCount == 0) {
-									$(this).css('display', 'inline');
-								} else {
-									$(this).css('display', 'none');
-								}
-								imgCount++;
-							});
-				} else if (imgBut.indexOf("one.png") >= 0) {
-					$(but).attr('src', 'images/three.png');
-					var serDivs = $(but).parent().prev().children();
-					var totserDivs = serDivs.length;
-					serDivs.each(function() {
-						if (imgCount == 0 || imgCount == Math.round(totserDivs / 2) - 1
-								|| imgCount == totserDivs - 1) {
-							$(this).css('background-color', '#00F');
-						} else {
-							$(this).css(
-									'background-color',
-									!$(this).hasClass('waiting') ? '#a6a6a6'
-											: '#464646');
-						}
-						imgCount++;
-					});
-		
-					imgCount = 0;
-		
-					var serImgs = $(but).parent().parent().next().children().children();
-					var serInsCnt = serImgs.length;
-					serImgs.each(function() {
-						if (imgCount == 0 || imgCount == Math.round(serInsCnt / 2) - 1
-								|| imgCount == serInsCnt - 1) {
-							$(this).css('display', 'inline');
-						} else {
-							$(this).css('display', 'none');
-						}
-						imgCount++;
-					});
-				} else {
-					$(but).attr('src', 'images/all.png');
-		
-					$(but).parent().prev().children().each(function() {
-						$(this).css('background-color', '#00F');
-					});
-		
-					$(but).parent().parent().next().children().children().each(
-							function() {
-								$(this).css('display', 'inline');
-							});
-				}
+			function changeImgView(but) {		
+				 var imgBut = $(but).attr('src');
+	                var imgCount = 0;
+
+	                if(imgBut.indexOf("all.png") >=0 ) {
+	                    $(but).attr('src', 'images/one.png');
+
+	                    $(but).parent().prev().children().each(function() {
+	                        if(imgCount == 0) {
+	                            $(this).css('background-color', '#00F');
+	                        } else {
+	                            $(this).css('background-color', !$(this).hasClass('waiting') ? '#a6a6a6' : '#464646');
+	                        }
+	                        imgCount++;
+	                    });
+
+	                    imgCount = 0;
+
+	                    $(but).parent().parent().next().children().children().each(function() {
+	                        if(imgCount == 0) {
+	                            $(this).css('display', 'inline');
+	                        } else {
+	                            $(this).css('display', 'none');
+	                        }
+	                        imgCount++;
+	                    });
+	                } else if(imgBut.indexOf("one.png") >=0 ) {
+	                    $(but).attr('src', 'images/three.png');
+	                    var serDivs = $(but).parent().prev().children();
+	                    var totserDivs = serDivs.length;
+	                    serDivs.each(function() {
+	                        if(imgCount == 0 || imgCount == Math.round(totserDivs/2)-1 || imgCount == totserDivs-1) {
+	                            $(this).css('background-color', '#00F');
+	                        } else {
+	                            $(this).css('background-color', !$(this).hasClass('waiting') ? '#a6a6a6' : '#464646');
+	                        }
+	                        imgCount++;
+	                    });
+
+	                    imgCount = 0;
+
+	                    var serImgs = $(but).parent().parent().next().children().children();
+	                    var serInsCnt = serImgs.length;
+	                    serImgs.each(function() {
+	                        if(imgCount == 0 || imgCount == Math.round(serInsCnt/2)-1 || imgCount == serInsCnt-1) {
+	                            $(this).css('display', 'inline');
+	                        } else {
+	                            $(this).css('display', 'none');
+	                        }
+	                        imgCount++;
+	                    });
+	                } else {
+	                    $(but).attr('src', 'images/all.png');
+
+	                    $(but).parent().prev().children().each(function() {
+	                    	$(this).css('background-color', !$(this).hasClass('waiting') ? '#00F' : '#464646');
+	                    });
+
+	                    $(but).parent().parent().next().children().children().each(function() {
+	                        $(this).css('display', 'inline');
+	                    });
+	                }
 		
 				/* var tmp = $(but).attr('name');
 				var tmp = tmp.split("|");
@@ -277,6 +263,17 @@
 			function showRawDataAlert() {
 				jAlert('Raw data storage cannot be shown in viewer!', 'ERROR');
 			}
+
+			function showProgress(ser_id,lbl_id) {
+            	var lbl = jQuery('#'+ser_id.replace(/\./g,'-')+"_"+lbl_id);   
+            	var imgToggleMode = jQuery(lbl).parent().next().find('img').attr('src');
+            	if(imgToggleMode=="images/three.png" || imgToggleMode=="images/one.png") {
+            		lbl.css('background','#a6a6a6');
+            	} else {
+            		lbl.css('background','#00F');
+            	}		
+				lbl.removeClass('waiting');			
+            }
 		</script>
 	</head>
 	<body>
@@ -361,7 +358,7 @@
 																		<div style="background: #00F; width: 5px; height: 5px; float: left;margin: 0 1px 1px;"></div>
 																	</c:when>
 																	<c:otherwise>
-																		<div id="${fn:replace(seriesId, '.','-')}_${i}" style="background: #a6a6a6; width: 5px; height: 5px; float: left;margin: 0 1px 1px;"></div>
+																		<div id="${fn:replace(seriesId, '.','-')}_${i}" style="background: #464646; width: 5px; height: 5px; float: left;margin: 0 1px 1px;" class="waiting"></div>
 																	</c:otherwise>
 																</c:choose>
 															</c:forEach>
@@ -429,7 +426,7 @@
 							    					<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="image" style="${thumbSize};" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}" onclick="changeSeries(this)" />
 							    				</c:when> 
 							    				<c:otherwise>
-							    					<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="other_${cnt}" class="image" style="${thumbSize}; display: none;" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}" onclick="changeSeries(this)" />
+							    					<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="other_${cnt}" class="image" style="${thumbSize}; display: none;" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}" onclick="changeSeries(this)" onload='showProgress("${seriesId}","${cnt}");'/>
 							    				</c:otherwise>
 							    			</c:choose>	
 							    		</c:when>
@@ -439,7 +436,7 @@
 							    					<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" class="image" src="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"  onclick="changeSeries(this)"/>
 							    				</c:when> 
 							    				<c:otherwise>	
-							    					<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="other_${cnt} image" style="${thumbSize} display: none;" link="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"  onclick="changeSeries(this)"/>
+							    					<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="other_${cnt} image" style="${thumbSize} display: none;" link="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"  onclick="changeSeries(this)" onload='showProgress("${seriesId}","${cnt}");'/>
 							    				</c:otherwise> 
 							    			</c:choose> 
 							    		</c:otherwise> 														    		
