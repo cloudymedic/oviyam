@@ -297,7 +297,12 @@ function loadInstanceText(checkForUpdate) {
 					jQuery('#frameSrc').html(frmSrc + "&object=" + data['SopUID']);					
 				}
 				
-				doAutoplay((1000/parseFloat(data['frameTime'])));
+				var frameTime = parseFloat(data['frameTime']); 
+				if(frameTime>0.0) {
+					doAutoplay(frameTime);
+				} else {
+					doAutoplay(15); // 15 FPS by default
+				}
 			} else {
 				jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
 				jQuery('#multiframe').css('visibility','hidden');				
