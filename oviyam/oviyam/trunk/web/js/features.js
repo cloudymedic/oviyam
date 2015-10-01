@@ -205,6 +205,12 @@ function getActiveFrame() {
     }
 }
 
+function hideToolbar() {
+	jQuery("#toolbarContainer").css("display","none");
+	jQuery("#westPane").css("height","100%");
+	jQuery("#tabs_div").css("height","100%");
+}
+
 function changeLayout(layoutUrl) {
     jQuery('#contentDiv').html('');
     jQuery('#contentDiv').load(layoutUrl);

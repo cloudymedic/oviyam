@@ -51,6 +51,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.zip.DeflaterOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -75,6 +76,19 @@ public class DcmImage extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    	boolean isgzip = false;
+		String encodings = request.getHeader("Accept-Encoding");
+		String[] browserflags = encodings.split(",");
+
+		for (int i = 0; i < browserflags.length; i++) {
+			String string = browserflags[i];
+			if (string.equalsIgnoreCase("gzip")) {
+				isgzip = true;
+				response.setHeader("Content-Encoding", "deflate");
+				response.setHeader("Vary", "Accept-Encoding");
+			}
+		}
+		
         String imageURL = "";
 
         // Reads the parameters from the request object which is sent by user.
@@ -88,38 +102,49 @@ public class DcmImage extends HttpServlet {
         String rows = request.getParameter("rows");
         String transferSyntax = request.getParameter("transferSyntax");
         String frameNo = request.getParameter("frameNumber");
+        String isRID = request.getParameter("rid");        
 
-        imageURL = serverURL + "?requestType=WADO&studyUID=" + study + "&seriesUID=" + series + "&objectUID=" + object;
-
-        if(contentType != null) {
-            imageURL += "&contentType=" + contentType;
-            response.setContentType(contentType);
-        }
-
-        if(windowCenter != null && windowCenter.length() > 0) {
-            imageURL += "&windowCenter=" + windowCenter;
-        }
-
-        if(windowWidth != null && windowWidth.length() > 0) {
-            imageURL += "&windowWidth=" + windowWidth;
-        }
-
-        if(rows != null && rows.length() > 0) {
-            imageURL += "&rows=" + rows;
-        }
-
-        if(transferSyntax != null && transferSyntax.length()>0) {
-            imageURL += "&transferSyntax=" + transferSyntax;
-        }
-
-        if(frameNo != null && frameNo.length()>0) {
-            imageURL += "&frameNumber=" + frameNo;
+        if(isRID==null) {
+	        imageURL = serverURL + "?requestType=WADO&studyUID=" + study + "&seriesUID=" + series + "&objectUID=" + object;
+	
+	        if(contentType != null) {
+	            imageURL += "&contentType=" + contentType;
+	            response.setContentType(contentType);
+	        }
+	
+	        if(windowCenter != null && windowCenter.length() > 0) {
+	            imageURL += "&windowCenter=" + windowCenter;
+	        }
+	
+	        if(windowWidth != null && windowWidth.length() > 0) {
+	            imageURL += "&windowWidth=" + windowWidth;
+	        }	
+	
+	        if(rows != null && rows.length() > 0) {
+	            imageURL += "&rows=" + rows;
+	        }
+	
+	        if(transferSyntax != null && transferSyntax.length()>0) {
+	            imageURL += "&transferSyntax=" + transferSyntax;
+	        }
+	
+	        if(frameNo != null && frameNo.length()>0) {
+	            imageURL += "&frameNumber=" + frameNo;
+	        }
+        } else {   
+        	imageURL = serverURL.substring(0, serverURL.lastIndexOf("/"));
+        	imageURL += "/rid/IHERetrieveDocument?requestType=DOCUMENT&documentUID="+object+"&preferredContentType=application/pdf";        	
         }
 
         InputStream is = null;
+        OutputStream os = null;       
 
         // Get the response OutputStream instance to write a image in the response.
-        OutputStream os = response.getOutputStream();
+        if (isgzip) {
+			os = new DeflaterOutputStream(response.getOutputStream());
+		} else {
+			os = response.getOutputStream();
+		}
 
         try {
             // Initialize the URL for the requested image.

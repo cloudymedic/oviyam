@@ -61,16 +61,20 @@
         <style type="text/css">
             .heading
             {
-                font-family: Arial,Helvitica,Serif;               
+                font-family: Arial;               
                 font-weight: bold;
-                font-size: 13px;  
-                padding-left: 3px;              
+                font-size: 20px;  
+                padding-left: 3px;  
+                width: 100%;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;            
             }
             
             .seriesTable {
             	table-layout: fixed;
             	width: 100%;
-            	font-family: Arial,Helvitica,Serif;
+            	font-family: Arial;
             	font-size: 12px;
             	border-spacing: 0px;
             	padding-left: 2px;
@@ -208,30 +212,32 @@
          </script>
 
     </head>
-     <body>   	
-        <div id="patName" class="heading" style="padding-top: 2px;"><%=patName%></div>
-        <div id="patID" class="heading">ID: ${param.patient}</div>
-        <table id="studyTable" class='ui-widget-content' style="font-family: Arial,Helvitica,Serif; font-size:12px; width: 100%; border: none;" >
-            <tbody>
-                <tr>
-                    <td colspan="2"><%=studyDesc%></td>
-                </tr>
-                <tr>
-                    <td>${param.studyDate}</td>
-                    <td align="right">${param.totalSeries} Series</td>
-                </tr>
-            </tbody>
-        </table>
-     <!--   <br /> -->
-   		<div id="previews" style="overflow: auto; height: 90%; border-top: 2px solid black;">
+     <body>  
+     	<div style="border: 2px solid #2A2A2A;">	 	
+	        <div id="patName" class="heading" style="padding-top: 2px;" title="<%=patName%>"><%=patName%></div>
+	        <div id="patID" class="heading" style="font-size: 15px;!important;" >ID: ${param.patient}</div>
+	        <table id="studyTable" class='ui-widget-content' style="font-family: Arial; font-size:12px; width: 100%; border: none;" >
+	            <tbody>
+	                <tr>
+	                    <td colspan="2"><%=studyDesc%></td>
+	                </tr>
+	                <tr>
+	                    <td>${param.studyDate}</td>
+	                    <td align="right">${param.totalSeries} Series</td>
+	                </tr>
+	            </tbody>
+	        </table>
+        </div>
+       <br>
+   		<div id="previews" style="overflow: auto; height: 90%;">
    			 <ser:Series patientId="${param.patient}" study="${param.study}" dcmURL="${param.dcmURL}">
        			 <c:set var="middle" value="${numberOfImages/2}" />
         		<fmt:formatNumber var="middle" maxFractionDigits="0" value="${middle}" />
-       			<table class="seriesTable">
+       			<table class="seriesTable" id="${fn:replace(seriesId, '.','_')}_table">
         		    <tbody>
         		        <tr onclick="jQuery(this).next().toggle()" style="cursor: pointer;" class='ui-widget-content'>
 	    		            <td> ${seriesDesc}</td>
-        		            <td align="right"> ${numberOfImages} Imgs</td>
+        		            <td align="right">${numberOfImages} Imgs</td>
         		            <!--<td colspan="2">${seriesDesc} - Images: ${numberOfImages}</td>-->
         		        </tr>
         		        <tr>
@@ -261,27 +267,41 @@
 
                    								<c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.104.1'}">
 							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}" ondblclick="openSeriesInViewer(this)" />
-							                    </c:when>				
+							                    </c:when>	
+							                    
+							                    <c:when test="${fn:contains(sopClassUID,'1.2.840.10008.5.1.4.1.1.9')}"> <!-- Wave Forms -->
+							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&rid=true" ondblclick="openSeriesInViewer(this)" />
+							                    </c:when>
+							                    
+							                    <c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.66'}"> <!-- Raw Data Storage -->
+							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/rawdata.png"/>
+							                    </c:when>
+							                        			
                 						    <c:otherwise>
-					                        <c:choose>
-                    					        <c:when test="${param.wadoUrl == 'C-GET'}">
-                    					            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-                    					                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}" ondblclick="openSeriesInViewer(this)" />
-                    					            </c:if>
-                    					        </c:when>
-                          						<c:when test="${param.wadoUrl == 'C-MOVE'}">
-					                                <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-                    					                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}" ondblclick="openSeriesInViewer(this)" />
-                    					            </c:if>
-                    					        </c:when>
-                    				        <c:otherwise>
-                    				            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-                    				                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}" ondblclick="openSeriesInViewer(this);" />
-                    				            </c:if>
-                    				        </c:otherwise>
-                    				    </c:choose>
-                    				</c:otherwise>
-				                </c:choose>
+                						    	<c:choose>
+	                    					        <c:when test="${param.wadoUrl == 'C-GET'}">
+	                    					            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
+	                    					                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}" ondblclick="openSeriesInViewer(this)" />
+	                    					            </c:if>
+	                    					        </c:when>
+	                          						<c:when test="${param.wadoUrl == 'C-MOVE'}">
+						                                <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
+	                    					                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}" ondblclick="openSeriesInViewer(this)" />
+	                    					            </c:if>
+	                    					        </c:when>	                    					        
+	                    					        <c:otherwise>	                    					        
+		                    				            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
+		                    				                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}" ondblclick="openSeriesInViewer(this);" />
+		                    				            </c:if>
+	                    				            </c:otherwise>
+                    				            </c:choose>
+                    						</c:otherwise>
+				                	</c:choose>
+				              <!--   <c:if test="${multiframe == 'yes'}">
+				                	<script type="text/javascript">							                		
+        								$("#${fn:replace(seriesId, '.','_')}_table").find("#totalImgs").html("${numberOfFrames} Frames");	                								
+							        </script>
+				                </c:if>-->
 				            </img:Image>
 			            </td>
             		</tr>
