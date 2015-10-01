@@ -393,6 +393,10 @@
 	               				<c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.104.1'}"> <!-- Enacpsulated PDF -->
 	                    			<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}"  onclick="changeSeries(this)"/>
 	               				 </c:when>
+	               				 
+	               				 <c:when test="${fn:contains(sopClassUID,'1.2.840.10008.5.1.4.1.1.9')}"> <!-- Wave Forms -->
+							        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&rid=true"  onclick="changeSeries(this)" />
+							    </c:when>
 	                
 	                			<c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.66'}"> <!-- Raw Data Storage -->
 							        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/rawdata.png" onclick="showRawDataAlert();"/>

@@ -153,6 +153,7 @@
                             <option value="NM">NM</option>
                             <option value="RF">RF</option>
                             <option value="OT">OT</option>                            
+                            <option value="ECG">ECG</option>
                         </select>    
 
                     </td>                     
