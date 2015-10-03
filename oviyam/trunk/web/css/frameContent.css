@@ -88,3 +88,50 @@ div#footer{
         position:fixed;
     }
 }
+
+.menu {
+	width: auto !important;	
+}
+
+.menu LI {
+	white-space: nowrap !important;
+	font-size: 13px;
+	font-family: Arial,sans-serif;	
+}
+
+.menu A {
+	white-space: nowrap !important;
+	font-size: 13px;
+	font-family: Arial,sans-serif;
+	padding-left: 5px !important;	
+}
+
+#progressbar {
+	position:absolute;
+	left: 35%;
+	top: 45%;	
+	z-index:100;
+	background: #B48A78;
+	height: 25px;
+	width:	27%;
+	border: none !important;
+	border-radius: 6px;
+	display: none;
+}
+
+.ui-progressbar-value {	
+	background: rgb(100,75,75);
+	border: 1px solid rgb(100,75,75);
+	border-radius: 6px;		
+}
+
+#progresslbl {
+	position:absolute;
+	left:40%;	
+	top: 45%;
+	padding: 5px;
+	z-index:200;
+	color: #fff;
+	font-size: 14px;	
+	display: none;
+}

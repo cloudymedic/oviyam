@@ -471,16 +471,17 @@ function activateWindowing(toolId) {
 		enableTool(toolId);	
 		doMouseWheel = false;
 
-		jQuery('#thickLocationPanel').hide();		
-		jQuery('#loadingView',window.parent.document).show();
+		jQuery('#thickLocationPanel').hide();
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
-		setTimeout(function() {
+		var progress = 0;
+		
+//		setTimeout(function() {
 			var imageData = null;
 			try {
-				imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+				imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];				
 
-				var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&retrieveType=" + window.parent.pat.serverURL;				
+				var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&serverURL=" + window.parent.pat.serverURL;				
 
 				if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
 					url+="&frameNumber=" + (frameInc-1);
@@ -515,6 +516,33 @@ function activateWindowing(toolId) {
 					}
 				};
 				
+				// Progress
+				xhr.onreadystatechange = function(evt) {
+					if(xhr.readyState==4) {
+						jQuery('#progressbar').progressbar("value",100);
+						jQuery('#progressbar').hide();
+						jQuery('#progresslbl').hide();
+					}
+					
+					if(xhr.readyState==2) {
+						jQuery('#progressbar').progressbar({
+							value: false,
+							change: function() {
+								jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(progress) + "%" );
+							},							
+						});
+						jQuery('#progressbar').show();
+						jQuery('#progresslbl').show();
+					}
+				};
+				
+				 xhr.addEventListener("progress", function(evt){					 
+				      if (evt.lengthComputable) {  				     
+				        progress = 100*evt.loaded/evt.total;				        
+				        jQuery('#progressbar').progressbar("value",progress);				       
+				      }
+				    }, true); 
+				 
 				xhr.send();
 			} catch(exception) { 
 				var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
@@ -523,7 +551,7 @@ function activateWindowing(toolId) {
 			}
 			
 			//doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'));
-		},1);
+//		},1);
 	} else {
 		unbindWindowing(toolId);
 	}
@@ -544,64 +572,91 @@ function activateMeasure(toolId) {
 		enableTool(toolId);	
 		doMouseWheel = false;
 		
-		jQuery('#thickLocationPanel').hide();
-		jQuery('#loadingView', window.parent.document).show();
+		jQuery('#thickLocationPanel').hide();		
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
-		setTimeout(function() {
-			var imageData = null;
-			try {
-				imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
-				var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&retrieveType=" + window.parent.pat.serverURL;
-				if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
-					url+="&frameNumber=" + (frameInc-1);
-				}
-				
-				var xhr = new XMLHttpRequest();
-				xhr.open("POST", url, true);
-				xhr.responseType = "arraybuffer";  
-				
-				xhr.onload = function(e) {
-					if (this.status == 200) {
-						if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
-							pixelBuffer = new Uint8Array(this.response);
-						} else if(imageData['PixelRepresentation']==0 && imageData['BitsStored']>8) {
-							pixelBuffer = new Uint16Array(this.response);
-						} else if(imageData['PixelRepresentation']==1 && imageData['BitsStored']>8) {
-							pixelBuffer = new Int16Array(this.response);
-						} else {
-							pixelBuffer = this.response;
-						}
-						
-						for(var i=0;i<pixelBuffer.length;i++) {
-							var pix = pixelBuffer[i];
-							minPix = Math.min(minPix,pix);
-							maxPix = Math.max(maxPix,pix);
-						}
-							
-						lookupObj = new LookupTable();
-						lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
-						columns = imageData['nativeColumns'];
-						loadLookUp(imageData);
-						measure(document.getElementById('canvasLayer2'),jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc, imageData['nativeColumns']);
-					}
-				};
-				
-				xhr.send();
-			} catch(exception) {			
-				var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
-				imageData = parseDicom(null,getParameter(imgSrc,'object'));
-				if(imageData['pixelSpacing']!=undefined) {
-					jQuery('#pixelSpacing').html((imageData['pixelSpacing'].length>1) ?  imageData['pixelSpacing'][0]+"\\"+imageData['pixelSpacing'][1] : imageData['pixelSpacing']);
-				} else {
-					jQuery('#pixelSpacing').html("1.0\\1.0");
-				}
-				columns = imageData['nativeColumns'];
-				loadLookUp(imageData);
-				measure(document.getElementById('canvasLayer2'),jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc, imageData['nativeColumns']);
+		var progress = 0;
+		
+		var imageData = null;
+		try {
+			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&serverURL=" + window.parent.pat.serverURL;
+			if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
+				url+="&frameNumber=" + (frameInc-1);
 			}
-			window.parent.enableMeasureContext();
-		},1);
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", url, true);
+			xhr.responseType = "arraybuffer";  
+			
+			xhr.onload = function(e) {
+				if (this.status == 200) {
+					if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
+						pixelBuffer = new Uint8Array(this.response);
+					} else if(imageData['PixelRepresentation']==0 && imageData['BitsStored']>8) {
+						pixelBuffer = new Uint16Array(this.response);
+					} else if(imageData['PixelRepresentation']==1 && imageData['BitsStored']>8) {
+						pixelBuffer = new Int16Array(this.response);
+					} else {
+						pixelBuffer = this.response;
+					}
+					
+					for(var i=0;i<pixelBuffer.length;i++) {
+						var pix = pixelBuffer[i];
+						minPix = Math.min(minPix,pix);
+						maxPix = Math.max(maxPix,pix);
+					}
+						
+					lookupObj = new LookupTable();
+					lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
+					columns = imageData['nativeColumns'];
+					loadLookUp(imageData);
+					measure(document.getElementById('canvasLayer2'),jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc, imageData['nativeColumns']);
+				}
+			};
+			
+			// Progress
+			xhr.onreadystatechange = function(evt) {
+				if(xhr.readyState==4) {
+					jQuery('#progressbar').progressbar("value",100);
+					jQuery('#progressbar').hide();
+					jQuery('#progresslbl').hide();
+				}
+				
+				if(xhr.readyState==2) {
+					jQuery('#progressbar').progressbar({
+						value: false,
+						change: function() {
+							jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(progress) + "%" );
+						},							
+					});
+					jQuery('#progressbar').show();
+					jQuery('#progresslbl').show();
+				}
+			};
+			
+			 xhr.addEventListener("progress", function(evt){					 
+			      if (evt.lengthComputable) {  				     
+			        progress = 100*evt.loaded/evt.total;				        
+			        jQuery('#progressbar').progressbar("value",progress);				       
+			      }
+			    }, true); 
+			 
+			xhr.send();
+		} catch(exception) {			
+			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
+			imageData = parseDicom(null,getParameter(imgSrc,'object'));
+			if(imageData['pixelSpacing']!=undefined) {
+				jQuery('#pixelSpacing').html((imageData['pixelSpacing'].length>1) ?  imageData['pixelSpacing'][0]+"\\"+imageData['pixelSpacing'][1] : imageData['pixelSpacing']);
+			} else {
+				jQuery('#pixelSpacing').html("1.0\\1.0");
+			}
+			columns = imageData['nativeColumns'];
+			loadLookUp(imageData);
+			measure(document.getElementById('canvasLayer2'),jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc, imageData['nativeColumns']);
+		}
+		window.parent.enableMeasureContext();
+		
 	} else {
 		deactivateMeasure(toolId);
 		doMouseWheel = true;
