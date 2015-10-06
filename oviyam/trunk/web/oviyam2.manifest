@@ -69,6 +69,7 @@ js/measure.js
 js/line.js
 js/rect.js
 js/oval.js
+js/angle.js
 js/lib/raphael-min.js
 js/lib/raphaelle.js
 js/framecontent.js
