@@ -82,8 +82,9 @@
             }
 
             #loopDiv {
-                float: right;
-                font-size: 10pt;                
+               position:absolute;
+               right:0px;
+               font-size: 10pt;                
                 margin-top: 10px;
                 width: 23%;                
             }
@@ -156,7 +157,7 @@
         </style>
 
 		<script type="text/javascript">
-		jQuery(document).ready(function() {
+		jQuery(document).ready(function() {			
 		
     	jQuery("#loopSlider").slider({
        		max:1000,
@@ -387,12 +388,14 @@ jQuery(document).mouseup(function(e) {
             <div class="toolbarButton" align="center" id="metaData" onclick="doTool(this.id);">
                 <img src="images/metadata.png" id="lblMetadata" class="imgOff" alt="View meta-data" title="View Meta-data">
             </div>
+            
             <div class="toggleButton" align="center" id="measure">
                 <img src="images/ruler.png" id="lblLines" class="imgOff" alt="Draw measurement lines" title="Draw Measurements"/>
 				<ul id="measureContext" class="contextMenu" style="width:82px; position:fixed; background:#000;">
 					<li><a id="line" href="#" class="selectedshape cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('ruler');">Ruler</a></li>
 		            <li><a id="rectangle" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('rectangle');">Rectangle</a></li>
 		            <li><a id="oval" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('oval'); ">Oval</a></li>
+		            <li><a id="angle" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('angle'); ">Angle</a></li>
 					<li type='separator' style="height: 2px; background-color: #00CC66;"></li>
 					<li><a href="#" class="cmenuItem" onclick="doTool('clearAll');">Delete All </a></li>
 				</ul>
@@ -406,10 +409,11 @@ jQuery(document).mouseup(function(e) {
         				<td width="65%" align="right"><div id="loopSlider"></div></td>
             		</tr>
             	</table>
-				<!-- <div style="color: #FF8A00; font-weight: bold; float: left; margin-top:13px; margin-right: 4px;">Cine Loop  </div>
-                <input type="checkbox" id="loopChkBox" style="margin-top:15px;" onclick="loop(this.checked);" >
-                <div id="loopSlider"></div>-->
             </div>
+            <!--  Report -->
+             <!-- <div align="center" id="report" onclick="doTool(this.id);" style="position: absolute; right:23%; margin-right: 5px;">
+                <img src="images/reportv.png" id="lblReport" class="imgOff" alt="View report" title="View Report"/>
+            </div>-->  
         </div>          
     </body>
 </html>
