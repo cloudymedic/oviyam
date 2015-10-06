@@ -2,142 +2,226 @@ var mouseLocX, mouseLocY,curr_Img = -1,nativeColumns;
 var drawCanvas = null, context = null;
 var tool = '';
 
-var ruler = null,rect = null, oval = null;
+var ruler = null,rect = null, oval = null, angle = null;
 var selectedShape = null, selectedHandle = -1;
+var startCoords = [];
 
-function measure(canvasLayer2,iNo, columns) {
-	drawCanvas = canvasLayer2;
-	this.context = drawCanvas.getContext('2d');
-	
-	init(iNo);
-	jQuery('#huDisplayPanel').show();
-	jQuery('#loadingView',window.parent.document).hide();
-	jQuery(drawCanvas).mousedown(function(e) {
-		mousedownHandler(e);
-	}).mousemove(function(e){
-		mousemoveHandler(e);
-	}).mouseup(function(e) {
-		mouseupHandler(e);
-	});
-	tool = jQuery(jQuery('.selectedShape',window.parent.document).get(0)).html().toLowerCase();
-	nativeColumns = columns;
-}
+var xPxl = null, yPxl = null;
 
 function init(iNo) {
-	var tagPxlSpacing = jQuery('#pixelSpacing').html();
-	if(tagPxlSpacing==='') {
-		loadInstanceText();
-		tagPxlSpacing = jQuery('#pixelSpacing').html();
-	}
-	var pxlSpacing = tagPxlSpacing.split('\\');
-	
-	var xPxl = pxlSpacing.length>0?pxlSpacing[0]:1, yPxl = pxlSpacing.length>1?pxlSpacing[1]:1;
+	if(xPxl==null) {
+		var tagPxlSpacing = jQuery('#pixelSpacing').html();
+		if(tagPxlSpacing==='') {
+			loadInstanceText(false);
+			tagPxlSpacing = jQuery('#pixelSpacing').html();
+		}
+		var pxlSpacing = tagPxlSpacing.split('\\');
+		
+		xPxl = pxlSpacing.length>0?pxlSpacing[0]:1;
+		yPxl = pxlSpacing.length>1?pxlSpacing[1]:1;
+	}	
 	
 	if(curr_Img==-1 || curr_Img!=iNo) {
 		clearMeasurements();
 		curr_Img = iNo;
+	}
+}
+
+function initializeMeasureCanvas() {
+	drawCanvas = document.getElementById("canvasLayer2");
+	this.context = drawCanvas.getContext('2d');				
+	jQuery('#loadingView',window.parent.document).hide();
+	addMouseEvents(drawCanvas);
+}
+
+function activateRuler(iNo,columns) {
+	init(iNo);
+	var data = jQuery(drawCanvas).data('events');
+	if(data==undefined || (data!=undefined && data.mousedown==undefined)) {
+		initializeMeasureCanvas();
+	}
+	jQuery('#huDisplayPanel').hide();
+	tool = "ruler";
+	nativeColumns = columns;
+	if(ruler==null) {
 		ruler = new ovm.shape.ruler(xPxl,yPxl);
+	}
+}
+
+function activateRect(iNo,columns) {
+	init(iNo);
+	var data = jQuery(drawCanvas).data('events');
+	if(data==undefined || (data!=undefined && data.mousedown==undefined)) {
+		initializeMeasureCanvas();		
+	}
+	jQuery('#huDisplayPanel').show();		
+	tool = "rectangle";
+	nativeColumns = columns;
+	if(rect==null) {
 		rect = new ovm.shape.rect(xPxl,yPxl);
+	}
+}
+
+function activateOval(iNo,columns) {
+	init(iNo);
+	var data = jQuery(drawCanvas).data('events');
+	if(data==undefined || (data!=undefined && data.mousedown==undefined)) {
+		initializeMeasureCanvas();	
+	}
+	jQuery('#huDisplayPanel').show();		
+	tool = "oval";
+	nativeColumns = columns;
+	if(oval==null) {
 		oval = new ovm.shape.oval(xPxl,yPxl);
 	}
 }
 
-function mousedownHandler(evt) {
-	jQuery('.contextMenu',window.parent.dcoument).hide();
-	state.drag = true;
-	
-	mouseLocX = evt.pageX - drawCanvas.offsetLeft;
-	mouseLocY = evt.pageY - drawCanvas.offsetTop;
-	
-	if(selectedShape!=null) {
-		detectHandle(evt);
-
-		if(selectedHandle==-1 && !selectedShape.isActiveShape(selectedShape.x1,selectedShape.y1,selectedShape.x2,selectedShape.y2,mouseLocX,mouseLocY)) {
-			if(selectedShape.getType()!="ruler") {
-				selectedShape.measure(selectedShape);
-			}
-			selectedShape.active = false;
-			selectedShape = null;
-			drawAllShapes();
-		}
-	} else {
-		detectSelectedShape();
+function activateAngle(iNo,columns) {
+	init(iNo);
+	var data = jQuery(drawCanvas).data('events');
+	if(data==undefined || (data!=undefined && data.mousedown==undefined)) {
+		initializeMeasureCanvas();	
 	}
-	
-	evt.stopPropagation();
-	evt.preventDefault();
-	evt.target.style.cursor = 'default';
+	jQuery('#huDisplayPanel').hide();		
+	tool = "angle";
+	nativeColumns = columns;
+	if(angle==null) {
+		angle = new ovm.shape.angle(xPxl,yPxl);
+	}
 }
 
-function mousemoveHandler(evt) {
+function addMouseEvents(canvas) {
+	jQuery(canvas).mousedown(function(e){
+		mouseDownHandler(e);
+	}).mousemove(function(e1){
+		mouseMoveHandler(e1);
+	}).mouseup(function (e2){
+		mouseUpHandler(e2);
+	});
+}
+
+function mouseDownHandler(evt) {
+	if(evt.which==1) {
+		jQuery('.contextMenu',window.parent.dcoument).hide();
+		state.drag = true;
+		
+		mouseLocX = evt.pageX - drawCanvas.offsetLeft;
+		mouseLocY = evt.pageY - drawCanvas.offsetTop;
+		
+		this.startCoords = [
+	        (evt.pageX - state.translationX)/state.scale,
+    	    (evt.pageY - state.translationY)/state.scale
+        ];
+		
+		if(selectedShape!=null) {			
+			detectHandle(evt);
+	
+			if(selectedHandle==-1 && !selectedShape.isActiveShape(context,mouseLocX,mouseLocY)) {
+				if(selectedShape.getType()!="ruler" && selectedShape.getType()!="angle") {
+					selectedShape.measure(selectedShape);
+				}
+				selectedShape.active = false;				
+				selectedShape = null;
+				drawAllShapes();
+			}
+		} 
+		else {
+			detectSelectedShape();			
+			
+			if(selectedShape==null) {
+				if(tool=="ruler") {
+					ruler.initNewLine();
+				} else if(tool=="rectangle") {
+					rect.initNewRect();
+				} else if(tool=="oval") {
+					oval.initNewOval();
+				} else if(tool=="angle") {
+					if(angle.angleStarted()) {
+						if(angle.curr_angle.setIntersectionPt(mouseLocX, mouseLocY)) {
+							state.drag = false;				
+						}			
+					} else {
+						angle.initAngle();
+						state.drag = true;
+					}
+				}
+			}
+		}
+		
+		evt.stopPropagation();
+		evt.preventDefault();
+		evt.target.style.cursor = selectedShape!=null? 'move' : 'crosshair';
+	}
+}
+
+function mouseMoveHandler(evt) {
 	var x = evt.pageX-drawCanvas.offsetLeft;
 	var y = evt.pageY-drawCanvas.offsetTop;
+	
 	var imgX = parseInt((x-state.translationX)/state.scale);
 	var imgY = parseInt((y-state.translationY)/state.scale);
-	jQuery('#huDisplayPanel').html("X :"+imgX+" Y :"+imgY+" HU :"+getPixelValAt(imgX,imgY));
+	
+	if(tool=="rectangle" || tool=="oval") {
+		jQuery('#huDisplayPanel').html("X :"+imgX+" Y :"+imgY+" HU :"+getPixelValAt(imgX,imgY));
+	}
+	
 	if(state.drag) {
 		drawAllShapes();
 		
 		if(selectedShape==null ) { // New Shape
 			switch(tool) { 
-				case 'ruler':
-					var mouseLocX1 = evt.pageX-drawCanvas.offsetLeft;
-					var mouseLocY1 = evt.pageY-drawCanvas.offsetTop;
-					ruler.drawRuler(context,mouseLocX,mouseLocY,mouseLocX1,mouseLocY1);
+				case 'ruler':					
+					ruler.drawRuler(context,mouseLocX,mouseLocY,x,y);
 					break;
-				case 'rectangle':
-					var mouseLocX1 = (evt.pageX - drawCanvas.offsetLeft)-mouseLocX;
-					var mouseLocY1 = (evt.pageY - drawCanvas.offsetTop)-mouseLocY;
-				
-					rect.drawRect(context,mouseLocX,mouseLocY,mouseLocX1,mouseLocY1);
+				case 'rectangle':									
+					rect.drawRect(context,mouseLocX,mouseLocY,x,y);
 					break;
-				case 'oval':
-					var mouseLocX1 = (evt.pageX - drawCanvas.offsetLeft)-mouseLocX;
-					var mouseLocY1 = (evt.pageY - drawCanvas.offsetTop)-mouseLocY;
-				
-					oval.drawOval(context,mouseLocX,mouseLocY,mouseLocX1,mouseLocY1);
+				case 'oval':								
+					oval.drawOval(context,mouseLocX,mouseLocY,x,y);
+					break;
+				case 'angle':
+					if(angle.angleStarted()) {
+						angle.setOAorOB(context, mouseLocX, mouseLocY, x, y);
+					}
 					break;
 			}
-		} else if(selectedHandle==-1) { // Move a shape			
-			selectedShape.moveShape(selectedShape,(evt.pageX- drawCanvas.offsetLeft),(evt.pageY - drawCanvas.offsetTop));			
-			if(selectedShape.getType()!="ruler") {
-				selectedShape.mean = selectedShape.stdDev = "";
-			}
-		} else { // Resizing a shape
-			selectedShape.resizeShape(selectedShape,(evt.pageX- drawCanvas.offsetLeft),(evt.pageY - drawCanvas.offsetTop),selectedHandle);
-			if(selectedShape.getType()!="ruler") {
-				selectedShape.mean = selectedShape.stdDev = "";
-			}
+		} else if(selectedHandle==-1) { // Move a shape							
+			selectedShape.moveShape(Math.round(imgX-this.startCoords[0]),Math.round(imgY-this.startCoords[1]));
+			this.startCoords = [imgX,imgY];
+			evt.target.style.cursor = 'move';			
+		} else if(selectedShape.active) { // Resizing a shape			
+			selectedShape.resizeShape(Math.round(imgX-this.startCoords[0]),Math.round(imgY-this.startCoords[1]),selectedHandle);
+			this.startCoords = [imgX,imgY];
 		}
-	} else if(selectedShape!=null) {
-			detectHandle(evt);
+	} else if(selectedShape!=null && selectedShape.active) {		
+			detectHandle(evt);			
 	}
 }
 
-function mouseupHandler(evt) {
+function mouseUpHandler(evt) {
 	if(selectedShape==null) { // New Shape
 		switch(tool) {
 			case 'ruler':
 				ruler.createNewLine(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
 				break;
 			case 'rectangle':
-				rect.createNewRect(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft)-mouseLocX, (evt.pageY-drawCanvas.offsetTop)-mouseLocY);
+				rect.createNewRect(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
 				break;
 			case 'oval':
-				oval.createNewOval(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft)-mouseLocX, (evt.pageY-drawCanvas.offsetTop)-mouseLocY);
+				oval.createNewOval(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
+				break;
+			case 'angle':
+				if(angle.angleStarted() && angle.curr_angle.lineOAValid() && angle.curr_angle.lineOBValid()) {
+					angle.createNewAngle();
+				}
 				break;
 		}
 		drawAllShapes();
-	}
-	state.drag = false;					
-}
-
-function drawAllShapes() {
-	if(context!=null) {
-		context.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-		ruler.drawData(context);
-		rect.drawData(context);
-		oval.drawData(context);
+		if(tool!="angle") {
+			state.drag = false;					
+		}					
+	} else {
+		state.drag = false;
 	}
 }
 
@@ -147,29 +231,83 @@ function setShape(shape) {
 }	
 
 function detectSelectedShape() {
-	if((selectedShape = ruler.getActiveLine(mouseLocX,mouseLocY))!=null ||(selectedShape = rect.getActiveRect(mouseLocX,mouseLocY))!=null || (selectedShape = oval.getActiveOval(mouseLocX,mouseLocY))!=null) {
-		selectedShape.active = true;
+	if(ruler!=null && (selectedShape = ruler.getActiveLine(context,mouseLocX,mouseLocY))!=null || rect!=null && (selectedShape = rect.getActiveRect(context,mouseLocX,mouseLocY))!=null || oval!=null && (selectedShape = oval.getActiveOval(context,mouseLocX,mouseLocY))!=null || angle!=null && (selectedShape = angle.getActiveAngle(context,mouseLocX,mouseLocY))!=null) {
 		drawAllShapes();
 		return;
 	}
 }
 
-function detectHandle(e) {
-	selectedHandle = selectedShape.detectHandle(selectedShape,e.pageX-drawCanvas.offsetLeft,e.pageY-drawCanvas.offsetTop,e.target);	
+function detectHandle(e) {	
+	selectedHandle = selectedShape.detectHandle(e.pageX-drawCanvas.offsetLeft,e.pageY-drawCanvas.offsetTop,e.target);	
 }
 
 function clearMeasurements() {
 	curr_Img = -1;
-	ruler = rect = oval = null;	
+	if(ruler!=null) {
+		ruler.clearAll();
+	}
+	if(rect!=null) {
+		rect.clearAll();
+	}
+	if(oval!=null) {
+		oval.clearAll();
+	}
+	if(angle!=null) {
+		angle.clearAll();
+	}
 	if(context!=null) {
 		context.clearRect(0,0,drawCanvas.width,drawCanvas.height);
 	}
 }
 
+function resetAnnotation() {
+	clearMeasurements();
+	tool = "";
+	jQuery('.selectedshape',window.parent.document).removeClass('selectedshape');
+	jQuery('#line',window.parent.document).addClass('selectedshape');
+	this.context = null;
+}
+
 function deleteSelectedMeasurement() {
 	if(selectedShape!=null) {
-		selectedShape.removeShape(selectedShape);
+		if(selectedShape.getType()=="ruler") {
+			ruler.removeShape(selectedShape);
+		} else if(selectedShape.getType()=="rect") {
+			rect.removeShape(selectedShape);
+		} else if(selectedShape.getType()=="oval") {
+			oval.removeShape(selectedShape);
+		} else if(selectedShape.getType()=="angle") {
+			angle.removeShape(selectedShape);
+		}
 		selectedShape = null;
 		drawAllShapes();
+	}
+}
+
+function drawAllShapes() {
+	if(this.context!=null) {
+		this.context.save();
+		this.context.setTransform(1,0,0,1,0,0);		
+		this.context.clearRect(0,0,drawCanvas.width,drawCanvas.height);	
+		if(state.vflip) {
+			this.context.translate(0,drawCanvas.height);
+			this.context.scale(1,-1);
+		}
+	
+		if(state.hflip) {
+			this.context.translate(drawCanvas.width,0);
+			this.context.scale(-1,1);
+		}
+	
+		if(state.rotate!=0) {
+			this.context.translate(drawCanvas.width/2,drawCanvas.height/2);
+			this.context.rotate(state.rotate===90 ? Math.PI/2 : state.rotate===180? Math.PI : (Math.PI*3)/2);
+			this.context.translate(-drawCanvas.width/2,-drawCanvas.height/2);	   
+		}		
+		if(ruler!=null) ruler.drawData(context);
+		if(rect!=null) rect.drawData(context);
+		if(oval!=null) oval.drawData(context);
+		if(angle!=null) angle.drawData(context);
+		this.context.restore();
 	}
 }

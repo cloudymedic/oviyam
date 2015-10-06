@@ -390,9 +390,9 @@ jQuery(document).mouseup(function(e) {
             <div class="toggleButton" align="center" id="measure">
                 <img src="images/ruler.png" id="lblLines" class="imgOff" alt="Draw measurement lines" title="Draw Measurements"/>
 				<ul id="measureContext" class="contextMenu" style="width:82px; position:fixed; background:#000;">
-					<li><a id="line" href="#" class=" selectedshape cmenuItem" onclick="doTool('ruler'); jQuery(this).addClass('selectedshape');">Ruler</a></li>
-		            <li><a href="#" class="cmenuItem" onclick="doTool('rectangle'); jQuery(this).addClass('selectedshape');">Rectangle</a></li>
-		            <li><a href="#" class="cmenuItem" onclick="doTool('oval'); jQuery(this).addClass('selectedshape');">Oval</a></li>
+					<li><a id="line" href="#" class="selectedshape cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('ruler');">Ruler</a></li>
+		            <li><a id="rectangle" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('rectangle');">Rectangle</a></li>
+		            <li><a id="oval" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('oval'); ">Oval</a></li>
 					<li type='separator' style="height: 2px; background-color: #00CC66;"></li>
 					<li><a href="#" class="cmenuItem" onclick="doTool('clearAll');">Delete All </a></li>
 				</ul>

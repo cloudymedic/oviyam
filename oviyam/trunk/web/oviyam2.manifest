@@ -10,7 +10,6 @@ oviyam2.manifest
 
 css/jquery.ui.all.css
 css/layout-default-latest.css
-css/jquery.contextMenu.css
 css/demo_table_jui.css
 css/jquery-ui.css
 css/jquery-ui(1).css
@@ -21,17 +20,18 @@ css/jquery.ui.core.css
 css/jquery.ui.accordion.css
 css/jquery.ui.autocomplete.css
 css/jquery.ui.button.css
+css/jquery.contextMenu.css
 css/jquery.ui.datepicker.css
 css/jquery.ui.dialog.css
 css/jquery.ui.progressbar.css
 css/jquery.ui.resizable.css
 css/jquery.ui.slider.css
 css/jquery.ui.tabs.css
-css/jqcontextmenu.css
 css/smartslider.css
 css/demos.css
 css/jquery.alerts.css
 css/frameContent.css
+css/jqcontextmenu.css
 
 js/lib/jquery-latest.js
 js/lib/jquery-ui-latest.js
@@ -66,13 +66,16 @@ js/dicom/NewDictionary.js
 js/html/html.js
 js/utils/string.js
 js/measure.js
+js/line.js
+js/rect.js
+js/oval.js
 js/lib/raphael-min.js
 js/lib/raphaelle.js
 js/framecontent.js
 js/lib/smartslider.js
-js/lib/jqcontextmenu.js
 js/i18n/Bundle.js
-js/shape.js
+js/lib/jqcontextmenu.js
+
 
 images/three.png
 images/all.png
@@ -115,7 +118,6 @@ css/images/title.gif
 css/images/important.gif
 css/images/info.gif
 
-
 css/images/selected.png
 
 
@@ -123,5 +125,5 @@ NETWORK:
 westContainer.jsp
 Image.do
 UserConfig.do
-Wado.do
 DcmStream.do
+Wado.do

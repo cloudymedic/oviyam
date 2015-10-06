@@ -6,6 +6,7 @@
 
         <script type="text/javascript" src="js/lib/jquery-latest.js"></script>
         <script type="text/javascript" src="js/lib/jquery-ui-latest.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.cookies.min.js"></script>
         <script type="text/javascript" src="js/lib/jquery.sleep.js"></script>        
         <script type="text/javascript" src="js/viewer.js"></script>      
         <script type="text/javascript" src="js/lib/smartslider.js"></script>
@@ -26,19 +27,14 @@
         <script type="text/javascript" src="js/framecontent.js"></script>
         <script type="text/javascript" src="js/toolactivator.js"></script>
         <script type="text/javascript" src="js/oviyam.js"></script>
-        <script type="text/javascript" src="js/shape.js"></script>
+        <script type="text/javascript" src="js/line.js"></script>
+        <script type="text/javascript" src="js/rect.js"></script>
+        <script type="text/javascript" src="js/oval.js"></script>        
         <script type="text/javascript" src="js/measure.js"></script>
 
         <script type="text/javascript" src="js/lib/jqcontextmenu.js">
-
-            /***********************************************
-             * jQuery Context Menu- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
-             * This notice MUST stay intact for legal use
-             * Visit Dynamic Drive at http://www.dynamicdrive.com/ for this script and 100s more
-             ***********************************************/
-
         </script>
-
+        
         <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="css/jqcontextmenu.css" />
         <link rel="stylesheet" type="text/css" href="css/smartslider.css" />
@@ -64,8 +60,8 @@
                 <canvas id="imageCanvas"  style="z-index:1; position:absolute; margin:auto;">Your browser doesn't support canvas.</canvas>
                 <canvas id="canvasLayer1" style="z-index:2; position:absolute; margin:auto;">Your browser doesn't support canvas.</canvas>
                 <canvas id="canvasLayer2" style="z-index:3; position:absolute; margin:auto;">Your browser doesn't support canvas.</canvas>
-                <canvas id="previewCanvas" class="preview" style="z-index:4; width: 20%; position:absolute; top: 52px; right: 2px; display: none;"></canvas>
-                <canvas id="highlightCanvas" class="preview" style="z-index:5; width: 20%; position:absolute; top: 52px; right: 2px; display: none;"></canvas>
+                <canvas id="previewCanvas" class="preview" style="z-index:4; position:absolute; top: 52px; right: 2px;"></canvas>
+                <canvas id="highlightCanvas" class="preview" style="z-index:5; position:absolute; top: 52px; right: 2px;"></canvas>
             </div>
             <div id="totalImages" class="textOverlay" style="left:5px; bottom:55px"></div>
             <div id="windowLevel" class="textOverlay" style="left:5px; bottom:35px"></div>
@@ -91,13 +87,13 @@
             <div id="modalityDiv" style="visibility:hidden"></div>            
             <div id="applyWLDiv" class="textOverlay" style="bottom:100px; right:7px; cursor:pointer; display:none" divState="false" onclick="applyWL();">Apply All</div>
             <div id="tool" style="display:none;"></div>           
-            <div id="serId" style="display:none;"></div> 
+            <div id="serId" style="display:none;"></div>
+            <div id="studyId" style="display:none;"></div>  
             
             <div id="progressbar"></div>            
             <div id="progresslbl"></div>
         </div>
-
-        <script type="text/javascript">        	
+         <script type="text/javascript">        	
             function loadContextMenu() {
             	var queryString = window.location.href;
             	var seriesData = JSON.parse(sessionStorage[parent.pat.studyUID]);            	
@@ -135,7 +131,6 @@
 
                 jQuery('canvas').addcontextmenu('contextmenu1');
             }
-        </script>
-
-    </body>
+        </script>        
+    </body>    
 </html>
