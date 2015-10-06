@@ -18,7 +18,6 @@ function disableOtherTools(tool) {
 		stopMove(document.getElementById('canvasLayer2'));
 	}
 	if(tool!='windowing') { //Deactivates windowing
-		windowCenter = windowWidth = '';
 		unbindWindowing('windowing');
 	}
 	if(tool!='measure') { // Deactivates Measure
@@ -78,13 +77,16 @@ function onToolSelection(e) {
 				activateMeasure(e.detail.tool);
 				break;
 			case 'ruler':
-				setShape(e.detail.tool);
+				doRuler();
 				break;
 			case 'rectangle':
-				setShape(e.detail.tool);
+				doRect();
 				break;
 			case 'oval':
-				setShape(e.detail.tool);
+				doOval();
+				break;
+			case 'angle':
+				doAngle();
 				break;
 			case 'preset':
 				applyPreset(e.detail.wc,e.detail.ww);
@@ -94,7 +96,9 @@ function onToolSelection(e) {
 				init(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc);
 				break;
 			case 'mouseup':
-				state.drag = false;
+				if(jQuery('.selectedshape',window.parent.document).attr('id')!="angle") {
+					state.drag = false;
+				}
 				break;
 			case 'delete':
 				deleteSelectedMeasurement();
@@ -224,8 +228,8 @@ function doReset(toolid) {
 	doMouseWheel = true;
 
 	disableOtherTools(toolid);	
-	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
-	showImage(seriesUid+"_"+imgInc);	
+	resetAnnotation();
+	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};	
 
 	loadInstanceText(false);
 	drawoutline();
@@ -238,6 +242,16 @@ function doReset(toolid) {
 		modifiedWW = windowWidth;
 		getWLAppliedImages();
 		jQuery('#applyWLDiv').attr('divState',"false");
+		jQuery('#applyWLDiv').hide();
+		jQuery('#windowLevel').html("WL: "+modifiedWC+" / WW: "+modifiedWW);
+		var image = jQuery('#'+(seriesUid+"_"+imgInc).replace(/\./g,'_'), window.parent.document).get(0);
+		jQuery(image).load(function() {
+//			showImage(null,image);
+			showImage(seriesUid+"_"+imgInc);	
+			window.parent.wlApplied = false;
+		});		
+	} else {
+		showImage(seriesUid+"_"+imgInc);	
 	}
 }
 
@@ -253,19 +267,17 @@ function doMove() {
 	var startCoords = [];	
 	
 	canvasLayer2.onmousedown = function(e) {
-		if(e.which==1) {
-			state.drag = true;
-			 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
-	
-	        startCoords = [
-	        e.pageX - state.translationX,
-	        e.pageY - state.translationY
-	        ];
-	
-	        e.preventDefault();
-	        e.stopPropagation();
-	        e.target.style.cursor = "url(images/move.png), auto";
-		}
+		state.drag = true;
+		 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
+
+        startCoords = [
+        e.pageX - state.translationX,
+        e.pageY - state.translationY
+        ];
+
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.style.cursor = "url(images/move.png), auto";
 	};
 	
 	 canvasLayer2.onmouseup = function(e) {
@@ -283,6 +295,7 @@ function doMove() {
         
 		showImg(null,img);
 		drawoutline();
+		drawAllShapes();
     };	
 }
 
@@ -441,7 +454,7 @@ function synchronize(e) {
 			
 				if(sliceLoc>=fromTo['from'] && sliceLoc<=fromTo['to'] && parseFloat(sliceLoc)-parseFloat(fromTo['sliceLoc'])<128) {
 					imgInc = (i+1);
-					showImg(seriesUid+ '_' + imgInc,null,true);
+					showImg(seriesUid+ '_' + imgInc);
 					loadInstanceText(false);
 					break;
 				}
@@ -476,12 +489,12 @@ function activateWindowing(toolId) {
 		window.parent.document.getElementById('loopChkBox').checked = false;
 		var progress = 0;
 		
-//		setTimeout(function() {
+		setTimeout(function() {
 			var imageData = null;
 			try {
 				imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];				
 
-				var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&serverURL=" + window.parent.pat.serverURL;				
+				var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;				
 
 				if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
 					url+="&frameNumber=" + (frameInc-1);
@@ -551,7 +564,7 @@ function activateWindowing(toolId) {
 			}
 			
 			//doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'));
-//		},1);
+		},1);
 	} else {
 		unbindWindowing(toolId);
 	}
@@ -563,6 +576,7 @@ function unbindWindowing(toolId) {
 	jQuery('#thickLocationPanel').show();
 	jQuery('#canvasLayer2').unbind('mousemove').unbind('mousedown').unbind('mouseup');
 	window.parent.disableWindowingContext();
+	jQuery('#applyWLDiv').hide();
 	doMouseWheel = true;
 }
 
@@ -572,95 +586,154 @@ function activateMeasure(toolId) {
 		enableTool(toolId);	
 		doMouseWheel = false;
 		
-		jQuery('#thickLocationPanel').hide();		
+		jQuery('#thickLocationPanel').hide();
+		jQuery('#loadingView', window.parent.document).show();
 		doLoop(false);
-		window.parent.document.getElementById('loopChkBox').checked = false;
-		var progress = 0;
+		window.parent.document.getElementById('loopChkBox').checked = false;	
 		
-		var imageData = null;
-		try {
-			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
-			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&serverURL=" + window.parent.pat.serverURL;
-			if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
-				url+="&frameNumber=" + (frameInc-1);
-			}
-			
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST", url, true);
-			xhr.responseType = "arraybuffer";  
-			
-			xhr.onload = function(e) {
-				if (this.status == 200) {
-					if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
-						pixelBuffer = new Uint8Array(this.response);
-					} else if(imageData['PixelRepresentation']==0 && imageData['BitsStored']>8) {
-						pixelBuffer = new Uint16Array(this.response);
-					} else if(imageData['PixelRepresentation']==1 && imageData['BitsStored']>8) {
-						pixelBuffer = new Int16Array(this.response);
-					} else {
-						pixelBuffer = this.response;
-					}
-					
-					for(var i=0;i<pixelBuffer.length;i++) {
-						var pix = pixelBuffer[i];
-						minPix = Math.min(minPix,pix);
-						maxPix = Math.max(maxPix,pix);
-					}
-						
-					lookupObj = new LookupTable();
-					lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
-					columns = imageData['nativeColumns'];
-					loadLookUp(imageData);
-					measure(document.getElementById('canvasLayer2'),jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc, imageData['nativeColumns']);
-				}
-			};
-			
-			// Progress
-			xhr.onreadystatechange = function(evt) {
-				if(xhr.readyState==4) {
-					jQuery('#progressbar').progressbar("value",100);
-					jQuery('#progressbar').hide();
-					jQuery('#progresslbl').hide();
-				}
-				
-				if(xhr.readyState==2) {
-					jQuery('#progressbar').progressbar({
-						value: false,
-						change: function() {
-							jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(progress) + "%" );
-						},							
-					});
-					jQuery('#progressbar').show();
-					jQuery('#progresslbl').show();
-				}
-			};
-			
-			 xhr.addEventListener("progress", function(evt){					 
-			      if (evt.lengthComputable) {  				     
-			        progress = 100*evt.loaded/evt.total;				        
-			        jQuery('#progressbar').progressbar("value",progress);				       
-			      }
-			    }, true); 
-			 
-			xhr.send();
-		} catch(exception) {			
-			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
-			imageData = parseDicom(null,getParameter(imgSrc,'object'));
-			if(imageData['pixelSpacing']!=undefined) {
-				jQuery('#pixelSpacing').html((imageData['pixelSpacing'].length>1) ?  imageData['pixelSpacing'][0]+"\\"+imageData['pixelSpacing'][1] : imageData['pixelSpacing']);
-			} else {
-				jQuery('#pixelSpacing').html("1.0\\1.0");
-			}
-			columns = imageData['nativeColumns'];
-			loadLookUp(imageData);
-			measure(document.getElementById('canvasLayer2'),jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc, imageData['nativeColumns']);
+		var shape = jQuery('.selectedshape',window.parent.document).attr('id');
+
+		switch(shape) {
+			case "line":
+				doRuler();
+				break;
+			case "rectangle":
+				doRect();
+				break;
+			case "oval":
+				doOval();
+				break;
+			case "angle":
+				doAngle();
+				break;
 		}
 		window.parent.enableMeasureContext();
-		
 	} else {
 		deactivateMeasure(toolId);
 		doMouseWheel = true;
 	}
+}
+
+function doRuler() {
+	var imageData = null;
+	try {
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		activateRuler(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
+	} catch(e) {
+		console.log("DICOM DATA NOT AVAILABLE.");
+	}
+}
+
+function doRect() {
+	var imageData = null;
+	try {
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		getDICOM();
+		activateRect(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
+	} catch(e) {
+		console.log("DICOM DATA NOT AVAILABLE.");
+	}
+}
+
+function doOval() {
+	var imageData = null;
+	try {
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		getDICOM();
+		activateOval(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
+	} catch(e) {
+		console.log("DICOM DATA NOT AVAILABLE.");
+	}
+}
+
+function doAngle() {
+	var imageData = null;
+	try {
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		activateAngle(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
+	} catch(e) {
+		console.log("DICOM DATA NOT AVAILABLE.");
+	}
+}
+
+function getDICOM() {
+	var imageData = null;
+	try {
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;
+		if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
+			url+="&frameNumber=" + (frameInc-1);
+		}
+		var progress = 0;
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url, true);
+		xhr.responseType = "arraybuffer";  
+		
+		xhr.onload = function(e) {
+			if (this.status == 200) {
+				if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
+					pixelBuffer = new Uint8Array(this.response);
+				} else if(imageData['PixelRepresentation']==0 && imageData['BitsStored']>8) {
+					pixelBuffer = new Uint16Array(this.response);
+				} else if(imageData['PixelRepresentation']==1 && imageData['BitsStored']>8) {
+					pixelBuffer = new Int16Array(this.response);
+				} else {
+					pixelBuffer = this.response;
+				}
+				
+				for(var i=0;i<pixelBuffer.length;i++) {
+					var pix = pixelBuffer[i];
+					minPix = Math.min(minPix,pix);
+					maxPix = Math.max(maxPix,pix);
+				}
+					
+				lookupObj = new LookupTable();
+				lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
+				columns = imageData['nativeColumns'];
+				loadLookUp(imageData);
+			}
+		};
+		
+		// Progress
+		xhr.onreadystatechange = function(evt) {
+			if(xhr.readyState==4) {
+				jQuery('#progressbar').progressbar("value",100);
+				jQuery('#progressbar').hide();
+				jQuery('#progresslbl').hide();
+			}
+			
+			if(xhr.readyState==2) {
+				jQuery('#progressbar').progressbar({
+					value: false,
+					change: function() {
+						jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(progress) + "%" );
+					},							
+				});
+				jQuery('#progressbar').show();
+				jQuery('#progresslbl').show();
+			}
+		};
+		
+		 xhr.addEventListener("progress", function(evt){					 
+		      if (evt.lengthComputable) {  				     
+		        progress = 100*evt.loaded/evt.total;				        
+		        jQuery('#progressbar').progressbar("value",progress);				       
+		      }
+		    }, true); 
+		
+		xhr.send();
+	} catch(exception) {			
+		var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
+		imageData = parseDicom(null,getParameter(imgSrc,'object'));
+		if(imageData['pixelSpacing']!=undefined) {
+			jQuery('#pixelSpacing').html((imageData['pixelSpacing'].length>1) ?  imageData['pixelSpacing'][0]+"\\"+imageData['pixelSpacing'][1] : imageData['pixelSpacing']);
+		} else {
+			jQuery('#pixelSpacing').html("1.0\\1.0");
+		}
+		columns = imageData['nativeColumns'];
+		loadLookUp(imageData);
+	}	
 }
 
 function deactivateMeasure(toolId) {
@@ -668,42 +741,36 @@ function deactivateMeasure(toolId) {
 	jQuery('#huDisplayPanel').hide();
 	jQuery('#thickLocationPanel').show();
 	jQuery('#canvasLayer2').unbind('mousedown').unbind('mousemove').unbind('mouseup');
-	window.parent.disableMeasureContext();
-	clearMeasurements();
+	window.parent.disableMeasureContext();	
 }
 
 function doWindowing(imageData,huDisplay,wlDisplay) {
 	var rescaleSlope = parseFloat(imageData['rescaleSlope']), rescaleIntercept = parseFloat(imageData['rescaleIntercept']);
-	/*if(rescaleSlope===undefined) {
-		rescaleSlope = 1.0;
-	}
-	
-	if(rescaleIntercept===undefined) {
-		rescaleIntercept = 0.0;
-	}*/
 			
-	modifiedWC = imageData['windowCenter'],modifiedWW = imageData['windowWidth'];
+	windowCenter = imageData['windowCenter'],windowWidth = imageData['windowWidth'];
 	
-	if(modifiedWC!=undefined && modifiedWC.length>0) {
-		if(modifiedWC && modifiedWC.indexOf('|') >=0) {
-   	 		modifiedWC = parseInt(modifiedWC.substring(0, modifiedWC.indexOf('|')));
+	if(windowCenter!=undefined && windowCenter.length>0) {
+		if(windowCenter && windowCenter.indexOf('|') >=0) {
+   	 		windowCenter = parseInt(windowCenter.substring(0, windowCenter.indexOf('|')));
 		}
 		
-		if(modifiedWW && modifiedWW.indexOf('|') >=0) {
-		    modifiedWW = parseInt(modifiedWW.substring(0, modifiedWW.indexOf('|')));
+		if(windowWidth && windowWidth.indexOf('|') >=0) {
+		    windowWidth = parseInt(windowWidth.substring(0, windowWidth.indexOf('|')));
 		}
 	} else {
 		var maxVoi = maxPix * rescaleSlope + rescaleIntercept;
 		var minVoi = minPix * rescaleSlope + rescaleIntercept;
 		
-		modifiedWC = (maxVoi+minVoi) /2;
-		modifiedWW = maxVoi - minVoi;
+		windowCenter = (maxVoi+minVoi) /2;
+		windowWidth = maxVoi - minVoi;
 		
 		wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
 	}
 
-	this.windowCenter = modifiedWC;
-	this.windowWidth = modifiedWW;	
+	if(modifiedWC==undefined) {
+		modifiedWC = windowCenter;
+		modifiedWW = windowWidth;
+	}
 
 	lookupObj.setData(modifiedWC, modifiedWW, rescaleSlope, rescaleIntercept, imageData['BitsStored'],imageData['monochrome1']);
 	
@@ -724,7 +791,10 @@ function doWindowing(imageData,huDisplay,wlDisplay) {
 	renderImg();
 	jQuery('#loadingView', window.parent.document).hide();
 	huDisplay.show();
-	jQuery('#applyWLDiv').show();
+	
+	if(window.parent.pat.serverURL.indexOf('C-GET')<0 && window.parent.pat.serverURL.indexOf('C-MOVE')<0) {
+		jQuery('#applyWLDiv').show();
+	}
 	
 	jQuery('#canvasLayer2').mouseup(function(evt) {
 		state.drag = false;
@@ -732,21 +802,24 @@ function doWindowing(imageData,huDisplay,wlDisplay) {
 		jQuery('.contextMenu').hide();
 		jQuery('.selected').removeClass('selected');
 	}).mousedown(function(evt) {
-		if(evt.which==1) {
-			doMouseWheel = false;
-			state.drag = true;		
-			mouseLocX = evt.pageX;
-			mouseLocY = evt.pageY; 
-	
-	       evt.target.style.cursor = "url(images/wincursor.png), auto";
-	       
-	       evt.preventDefault();
-	       evt.stopPropagation();    
-		}
+		doMouseWheel = false;
+		state.drag = true;		
+		mouseLocX = evt.pageX;
+		mouseLocY = evt.pageY; 
+
+       evt.target.style.cursor = "url(images/wincursor.png), auto";
+       
+       evt.preventDefault();
+       evt.stopPropagation();    
+       
 	}).mousemove(function(evt) {
 		jQuery('.selected',window.parent.document).removeClass('selected');
+		/*var x = parseInt(evt.pageX/state.scale);
+		var y = parseInt(evt.pageY/state.scale);*/
+		
 		var x = parseInt((evt.pageX-state.translationX)/state.scale);
 		var y = parseInt((evt.pageY-state.translationY)/state.scale);
+		
 		huDisplay.html("X :"+x+" Y :"+y+" HU :"+lookupObj.getPixelAt(pixelBuffer[(y*imageData['nativeColumns'])+x]));
 
 		if(state.drag) {
@@ -776,16 +849,18 @@ function doWindowing(imageData,huDisplay,wlDisplay) {
 function applyPreset(wc,ww) {
 	jQuery('.selected',window.parent.document).removeClass('selected');
 	jQuery('.contextMenu',window.parent.document).hide();
+
 	if(wc!=undefined) {	
-		this.modifiedWC = wc;
-		this.modifiedWW = ww;	
-		lookupObj.setWindowingdata(modifiedWC,modifiedWW);		
+		modifiedWC = wc;
+		modifiedWW = ww;	
+		lookupObj.setWindowingdata(modifiedWC,modifiedWW);				
+		jQuery('#windowLevel').html("WL: "+modifiedWC+" / WW: "+modifiedWW);
 	} else {
-		this.modifedWC = windowCenter;
-		this.modifiedWW = windowWidth;
+		modifedWC = windowCenter;
+		modifiedWW = windowWidth;
 		lookupObj.setWindowingdata(windowCenter,windowWidth);
-	}
-	jQuery('#windowLevel').html("WL: "+modifiedWC+" / WW: "+modifiedWW);
+		jQuery('#windowLevel').html("WL: "+windowCenter+" / WW: "+windowWidth);
+	}	
 	iterateOverPixels();
 	renderImg();
 }
@@ -800,9 +875,15 @@ function getPixelValAt(i,j) {
 }
 
 function doZoom() {
-	var img = null;	
+	var img = null;
+	var offScreenCanvas = document.createElement('canvas');
 	var canvasLayer2 = document.getElementById('canvasLayer2');	
-	var canvas = document.getElementById('imageCanvas');		
+	var canvas = document.getElementById('imageCanvas');
+	var ctx = canvas.getContext('2d');	
+	
+	offScreenCanvas.width = canvas.width;
+	offScreenCanvas.height = canvas.height;
+	
 	var lastY = 0,mY = 0,zoomInc = 1,scaleFac = 1.01,originX = 0,originY = 0;
 	
 	
@@ -896,11 +977,9 @@ function stopZoom() {
 	ctx.restore();
 }*/
 
-function applyWL() {
-	windowCenter = modifiedWC;
-	windowWidth = modifiedWW;	
+function applyWL() {	
 	getWLAppliedImages();
-	doMouseWheel = true;	
+	unbindWindowing('windowing');
 }
 
 function getWLAppliedImages() {
@@ -909,13 +988,16 @@ function getWLAppliedImages() {
 	jQuery('#applyWLDiv').attr('divState','true');
 	
 	imgs.each(function(){
-		var imgSrc = jQuery(this).attr('src');
+var imgSrc = jQuery(this).attr('src');
 		
 		if(imgSrc.indexOf('windowCenter') >= 0) {
             imgSrc = imgSrc.substring(0, imgSrc.indexOf('&windowCenter='));
-        }
+        }       
 		
-		imgSrc += '&windowCenter=' + windowCenter + '&windowWidth=' + windowWidth;
-        jQuery(this).attr('src', imgSrc);
+		imgSrc += '&windowCenter=' + modifiedWC;
+		imgSrc = imgSrc.trim() + '&windowWidth=' + modifiedWW;	
+
+		window.parent.wlApplied = true;
+        jQuery(this).attr('src', imgSrc);        
 	});	
 }
