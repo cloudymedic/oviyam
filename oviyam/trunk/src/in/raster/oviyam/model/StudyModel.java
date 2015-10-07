@@ -42,6 +42,8 @@
 
 package in.raster.oviyam.model;
 
+import java.io.Serializable;
+import java.util.Calendar;
 import org.dcm4che.data.Dataset;
 import org.dcm4che.dict.Tags;
 
@@ -49,15 +51,20 @@ import org.dcm4che.dict.Tags;
  *
  * @author asgar
  */
-public class StudyModel {
+public class StudyModel implements Serializable {
 
-    //local variables
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//local variables
     private String patientID;
     private String patientName;
     private String patientGender;
     private String patientBirthDate;
     private String physicianName;
-    private String studyDate;
+    private String studyDate;    
+    private Calendar parsedDate = null;
     private String studyTime;
     private String studyDescription;
     private String modalitiesInStudy;
@@ -73,13 +80,26 @@ public class StudyModel {
     //constructor
     public StudyModel(Dataset ds) {
         patientID = ds.getString(Tags.PatientID);
-        patientName = ds.getString(Tags.PatientName);
-        patientGender = ds.getString(Tags.PatientSex);
+        patientName = ds.getString(Tags.PatientName).replace("^", " ");
+        patientGender = ds.getString(Tags.PatientSex)!=null ? ds.getString(Tags.PatientSex) : "unknown";
         patientBirthDate = ds.getString(Tags.PatientBirthDate) != null ? ds.getString(Tags.PatientBirthDate) : "";
         physicianName = ds.getString(Tags.ReferringPhysicianName) != null ? ds.getString(Tags.ReferringPhysicianName) : "";
-        studyDate = ds.getString(Tags.StudyDate);
-        studyTime = ds.getString(Tags.StudyTime);
-        studyDescription = ds.getString(Tags.StudyDescription) != null ? ds.getString(Tags.StudyDescription) : "";
+        studyDate = ds.getString(Tags.StudyDate)!=null ? ds.getString(Tags.StudyDate) : "unknown";
+        parsedDate = Calendar.getInstance();        
+        
+        if(studyDate!=null && !studyDate.equals("unknown")) {
+        	try {        		
+        		parsedDate.set(Integer.parseInt(studyDate.substring(0,4)), Integer.parseInt(studyDate.substring(4,6))-1, Integer.parseInt(studyDate.substring(6,8)));        		
+        	} catch(Exception ex) {
+        		ex.printStackTrace();
+        		parsedDate = null;
+        	}
+        } else {        	
+        	parsedDate = null;
+        }
+        
+        studyTime = ds.getString(Tags.StudyTime)!=null ? ds.getString(Tags.StudyTime) : "unknown";
+        studyDescription = ds.getString(Tags.StudyDescription) != null ? ds.getString(Tags.StudyDescription).replace("^", " ") : "";
 
         String[] modalities = ds.getStrings(Tags.ModalitiesInStudy) != null ? ds.getStrings(Tags.ModalitiesInStudy) : null;
         if(modalities != null) {
@@ -148,6 +168,10 @@ public class StudyModel {
 
     public String getStudyTime() {
         return studyTime;
+    }
+    
+    public Calendar getParsedDate() {
+    	return parsedDate;
     }
 
     @Override

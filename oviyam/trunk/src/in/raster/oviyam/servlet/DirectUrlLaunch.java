@@ -99,7 +99,8 @@ public class DirectUrlLaunch extends HttpServlet {
 	        	File tempDir = (File) getServletContext().getAttribute("javax.servlet.context.tempdir");
 	        	LanguageHandler.source = new File(new XMLFileHandler().getXMLFilePath(tempDir.getParent()));	
 //				forwardUrl = "/confirmation.jsp?";			
-	        } else {        	
+	        } 
+//			else {        	
 		        ServerHandler sh = new ServerHandler();
 		        Server server = null;
 		        if(serverName != null && !serverName.isEmpty()) {
@@ -113,7 +114,7 @@ public class DirectUrlLaunch extends HttpServlet {
 		            ListenerHandler lh = new ListenerHandler();
 		            String callingAET = lh.getListener().getAetitle();
 		            if( !(callingAET != null && callingAET.length() > 0) ) {
-		                callingAET = "OVIYAM2";
+		                callingAET = "IPACS2";
 		            }
 		            String dcmURL = "DICOM://" + server.getAetitle() + ":" + callingAET + "@" + server.getHostname() + ":" + server.getPort();
 		            String serverURL = null;
@@ -133,13 +134,14 @@ public class DirectUrlLaunch extends HttpServlet {
 		            		patientInfo.callFindWithQuery(patIDs[i], studyId, dcmURL); 
 		            	}            	
 		            }
-		            int totalStudies = patientInfo.getStudyList().size();	            
+//		            int totalStudies = patientInfo.getStudyList().size();	            
 					
-		            if(totalStudies == 1) {
-		           		forwardUrl = "/viewer.html?"; 
-		            } else if(totalStudies > 1) {
-		            	forwardUrl = "/index.html?";
-		            }
+//		            if(totalStudies == 1) {
+//		           		forwardUrl = "/viewer.html?"; 
+//		            } else if(totalStudies > 1) {
+//		            	forwardUrl = "/index.html?";
+//		            }
+		            forwardUrl = "/viewer.html?";
 		            if(patId != null && patId.length() > 0) {
 		            	forwardUrl += "patientID=" + patId;
 		            }
@@ -152,7 +154,7 @@ public class DirectUrlLaunch extends HttpServlet {
 		        } else {
 					throw new Exception("Server Not Found");
 		        }
-	        } 
+//	        } 
 			RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(forwardUrl);
 	       	dispatcher.forward(request,response);
 		} catch(Exception ex) {

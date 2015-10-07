@@ -132,7 +132,7 @@ function loadStudy() {
 			+ pat.studyUID + "&patientName=" + pat.pat_Name;
 	tmpUrl += "&studyDesc=" + pat.studyDesc + "&studyDate=" + pat.studyDate
 			+ "&totalSeries=" + pat.totalSeries + "&dcmURL=" + pat.dicomURL;
-	tmpUrl += "&wadoUrl=" + pat.serverURL;
+	tmpUrl += "&wadoUrl=" + pat.serverURL;	
 	$('#westPane').load(encodeURI(tmpUrl));
 
 	document.title = pat.pat_Name;
@@ -154,7 +154,7 @@ function loadStudy() {
 	}, "json");
 }*/
 
-function getSeries(patId, studyUID) {	
+/*function getSeries(patId, studyUID) {	
 	
 	$.post("Series.do", {
 		"patientID" : patId,
@@ -169,6 +169,12 @@ function getSeries(patId, studyUID) {
 				});
 			}
 	}, "json");	
+}*/
+
+function storeSer(studyId,data) {	
+	$.each(data, function(i, series) {
+		getInstances(pat.pat_ID, studyId, series['seriesUID']);
+	});
 }
 
 function getInstances(patId, studyUID, seriesUID) {
@@ -181,24 +187,4 @@ function getInstances(patId, studyUID, seriesUID) {
 	}, function(data) {
 		sessionStorage[seriesUID] = JSON.stringify(data);
 	}, "json");
-}
-
-function storeSer(data) {	
-	$.each(data, function(i, series) {
-		getInstances(pat.pat_ID, pat.studyUID, series['seriesUID']);
-	});
-}
-
-function getIns(seriesUID) {
-	jQuery.ajax({
-		url: "Instance.do?patientId=" + pat.pat_ID + "&studyUID=" + pat.studyUID + "&seriesUID=" + seriesUID + "&dcmURL=" + pat.dicomURL + "&serverURL=" + pat.serverURL,
-		dataType: 'json',
-		cache: false,
-		success: function(data) {
-			sessionStorage[seriesUID] = JSON.stringify(data);
-		}, 
-		error: function(request) {
-			console.log('error');
-		}
-	});
 }

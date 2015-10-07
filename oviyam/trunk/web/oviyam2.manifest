@@ -31,7 +31,6 @@ css/smartslider.css
 css/demos.css
 css/jquery.alerts.css
 css/frameContent.css
-css/jqcontextmenu.css
 
 js/lib/jquery-latest.js
 js/lib/jquery-ui-latest.js
@@ -75,7 +74,6 @@ js/lib/raphaelle.js
 js/framecontent.js
 js/lib/smartslider.js
 js/i18n/Bundle.js
-js/lib/jqcontextmenu.js
 
 
 images/three.png
@@ -109,6 +107,8 @@ images/showleft.png
 images/pdf.png
 images/SR_Latest.png
 images/rawdata.png
+images/arrow_down.gif
+images/arrow_up.gif
 css/images/ui-bg_highlight-hard_100_f9f9f9_1x100.png
 css/images/ui-bg_glass_75_dadada_1x400.png
 css/images/ui-icons_454545_256x240.png

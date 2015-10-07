@@ -78,9 +78,7 @@ import org.dcm4che2.tool.dcmqr.DcmQR;
 
 import in.raster.oviyam.util.core.MoveScu;
 import in.raster.oviyam.xml.handler.LanguageHandler;;
-//import com.sun.image.codec.jpeg.JPEGCodec;	 
-//import com.sun.image.codec.jpeg.JPEGImageEncoder;
-//import javax.imageio.ImageIO;
+
 
 /**
  * 

@@ -231,7 +231,7 @@ function doReset(toolid) {
 	resetAnnotation();
 	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};	
 
-	loadInstanceText(false);
+	loadInstanceText(false,false);
 	drawoutline();
 	
 	doLoop(false);
@@ -267,17 +267,19 @@ function doMove() {
 	var startCoords = [];	
 	
 	canvasLayer2.onmousedown = function(e) {
-		state.drag = true;
-		 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
-
-        startCoords = [
-        e.pageX - state.translationX,
-        e.pageY - state.translationY
-        ];
-
-        e.preventDefault();
-        e.stopPropagation();
-        e.target.style.cursor = "url(images/move.png), auto";
+		if(e.which==1) {
+			state.drag = true;
+			 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
+	
+	        startCoords = [
+	        e.pageX - state.translationX,
+	        e.pageY - state.translationY
+	        ];
+	
+	        e.preventDefault();
+	        e.stopPropagation();
+	        e.target.style.cursor = "url(images/move.png), auto";
+		}
 	};
 	
 	 canvasLayer2.onmouseup = function(e) {
@@ -368,7 +370,7 @@ function onTick(event, ui) {
 		frameInc = ui.value;
 		showImg(getParameter(jQuery('#frameSrc').html(),'object') + '_' + frameInc);	
 	}
-	loadInstanceText(false);
+	loadInstanceText(false,false);
 }
 
 function setSliderValue() {
@@ -455,7 +457,7 @@ function synchronize(e) {
 				if(sliceLoc>=fromTo['from'] && sliceLoc<=fromTo['to'] && parseFloat(sliceLoc)-parseFloat(fromTo['sliceLoc'])<128) {
 					imgInc = (i+1);
 					showImg(seriesUid+ '_' + imgInc);
-					loadInstanceText(false);
+					loadInstanceText(false,false);
 					break;
 				}
 			}
@@ -797,10 +799,12 @@ function doWindowing(imageData,huDisplay,wlDisplay) {
 	}
 	
 	jQuery('#canvasLayer2').mouseup(function(evt) {
-		state.drag = false;
-		evt.target.style.cursor = "default";
-		jQuery('.contextMenu').hide();
-		jQuery('.selected').removeClass('selected');
+		if(evt.which==1) {
+			state.drag = false;
+			evt.target.style.cursor = "default";
+			jQuery('.contextMenu').hide();
+			jQuery('.selected').removeClass('selected');
+		}
 	}).mousedown(function(evt) {
 		doMouseWheel = false;
 		state.drag = true;		

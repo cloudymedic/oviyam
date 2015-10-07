@@ -47,9 +47,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 import javax.imageio.ImageIO;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -66,15 +64,14 @@ public class XMLFileHandler {
 		String retValue = null;
 
 		try {
-			File srcFile = new File(this.getClass()
-					.getResource("/conf/oviyam2-1-config.xml").toURI());
+			File srcFile = new File(this.getClass().getResource("/conf/oviyam2-1-config.xml").toURI());
 			retValue = tmpDir + File.separator + "oviyam2-1-config.xml";
 			File destFile = new File(retValue);
 			// check the exists of XML file. If not exists, copy the file to
 			// default folder.
 			if (!destFile.exists()) {
 				copyFile(srcFile, destFile);
-			}
+			} 
 		} catch (URISyntaxException ex) {
 			log.error("Error while getting XML file path", ex);
 			return "";
@@ -108,44 +105,5 @@ public class XMLFileHandler {
 				log.error("Error while closing file", ex);
 			}
 		}
-	}
-
-	public void createXMLFile(String tmpDir) {
-		try {
-			// Version 2.0 configuration file
-			File config2_0 = new File(tmpDir + File.separator
-					+ "oviyam2-config.xml");
-			String retValue = tmpDir + File.separator + "oviyam2-1-config.xml";
-			File destFile = new File(retValue); // version 2.1
-
-			if (!destFile.exists()) {
-				if (config2_0.exists()) { // Upgrade settings from 2.0 to 2.1
-					log.info("Upgrading data from 2.0 to 2.1");
-					copyFile(config2_0, destFile);
-				} else { // New installation
-					File srcFile = new File(this.getClass()
-							.getResource("/conf/oviyam2-1-config.xml").toURI());
-					// check the exists of XML file. If not exists, copy the
-					// file to default folder.
-					if (!destFile.exists()) {
-						copyFile(srcFile, destFile);
-					}
-				}
-			}
-		} catch (URISyntaxException ex) {
-			log.error("Error while getting XML file path", ex);
-			System.out.println("Trying to get location : " + tmpDir
-					+ File.separator + "oviyam2-1-config.xml");
-		}
-	}
-
-	public boolean isInstallationRequired(String tmpDir) {
-		File config2_1 = new File(tmpDir + File.separator
-				+ "oviyam2-1-config.xml");
-		if (!config2_1.exists()) {
-			return true;
-		}
-		LanguageHandler.source = config2_1;
-		return false;
 	}
 }

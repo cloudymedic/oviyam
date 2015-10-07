@@ -7,7 +7,7 @@ var doMouseWheel = true;
 var loopTimer = null;
 var isSlider = false;
 var pixelBuffer = null, lookupObj = null, pixelData = null, tmpCanvas = null, numPixels = 0;
-var windowCenter='',windowWidth,modifiedWC,modifiedWW,maxPix=0,minPix=0;
+var windowCenter='',windowWidth,modifiedWC=undefined,modifiedWW=undefined,maxPix=0,minPix=0;
 var mouseLocX;
 var mouseLocY;
 var mousePressed; 
@@ -20,7 +20,9 @@ jQuery('#ImagePane').ready(function() {
     var width = jQuery(window).width()-3+'px';
     jQuery('body').css('width',width );
 
-    jQuery("#frameSrc").html(window.location.href);    
+    jQuery("#frameSrc").html(window.location.href);  
+ 	jQuery('#studyId').html(getParameter(window.location.href,'study'));
+     
     parent.window.addEventListener('selection',onTileSelection,false);
     parent.window.addEventListener('ToolSelection',onToolSelection,false); 
     parent.window.addEventListener('sync',synchronize,false);    
@@ -29,6 +31,7 @@ jQuery('#ImagePane').ready(function() {
     loadTextOverlay();
     
     var canvasDiv = jQuery('#canvasDiv');
+    
     canvasDiv.on('mousewheel DOMMouseScroll', function (e) {
     	
     	if(jQuery('body').css('border').indexOf('none')>=0){ 
@@ -41,11 +44,11 @@ jQuery('#ImagePane').ready(function() {
 				prevImage();
 			}		
 		}
-		//prevent page fom scrolling
+		//prevent page from scrolling
 		return false;	
 	});
 	
-	jQuery(document).keydown(function(e) {
+	jQuery(document).keydown(function(e) {		
 		if(doMouseWheel) {
 		    if(e.which == 38 || e.which == 37) {        	
 		        prevImage();
@@ -57,40 +60,40 @@ jQuery('#ImagePane').ready(function() {
     
     var oy,ny;
     canvasDiv.mousedown(function(e) {
-		if(jQuery('#tool').text()==='stackImage' && doMouseWheel) {
-			if(e.which==1) {
+    	if(e.which==1) {
+			if(jQuery('#tool').text()==='stackImage' && doMouseWheel) {
 				oy = e.pageY;
 				state.drag = true;			
-			}
-			
-			jQuery('#canvasDiv').mousemove(function(e1) {
-				if(jQuery('#tool').text()==='stackImage' && state.drag) {
-					ny = e1.pageY;
-					if( (oy-ny) >inc) {
-						prevImage();
-						oy = ny;
-					} else if( (oy-ny) < -(inc)) {
-						nextImage();
-						oy = ny;
+				
+				jQuery('#canvasDiv').mousemove(function(e1) {
+					if(jQuery('#tool').text()==='stackImage' && state.drag) {
+						ny = e1.pageY;
+						if( (oy-ny) >inc) {
+							prevImage();
+							oy = ny;
+						} else if( (oy-ny) < -(inc)) {
+							nextImage();
+							oy = ny;
+						}
 					}
-				}
-			});
-			
-			jQuery('#canvasDiv').mouseup(function(e2) {
-				state.drag = false;
-			});
-			
-			e.preventDefault();
-			e.stopPropagation();
-		}
+				});
+				
+				jQuery('#canvasDiv').mouseup(function(e2) {
+					state.drag = false;
+				});
+				
+				e.preventDefault();
+				e.stopPropagation();
+			}
+    	}
     }); 
     
     canvasDiv.click(function(e) {
     	window.parent.createEvent('selection',{"ImagePane":jQuery('#ImagePane')});
-    });
+    });   
     
-    jQuery('#canvasLayer2').dblclick(function(e) {
-    	toggleResolution();
+    jQuery("#canvasLayer2").dblclick(function(e) {    	
+    	toggleResolution();    	
     });
     
     window.addEventListener('resize', resizeCanvas, false);  
@@ -106,7 +109,7 @@ jQuery('#ImagePane').ready(function() {
         }
     },'text');	    
      
-	loadInstanceText(true);
+	loadInstanceText(true,true);
     
     if(window.parent.displayScout && (jQuery('#modalityDiv').html().indexOf('CT')>=0 || jQuery('#modalityDiv').html().indexOf('MR')>=0)) {
 		Localizer.drawScout();
@@ -114,7 +117,9 @@ jQuery('#ImagePane').ready(function() {
 	
 	if(window.parent.syncEnabled) {
 			window.parent.createEvent('sync',{forUid:jQuery('#forUIDPanel').html(),fromTo:getFromToLoc()});
-	}	
+	}
+	loadContextMenu();
+	
 });
 
 jQuery(document).mouseup(function(e) {
@@ -151,8 +156,8 @@ function eliminateRawData() {
 	}
 }
 
-function showImage(imgSrc) {
-	var image = jQuery('#' + imgSrc.replace(/\./g,'_'), window.parent.document).get(0);  	
+function showImage(imgSrc,image) {	
+	var image = imgSrc!=null ? jQuery('#' + imgSrc.replace(/\./g,'_'), window.parent.document).get(0) : image;  	
 	var canvas = document.getElementById('imageCanvas');
 
 	
@@ -171,7 +176,7 @@ function showImage(imgSrc) {
 		var left = (canvas.parentNode.offsetWidth - canvas.width) / 2;
 		canvas.style.marginLeft = parseInt(left) + "px";
 
-		var siblings = jQuery(canvas).siblings();
+		var siblings = jQuery(canvas).siblings().not('.preview');
 		for(var j=0; j<siblings.length; j++) {    	
 			var tmpCanvas = siblings.get(j);
 			if(tmpCanvas != null) {
@@ -186,13 +191,9 @@ function showImage(imgSrc) {
 	}
 
 	state.scale = Math.min(canvas.width/image.naturalWidth, canvas.height/image.naturalHeight);	
-	state.translationX = (canvas.width- state.scale * image.naturalWidth)/2;
-	state.translationY = (canvas.height- state.scale * image.naturalHeight)/2;
-	showImg(imgSrc,null,true);
-
-	jQuery('#zoomPercent').html('Zoom: ' + parseInt(state.scale * 100) + '%');
-	jQuery('#imageSize').html('Image size:' + image.naturalWidth + "x" + image.naturalHeight);
-	jQuery('#viewSize').html('View size:' + canvas.width + "x" + canvas.height);
+	state.translationX = (canvas.width- parseInt(state.scale * image.naturalWidth))/2;
+	state.translationY = (canvas.height- parseInt(state.scale * image.naturalHeight))/2;
+	showImg(null,image,true);	
 }
 
 function showImg(imgSrc,image,updatePreview) {
@@ -246,8 +247,6 @@ function loadTextOverlay() {
 	jQuery('#patName').html(window.parent.pat.pat_Name);
 	jQuery('#patID').html(window.parent.pat.pat_ID);
 	jQuery("#patGender").html(window.parent.pat.pat_gender);
-	jQuery("#studyDate").html(window.parent.pat.studyDate);
-	jQuery("#studyDesc").html(window.parent.pat.studyDesc);
 
 	var src = jQuery('#frameSrc').html();
 	jQuery('#seriesDesc').html(getParameter(src,'seriesDesc'));
@@ -256,13 +255,10 @@ function loadTextOverlay() {
 	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
 }
 
-function loadInstanceText(checkForUpdate) {
+function loadInstanceText(checkForUpdate,autoplay) {
 	data = sessionStorage[seriesUid];
 	if(data) {
-		data = JSON.parse(data)[imgInc-1];
-		if(checkForUpdate===true) {
-			loadContextMenu();
-		}
+		data = JSON.parse(data)[imgInc-1];		
 		if(data) {
 			if(data['imageOrientation']!=undefined && data['imageOrientation']!='') {
 				var imgOrient = data['imageOrientation'].split("\\");
@@ -273,7 +269,9 @@ function loadInstanceText(checkForUpdate) {
 		        jQuery('#imgOriTop').html(getOppositeOrientation(imgOrient[1]));
 			}
 		
-			if(windowCenter=='') {
+			if(modifiedWC!=undefined) {
+				jQuery("#windowLevel").html('WL: ' + modifiedWC + ' / ' + 'WW: ' + modifiedWW);
+			} else if(windowCenter=='') {
 				windowCenter = data['windowCenter'];
 				windowWidth = data['windowWidth'];
 		
@@ -284,8 +282,8 @@ function loadInstanceText(checkForUpdate) {
 				if(windowWidth && windowWidth.indexOf('|') >=0) {
 					windowWidth = windowWidth.substring(0, windowWidth.indexOf('|'));
 				}				
-			} 
-			jQuery("#windowLevel").html('WL: ' + windowCenter + ' / ' + 'WW: ' + windowWidth);
+				jQuery("#windowLevel").html('WL: ' + windowCenter + ' / ' + 'WW: ' + windowWidth);
+			} 			
 			
 			if(data['numberOfFrames'] != undefined && data['numberOfFrames'] != '') {
 				jQuery("#totalImages").html('Frames: ' + frameInc + ' / ' + data['numberOfFrames']);
@@ -293,15 +291,15 @@ function loadInstanceText(checkForUpdate) {
 				jQuery('#multiframe').css('visibility','visible');
 				
 				var frmSrc = jQuery('#frameSrc').text();				
-				if(getParameter(frmSrc,'object')==null) {
-					jQuery('#frameSrc').html(frmSrc + "&object=" + data['SopUID']);					
-				}
-				
-				var frameTime = parseFloat(data['frameTime']); 
-				if(frameTime>0.0) {
-					doAutoplay(frameTime);
-				} else {
-					doAutoplay(15); // 15 FPS by default
+				frmSrc = frmSrc.substring(0,frmSrc.indexOf("&object"));
+				jQuery('#frameSrc').html(frmSrc + "&object=" + data['SopUID']);	
+				if(autoplay) {									
+					var frameTime = parseFloat(data['frameTime']); 
+					if(frameTime>0.0) {
+						doAutoplay(frameTime);
+					} else {
+						doAutoplay(15); // 15 FPS by default
+					}
 				}
 			} else {
 				jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
@@ -337,12 +335,14 @@ function loadInstanceText(checkForUpdate) {
 		    jQuery('#imgOrientation').html(data['imageOrientPatient']);		    
 		    jQuery('#pixelSpacing').html(data['pixelSpacing']);		    
 	    }  else if(checkForUpdate===true){
-	    	setTimeout("loadInstanceText("+checkForUpdate+")",20);
+	    	setTimeout("loadInstanceText("+checkForUpdate + "," + autoplay +")",200);
 	    } else {
 	    	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
 	    } 
 	} else if(checkForUpdate===true) {
-		setTimeout("loadInstanceText("+checkForUpdate+")",20);
+		if(window.parent.pat.studyUID==jQuery('#studyId').html()) {
+			setTimeout("loadInstanceText("+checkForUpdate + "," + autoplay +")",200);
+		} 
 	} else {
 		jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
 	}
@@ -370,7 +370,7 @@ function nextImage() {
 		} catch(err) { // Some times it might be raw data
 			if(err=='rawdata') {
 				iNo = imgInc;
-				loadInstanceText(false);
+				loadInstanceText(false,false);
 				return;
 			}
 		}
@@ -380,7 +380,7 @@ function nextImage() {
 		}
 		this.imgInc = iNo;
 	}
-	loadInstanceText(false);
+	loadInstanceText(false,false);
 	clearMeasurements();		
 	
 }
@@ -400,7 +400,7 @@ function prevImage() {
 		} catch(err) { // Some times it might be raw data
 			if(err=='rawdata') {
 				iNo = imgInc;
-				loadInstanceText(false);
+				loadInstanceText(false,false);
 				return;
 			}
 		}
@@ -410,7 +410,7 @@ function prevImage() {
 		}
 		this.imgInc = iNo;
 	}
-	loadInstanceText(false);
+	loadInstanceText(false,false);
 	clearMeasurements();
 }
 
@@ -493,12 +493,12 @@ function toggleResolution() {
 			state.scale = scaleFac;
 			state.translationX = (canvas.width- state.scale * image.naturalWidth)/2;
 			state.translationY = (canvas.height- state.scale * image.naturalHeight)/2;
-			showImg(null,image,false);
+			showImg(null,image);
 		} else {
 			state.scale = 1.0;
 			state.translationX = (canvas.width- state.scale * image.naturalWidth)/2;
 			state.translationY = (canvas.height- state.scale * image.naturalHeight)/2;
-			showImg(null,image,false);
+			showImg(null,image);
 			if(jQuery('#tool').html()!="move") {
 				activateMove("move");
 			}
@@ -719,4 +719,53 @@ function drawoutline() {
 		jQuery('#previewCanvas').hide();
 		jQuery('#highlightCanvas').hide();
 	}
+}
+
+function loadContextMenu() {
+	var queryString = window.location.href;
+	var study = getParameter(queryString,'study');
+	var seriesData = JSON.parse(sessionStorage[study]);	
+	
+	var cxtContent = '<ul id="contextmenu1" class="menu"';
+
+
+	if(isCompatible()) {
+		for(var i=0;i<seriesData.length;i++) {
+			var series = seriesData[i];
+			jQuery('#studyDesc').html(series['studyDesc']);
+			jQuery('#studyDate').html(series['studyDate']);
+			var seriesDesc = convertSplChars(series['seriesDesc']);            			
+			if(seriesDesc== undefined && seriesDesc==='') {
+				seriesDesc = 'UNKNOWN';
+			}
+			cxtContent+= '<li><a class="cmenuItem" href="#" link="frameContent.html?study=' + study + '&series=' + series['seriesUID'] + '&seriesDesc=' + series['seriesDesc'] + '&images=' + series['totalInstances'] + '&modality='+ series['modality'] + '" onclick="triggerContext(jQuery(this));">' + seriesDesc + ' </a></li>';						
+		}   
+		cxtContent+='</ul>';         		
+	} else {
+		for(var i=0;i<seriesData.length;i++) {
+			var series = seriesData[i];
+			jQuery('#studyDesc').html(series['studyDesc']);
+			jQuery('#studyDate').html(series['studyDate']);
+			var seriesDesc = convertSplChars(series['seriesDesc']);
+			if(seriesDesc==undefined && seriesDesc==='') {
+				seriesDesc = 'UNKNOWN';
+			}
+			cxtContent +='<li><a href="#" link="frameContent.html?serverURL=';
+			cxtContent += getParameter(queryString, 'serverURL');
+			cxtContent += '&study=' + study;
+			cxtContent += '&series=' + series['seriesUID'];
+			cxtContent += '&seriesDesc=' + series['seriesDesc'];
+			cxtContent += '&images=' + series['totalInstances'];
+			cxtContent += '&modality=' + series['modality'] + '" onclick="triggerContext(jQuery(this));">' + seriesDesc + '</a></li>';
+		}
+		cxtContent+='</ul>';
+	}
+	var div = document.createElement("div");
+	div.innerHTML = cxtContent;
+	document.body.appendChild(div);
+	jQuery("#canvasLayer2").contextMenu({menu: 'contextmenu1'});
+}
+
+function triggerContext(contextItem) {
+	window.location.href = contextItem.attr('link');
 }

@@ -27,9 +27,10 @@ LookupTable.prototype.setData = function(wc, ww, rs, ri,bitsStored, invert) {
 	this.invert = invert;	
 }
 
-var setPixelInfo = function(minPix,maxPix) {
+var setPixelInfo = function(minPix,maxPix,invert) {
 	this.minPixel = minPix;
 	this.maxPixel = maxPix;	
+	this.invert = invert;
 };
 
 var setWindowingdata = function(wc, ww) {

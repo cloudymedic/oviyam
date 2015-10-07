@@ -43,6 +43,10 @@
 -->
 
 <% 
-	session.invalidate();
+// 	String url = "." + "?q=" + session.getAttribute("q");
+// 	session.invalidate();
+// 	response.sendRedirect(url);
+	
+ session.invalidate();
 	response.sendRedirect(".");
 %>

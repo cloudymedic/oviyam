@@ -165,7 +165,11 @@ public class PatientInfo {
         		cfgProperties.put("key.PatientID", patientID);
         	}
 
-            if(studyUID.length() > 0) {
+//            if(studyUID.length() > 0) {
+//                cfgProperties.put("key.StudyInstanceUID", studyUID);
+//            }
+        	
+        	if(studyUID!=null) {        		
                 cfgProperties.put("key.StudyInstanceUID", studyUID);
             }
         } catch(Exception e) {

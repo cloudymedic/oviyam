@@ -164,7 +164,7 @@ function insertTable() {
         $.ajax({
             url: 'ServerConfig.do',
             data: {
-                'logicalName':$("#desc").val(),
+                'logicalName':$("#desc").val().replace(/ /g,''),
                 'aeTitle':$("#aet").val(),
                 'hostName':$("#host").val(),
                 'port':$("#port").val(),

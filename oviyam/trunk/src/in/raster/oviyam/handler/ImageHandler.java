@@ -143,9 +143,7 @@ public class ImageHandler extends SimpleTagSupport {
 				 * Writes the instance informations such as imageId and
 				 * numberOfImages to the response.
 				 */
-				getJspContext().setAttribute("imageId", instance.getSopIUID());
-				// getJspContext().setAttribute("instanceNumber",
-				// instance.getInstanceNumber());
+				getJspContext().setAttribute("imageId", instance.getSopIUID());				
 
 				getJspContext().setAttribute("instanceNumber",
 						instanceCount + 1);
@@ -154,7 +152,7 @@ public class ImageHandler extends SimpleTagSupport {
 						instance.getSopClassUID());
 				getJspContext().setAttribute("numberOfFrames",
 						instance.getNumberOfFrames());
-
+				
 				getJspContext().setAttribute("multiframe", !instance.getNumberOfFrames().equals("0") ? "yes" : "no");
 				
 				getJspContext().setAttribute("thumbSize", instance.getThumbSize());

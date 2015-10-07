@@ -3,25 +3,20 @@
 <taglib>
   <tlib-version>1.0</tlib-version>
   <jsp-version>1.1</jsp-version>
-  <short-name>ImageInfo</short-name>
-  <uri>ImageInfo</uri>
+  <short-name>StudyInfo</short-name>
+  <uri>StudyInfo</uri>
   <tag>    
-    <name>Image</name>
-    <tag-class>in.raster.oviyam.handler.ImageHandler</tag-class>
+    <name>Study</name>
+    <tag-class>in.raster.oviyam.handler.StudyInfoHandler</tag-class>
     <body-content>scriptless</body-content>
-    <description>Image Information</description>
+    <description>Study Informations</description>
     <attribute>
       <name>patientId</name>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
       <name>study</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>series</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>

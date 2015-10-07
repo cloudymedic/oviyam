@@ -68,7 +68,7 @@ import org.apache.log4j.Logger;
 public class StudyInfoServlet extends HttpServlet {
 
     //Initialize the Logger.
-    private static Logger log = Logger.getLogger(SeriesServlet.class);
+    private static Logger log = Logger.getLogger(StudyInfoServlet.class);
       
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -152,7 +152,7 @@ public class StudyInfoServlet extends HttpServlet {
                     //}
                 }
             } catch(Exception e) {
-                log.error(e);
+                log.error(e.toString());
             }
         } else {
             try {

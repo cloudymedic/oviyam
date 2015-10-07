@@ -54,6 +54,8 @@ import org.apache.log4j.Logger;
 import org.dcm4che.util.DcmURL;
 import java.text.ParseException;
 import org.dcm4che.data.Dataset;
+import org.dcm4che.dict.Tags;
+import org.dcm4che2.data.UID;
 
 /**
  *
@@ -139,7 +141,7 @@ public class ImageInfo {
         for(int i=0; i<dsVector.size(); i++) {
             try {
                 dataSet = (Dataset) dsVector.elementAt(i);
-                instancesList.add(new InstanceModel(dataSet));
+              	instancesList.add(new InstanceModel(dataSet));
             } catch(Exception e) {
                 log.error(e.getMessage());
                 return;
