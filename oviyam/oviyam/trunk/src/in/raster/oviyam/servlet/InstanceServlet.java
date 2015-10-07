@@ -74,8 +74,11 @@ import org.dcm4che2.data.UID;
  */
 public class InstanceServlet extends HttpServlet {
 
-    //Initialize the logger
-    private static Logger log = Logger.getLogger(InstanceServlet.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -246,8 +249,7 @@ public class InstanceServlet extends HttpServlet {
 	                    is.close();
 	                } catch(Exception e) {
 	                    is.close();
-	                    dis.close();                    
-	                    log.error("Error while reading DICOM attributes " + e);
+	                    dis.close();                  
 	                    e.printStackTrace();
 	                }
 	
@@ -258,8 +260,7 @@ public class InstanceServlet extends HttpServlet {
             PrintWriter out = response.getWriter();
             out.print(jsonArray);
             out.close();
-        } catch(Exception ex) {
-            log.error(ex);
+        } catch(Exception ex) {            
             ex.printStackTrace();
         }
     }

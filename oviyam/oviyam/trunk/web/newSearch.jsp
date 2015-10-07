@@ -103,11 +103,11 @@
                 <tr>
 <!--                     <td style="width:50px;"> -->
 						<td>
-                        <label for="patId">Patient Name</label>
+                        <label for="patId">Patient ID</label>
                         <input type="search" id="patId" />
                     </td>
                     <td>
-                        <label for="patName">Patient ID</label>
+                        <label for="patName">Patient Name</label>
                         <input type="search" id="patName"/>
                     </td>
                    <!-- <td>
@@ -152,8 +152,8 @@
                             <option value="SC">SC</option>
                             <option value="NM">NM</option>
                             <option value="RF">RF</option>
-                            <option value="OT">OT</option>                            
-                            <option value="ECG">ECG</option>
+                            <option value="OT">OT</option>
+                            <option value="ECG">ECG</option>                                                        
                         </select>    
 
                     </td>                     

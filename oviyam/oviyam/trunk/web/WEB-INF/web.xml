@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"> 
     <servlet>
         <servlet-name>EchoServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.EchoServlet</servlet-class>
@@ -19,11 +19,15 @@
     <servlet>
         <servlet-name>DcmImage</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.DcmImage</servlet-class>
-    </servlet>
+    </servlet>   
     <servlet>
         <servlet-name>PixelData</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.PixelDataServlet</servlet-class>
-    </servlet>  
+    </servlet>
+    <servlet>
+        <servlet-name>DicomRetrieve</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.DicomRetrieve</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>ServerConfigServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.ServerConfigServlet</servlet-class>
@@ -43,7 +47,7 @@
     <servlet>
         <servlet-name>AutoRefreshStudies</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.AutoRefreshStudies</servlet-class>
-    </servlet>
+    </servlet>   
     <servlet>
         <servlet-name>WadoServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.WadoServlet</servlet-class>
@@ -74,6 +78,10 @@
     	<servlet-name>DirectUrlLaunch</servlet-name>
     	<servlet-class>in.raster.oviyam.servlet.DirectUrlLaunch</servlet-class>
     </servlet>
+    <servlet>
+    	<servlet-name>MayamInfo</servlet-name>
+    	<servlet-class>in.raster.oviyam.servlet.MayamInfo</servlet-class>
+    </servlet>
         
     <servlet-mapping>
         <servlet-name>EchoServlet</servlet-name>
@@ -94,11 +102,15 @@
     <servlet-mapping>
         <servlet-name>DcmImage</servlet-name>
         <url-pattern>/Image.do</url-pattern>
-    </servlet-mapping>
-	<servlet-mapping>
+    </servlet-mapping>    
+    <servlet-mapping>
         <servlet-name>PixelData</servlet-name>
         <url-pattern>/pixel.do</url-pattern>
-    </servlet-mapping> 
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DicomRetrieve</servlet-name>
+        <url-pattern>/DcmStream.do</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ServerConfigServlet</servlet-name>
         <url-pattern>/ServerConfig.do</url-pattern>
@@ -122,7 +134,7 @@
     <servlet-mapping>
         <servlet-name>WadoServlet</servlet-name>
         <url-pattern>/Wado.do</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>   
     <servlet-mapping>
         <servlet-name>Listener</servlet-name>
         <url-pattern>/Listener.do</url-pattern>
@@ -149,6 +161,10 @@
     	<servlet-name>DirectUrlLaunch</servlet-name>
     	<url-pattern>/oviyam</url-pattern>
     </servlet-mapping>
+     <servlet-mapping>
+    	<servlet-name>MayamInfo</servlet-name>
+    	<url-pattern>/mayaminfo.do</url-pattern>
+    </servlet-mapping>
         
     <session-config>
         <session-timeout>
@@ -172,6 +188,7 @@
             <url-pattern>/oviyam</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
+            
         </web-resource-collection>
         <auth-constraint>
             <role-name>*</role-name>

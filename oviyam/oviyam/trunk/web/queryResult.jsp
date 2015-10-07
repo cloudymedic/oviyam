@@ -48,6 +48,7 @@
 <%@taglib prefix="pat" uri="/WEB-INF/tlds/PatientInfo.tld"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 
 <%
@@ -63,7 +64,7 @@
 
 <html>
 <head>
- <style>
+<style>
  	.dataTables_scrollBody {
  		height: 88% !important;
  	}
@@ -72,6 +73,7 @@
  		border: 1px solid #2A2A2A;
  	}
  </style>
+
 
 <script type="text/javascript" src="js/lib/jquery.dataTables.min.js"></script>
 
@@ -87,9 +89,9 @@
                     "oLanguage": {
                         "sSearch": "Filter:"
                     },
-                    "sScrollY": "90%",
+                    "sScrollY": "87%",
                     "bScrollCollapse": true,
-                    "bAutoWidth": true,
+                    "bAutoWidth": false,
                     "sScrollX": "100%",
                     //"sScrollXInner": "100%",
                     "aaSorting": [[ 5, "desc" ]],
@@ -102,7 +104,6 @@
                                 }
                             }
                         }],
-                   /* "aoColumns": [ null, null, null, null, null, null, null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}]*/
                     "aoColumns": [ null, null, null, null, null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}]
                 });
 				
@@ -125,7 +126,7 @@
                     $('#Toggler').next().css('width', '100%');
                     $('#Toggler').next().css('left', '0px');
                     $('#Toggler').css('left','0px');
-                    $(divider).attr('title', 'Show Preview');
+                    $(divider).attr('title', 'Show Preview');                    
 					if($('#<%=tabName%>_search').is(":visible")) {
 						$(divider).css('background','url("images/showall.png")');
 						$(divider).next().css('background','url("images/hideall.png")');
@@ -148,6 +149,7 @@
 						$(divider).next().css('background','url("images/showall.png")');
 					}                   
                 }
+                $('#<%=tabName%>_table').css('width','100%');
                 dTable.fnAdjustColumnSizing();
             }
             
@@ -160,7 +162,8 @@
             		$(searchPane).hide();
             		$(tabContent).css('height','100%');
             		$('#Toggler').css('top','1%');
-            		$('#Toggler').next().css('top','0px');
+            		$('#Toggler').next().css('top','0px');  
+            		$('#Toggler').next().css('height','100%');          		
             		$(divider).attr('title','Show Search');
 
             		if($('#<%=tabName%>_westPane').is(":visible")) {
@@ -176,6 +179,7 @@
             		$(tabContent).css('height','85%');
             		$('#Toggler').css('top','13.5%');
             		$('#Toggler').next().css('top','13%');
+            		$('#Toggler').next().css('height','85%');
 
             		if($('#<%=tabName%>_westPane').is(":visible")) {
 						$(divider).css('background','url("images/hidesearch.png")');
@@ -184,7 +188,7 @@
 						$(divider).css('background','url("images/hideall.png")');
 						$(divider).prev().css('background','url("images/showall.png")');
 					}
-            	}            	            	
+            	}               	         	            	
             } 
             
             function loadWest() {
@@ -211,7 +215,7 @@
 	<c:choose>
 	<c:when test="${param.preview=='true'}">
 		<div id="<%=tabName%>_westPane"
-			style="width: 250px; height: 94%; visibility: visible; display: block; z-index: 0; float: left;"></div>	
+			style="width: 250px; visibility: visible; display: block; z-index: 0; float: left; height: 94%;"></div>	
 
 		<div id="Toggler" style="position: absolute; top: 13.5%; left: 254px; z-index: 3;">
 
@@ -258,7 +262,7 @@
 					<th><fmt:message key='studyDate' bundle="${lang}" /></th>
 					<th><fmt:message key='studyDescription' bundle="${lang}" /></th>
 					<th>Modality</th>
-					<th><fmt:message key="instanceCount" bundle="${lang}" /></th>
+					<th><fmt:message key="instanceCount" bundle="${lang}" /></th>					
 					<th>Study Instance UID</th>
 					<th>Refer Physician</th>
 					<th>Series Count</th>
@@ -285,7 +289,7 @@
 						<td>${studyDate}</td>
 						<td>${studyDescription}</td>
 						<td>${modality}</td>
-						<td>${totalInstances}</td>
+						<td>${totalInstances}</td>						
 						<td>${studyIUID}</td>
 						<td>${referPhysician}</td>
 						<td>${totalSeries}</td>

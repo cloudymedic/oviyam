@@ -1,4 +1,4 @@
-function searchClick(searchBtn) {	
+function searchClick(searchBtn) {
 	$('#buttonContainer').find('.ui-state-active').removeClass('ui-state-active');
     var inputFields = $(searchBtn).parent().parent().parent().find('input');
     var searchURL = "queryResult.jsp?";
@@ -54,16 +54,21 @@ function searchClick(searchBtn) {
     if(modalities!='') {
         searchURL += '&modality=' + modalities.trim();
     }   
-    var divContent = $('.ui-tabs-selected').find('a').attr('href') + '_content';
-    $(divContent).html('');
     
+    var divContent = $('.ui-tabs-selected').find('a').attr('href') + '_content';
+    $(divContent).html('');    
+
     if(searchURL.trim()==('queryResult.jsp?')) {
     	jConfirm('No filters have been selected. The search may take long time. Do you want to proceed?', 'No search criteria',function(doQry) {
 			if(doQry==true) {
+				var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+			    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
 				doQuery(searchURL,divContent);
 			} 
 	    });   	
     } else {
+    	var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+    	searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
     	doQuery(searchURL,divContent);
     }  
    

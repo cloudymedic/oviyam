@@ -50,8 +50,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
-
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +68,7 @@ public class ListenerServlet extends HttpServlet {
 
     private static Logger log = Logger.getLogger(ListenerServlet.class);
 
-    private static ReceiveDelegate receiveDelegate = new ReceiveDelegate();
+    private static ReceiveDelegate receiveDelegate = null;
    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -95,8 +93,9 @@ public class ListenerServlet extends HttpServlet {
             listener.setPort(port);
             ListenerHandler lh = new ListenerHandler();
             lh.updateListener(listener);
-            receiveDelegate.stop();
-            receiveDelegate = new ReceiveDelegate();
+            if(receiveDelegate!=null) {
+            	receiveDelegate.stop();
+            }            
             checkListenerService();
             PrintWriter pw = response.getWriter();
             pw.println("success");
@@ -133,7 +132,7 @@ public class ListenerServlet extends HttpServlet {
         return success;
     }
 
-    private void checkListenerService() {
+    public void checkListenerService() {
         if(getListenerStatus()) {
             ReadXMLFile rxf = new ReadXMLFile();
             JSONArray jsonArray = rxf.getElementValues("server");
@@ -142,6 +141,7 @@ public class ListenerServlet extends HttpServlet {
                     JSONObject obj = jsonArray.getJSONObject(i);
                                         
                     if(obj.getString("retrieve").equals("C-MOVE")) {
+                    	receiveDelegate = new ReceiveDelegate();
                         receiveDelegate.start();                        
                         break;
                     }
@@ -150,8 +150,8 @@ public class ListenerServlet extends HttpServlet {
                 log.error("Unable to start listener ", ex);
             }
         }
-    }
-
+    }   
+ 
     @Override
     public void destroy() {
         receiveDelegate.stop();

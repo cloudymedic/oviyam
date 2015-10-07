@@ -53,6 +53,10 @@ import org.dcm4che.dict.Tags;
  */
 public class InstanceModel implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Variables
 	private String sopIUID;
 	private String instanceNumber;
@@ -69,18 +73,14 @@ public class InstanceModel implements Serializable{
 	 */
 	public InstanceModel(Dataset ds) {
 		sopIUID = ds.getString(Tags.SOPInstanceUID);
-		instanceNumber = ds.getString(Tags.InstanceNumber);
-		sopClassUID = ds.getString(Tags.SOPClassUID)!=null ? ds.getString(Tags.SOPClassUID) : "";
-		numberOfFrames = ds.getString(Tags.NumberOfFrames)!=null ? ds.getString(Tags.NumberOfFrames) : "0";	
+		instanceNumber = ds.getString(Tags.InstanceNumber)!=null ? ds.getString(Tags.InstanceNumber) : "unknown";
+		sopClassUID = ds.getString(Tags.SOPClassUID)!=null ? ds.getString(Tags.SOPClassUID) : "unknown";
+		numberOfFrames = ds.getString(Tags.NumberOfFrames)!=null ? ds.getString(Tags.NumberOfFrames) : "0";
 		
-		int rows = 512, columns = 512;
+		int rows,columns;
 		
-		try {
-			rows = ds.getInteger(Tags.Rows);
-			columns = ds.getInteger(Tags.Columns);
-		} catch(NullPointerException ex) {
-			rows=columns=512;
-		}
+		rows = ds.getInteger(Tags.Rows)!=null ? ds.getInteger(Tags.Rows) : 512;
+		columns = ds.getInteger(Tags.Columns)!=null ? ds.getInteger(Tags.Columns) : 512;	
 		
 		if(columns>rows) {			
 			thumbSize = "width: 70px;";

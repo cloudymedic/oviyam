@@ -45,10 +45,7 @@ package in.raster.oviyam.servlet;
 import in.raster.oviyam.SeriesInfo;
 import in.raster.oviyam.model.SeriesModel;
 import in.raster.oviyam.util.SeriesComparator;
-import in.raster.oviyam.util.core.MoveScu;
-import in.raster.oviyam.xml.handler.LanguageHandler;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -58,7 +55,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.dcm4che2.tool.dcmqr.DcmQR;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -68,7 +64,11 @@ import org.json.JSONObject;
  */
 public class SeriesServlet extends HttpServlet {
    
-    //Initialize the Logger.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//Initialize the Logger.
     private static Logger log = Logger.getLogger(SeriesServlet.class);
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -114,7 +114,7 @@ public class SeriesServlet extends HttpServlet {
             out.print(jsonArray);
             out.close();
         } catch (Exception ex) {
-            log.error(ex);
+            log.error(ex.toString());
         }
 
     } 

@@ -93,6 +93,7 @@ public class DicomNodes extends HttpServlet {
             //File tempDir = (File) getServletContext().getAttribute("javax.servlet.context.tempdir");
             ListenerHandler lh = new ListenerHandler();
             Listener listener = lh.getListener();
+            new ListenerServlet().checkListenerService();
             JSONObject jsonObj = new JSONObject();
             jsonObj.put("callingAET", listener.getAetitle());
             jsonObj.put("listenerPort", listener.getPort());

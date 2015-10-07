@@ -72,11 +72,11 @@ public class SeriesModel implements Serializable {
      */
     public SeriesModel(Dataset ds) {
         seriesIUID = ds.getString(Tags.SeriesInstanceUID);
-        seriesNumber = ds.getString(Tags.SeriesNumber);
+        seriesNumber = ds.getString(Tags.SeriesNumber)!=null ? ds.getString(Tags.SeriesNumber) : "unknown";
         seriesDate = ds.getString(Tags.SeriesDate)!=null ? ds.getString(Tags.SeriesDate) : "";
         seriesTime = ds.getString(Tags.SeriesTime)!=null ? ds.getString(Tags.SeriesTime) : "";
-        seriesDescription = ds.getString(Tags.SeriesDescription)!=null? ds.getString(Tags.SeriesDescription) : "";
-        modality = ds.getString(Tags.Modality);
+        seriesDescription = ds.getString(Tags.SeriesDescription)!=null? ds.getString(Tags.SeriesDescription).replace("^", " ") : "";
+        modality = ds.getString(Tags.Modality)!=null ? ds.getString(Tags.Modality) : "unknown";
         numberOfInstances = ds.getString(Tags.NumberOfSeriesRelatedInstances)!=null ? ds.getString(Tags.NumberOfSeriesRelatedInstances) : "";
         bodyPartExamined = ds.getString(Tags.BodyPartExamined)!=null ? ds.getString(Tags.BodyPartExamined) : "";
     }

@@ -44,6 +44,7 @@ package in.raster.oviyam.xml.handler;
 
 import in.raster.oviyam.xml.model.Configuration;
 import in.raster.oviyam.xml.model.Language;
+
 import java.io.File;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -67,7 +68,7 @@ public class LanguageHandler {
         try {
             serializer = new Persister();
             source = new File(new XMLFileHandler().getXMLFilePath(tmpDir));            
-            config = serializer.read(Configuration.class, source);
+            config = serializer.read(Configuration.class, source);            
         } catch (Exception ex) {
 				log.error("Unable to read XML document", ex);            
         }
@@ -97,10 +98,11 @@ public class LanguageHandler {
     }
 
     public String getCurrentLanguage() {
-        List<Language> langList = config.getLanguagesList();
-        for (Language lang : langList) {
-            if (lang.isSelected()) {
-                return lang.getLocaleID();
+        List<Language> langList = config.getLanguagesList();        
+        
+        for (Language lang : langList) {        	
+            if (lang.isSelected()) {            	
+                return lang.getLocaleID();            	
             }
 
         }
@@ -125,7 +127,7 @@ public class LanguageHandler {
     
     
     public void upgrade(List<Language> list) {
-    	// From version 2.1 to 2.2
+    	// For version 2.1 to 2.2
     	for (Language lang : list) {
     		if(lang.getLocaleID().equals("ja_JP")) {
     			return;

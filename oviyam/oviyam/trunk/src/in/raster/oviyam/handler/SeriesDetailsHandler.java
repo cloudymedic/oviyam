@@ -119,7 +119,7 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
             return;
         }
 
-        try {
+        try {        	
             ArrayList<SeriesModel> seriesList = seriesInfo.getSeriesList();
 
             Collections.sort(seriesList, new SeriesComparator());
@@ -142,6 +142,8 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
                 getJspContext().setAttribute("seriesDesc", sm.getSeriesDescription());
                 getJspContext().setAttribute("modality", sm.getModality());
                 getJspContext().setAttribute("numberOfImages", sm.getNumberOfInstances());
+                getJspContext().setAttribute("bodyPart", sm.getBodyPartExamined());
+                getJspContext().setAttribute("firstSeries", (i==0));
 
                 String serDate = sm.getSeriesDate();
                 if(serDate != null && serDate.length() > 0) {

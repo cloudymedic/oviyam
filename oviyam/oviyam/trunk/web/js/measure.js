@@ -12,7 +12,7 @@ function init(iNo) {
 	if(xPxl==null) {
 		var tagPxlSpacing = jQuery('#pixelSpacing').html();
 		if(tagPxlSpacing==='') {
-			loadInstanceText(false);
+			loadInstanceText();
 			tagPxlSpacing = jQuery('#pixelSpacing').html();
 		}
 		var pxlSpacing = tagPxlSpacing.split('\\');

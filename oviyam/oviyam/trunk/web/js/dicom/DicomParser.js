@@ -30,11 +30,11 @@ function parseAll()
 	var pxlSpacing = this.readTag(40,0,48,0,"PixelSpacing");
 	this.bitsStored = this.readTagAsNumber(40,0,1,1,"BitsStored");
 	this.pixelRepresentation = this.readTagAsNumber(40,0,3,1,"PixelRepresentation");
-	var wc = this.readTag(40,0,80,16,"windowCenter");
-	var ww = this.readTag(40,0,81,16,"windowWidth");
+	var wc = this.readTag(40,0,80,16,"windowCenter");	
+	var ww = this.readTag(40,0,81,16,"windowWidth");	
 	var rescale_Intercept = this.readTag(40,0,82,16,"rescaleIntercept");
 	var rescale_slope = this.readTag(40,0,83,16,"rescaleSlope");
-	this.imgData={"monochrome1":monochrome1=="MONOCHROME1","BitsStored":this.bitsStored,"PixelRepresentation":this.pixelRepresentation,"windowCenter":wc[0],"windowWidth":ww[0],"rescaleIntercept":rescale_Intercept!=undefined?rescale_Intercept:0.0 ,"rescaleSlope":rescale_slope!=undefined ?rescale_slope:1.0,"nativeRows":rows,"nativeColumns":columns,"pixelSpacing":pxlSpacing};
+	this.imgData={"monochrome1":monochrome1=="MONOCHROME1","BitsStored":this.bitsStored,"PixelRepresentation":this.pixelRepresentation,"windowCenter":wc!=undefined? wc[0] : wc,"windowWidth":ww!=undefined ? ww[0] : ww,"rescaleIntercept":rescale_Intercept!=undefined?rescale_Intercept:0.0 ,"rescaleSlope":rescale_slope!=undefined ?rescale_slope:1.0,"nativeRows":rows,"nativeColumns":columns,"pixelSpacing":pxlSpacing};
 	
     this.moveToPixelDataTag();
     this.readImage();    

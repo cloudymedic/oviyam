@@ -41,14 +41,14 @@ $(document).ready(function() {
         }
     }); */
 
-    //start listener
-    $.ajax({
-        type: "GET",
-        url: "Listener.do",
-        data: {
-            'action':'Verify'
-        }
-    });
+//    //start listener
+//    $.ajax({
+//        type: "GET",
+//        url: "Listener.do",
+//        data: {
+//            'action':'Verify'
+//        }
+//    });
    
     // get the buttons from configuration
     $.ajax({
@@ -72,7 +72,8 @@ $(document).ready(function() {
         //createButton("Search", null, null, null);
        // createButton({"label":"Search"});
 
-        if(!location.search) {
+//        if( !location.search || location.search==="?q=sukraa") {
+        if( !location.search) {
         	$(json).each(function() {        		
         		createButton(this);
         	});
@@ -181,12 +182,15 @@ $(document).ready(function() {
                         
                         searchURL += "&preview=" + $('.ui-tabs-selected').find('a').attr('preview');
                         
-                        searchURL += "&search=" + (!location.search ? 'true' : 'false');
+//                        searchURL += "&search=" + ((!location.search || location.search==="?q=sukraa")? 'true' : 'false');
+                        searchURL += "&search=" + ((!location.search)? 'true' : 'false');
+                        var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+                        searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
                                             
                         divContent += '_content';
 
                         $(divContent).html('<div id="loading" style="height: 100%; width: 100%; text-align: center; z-index: 10000;"><div style="position: absolute; left: 45%; top: 45%;"><img src="images/overlay_spinner.gif" alt=""><div style="font-size: 12px; font-weight: bold;">Querying...</div></div></div>');
-                        $('#westPane').html('');                       
+                        $('#westPane').html('');                        
 
                         $(divContent).load(encodeURI(searchURL), function() {
                             clearInterval(timer);
@@ -318,7 +322,8 @@ $(document).ready(function() {
                 $('#tabUL').append(li);
                 
                 var div = '';
-                if( !location.search ) {
+
+                if( !location.search) {
                 	div = '<div id="' + node.logicalname + '" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" style="padding: 0; width: 100%;">';
                 	div += '<div id="' + node.logicalname + '_search" style="height:13%; width:100%;"></div>';
                 	div += '<div id="' + node.logicalname + '_content" style="height:85%; width:100%; cursor: pointer;"></div></div>';
@@ -338,6 +343,8 @@ $(document).ready(function() {
                 		searchURL += '&tabIndex=' + tabIndex;
                 		searchURL += '&preview=' + preview;
                 		searchURL += '&search=' + showSearch;
+                		var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+                	    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
                 		                   
                 		var divContent = '#' + node.logicalname + '_content';
 
@@ -356,8 +363,8 @@ $(document).ready(function() {
             	selected: tabIndex,
                 select: function(event, ui) {
                     clearInterval(timer);
-                    var selTabText = ui.tab.text;
-                    var oTable = $.fn.dataTableInstances[ui.index];
+//                    var selTabText = ui.tab.text;
+//                    var oTable = $.fn.dataTableInstances[ui.index];
 
                     /* var search_url = $(ui.tab).attr("searchurl");
                     if(typeof search_url != 'undefined') {
@@ -531,79 +538,56 @@ $(document).ready(function() {
                     window.open("viewer.html", "_blank");
                 }, errorHandler);
             });
-        } else {
-
-            var jsonObj = {
-                "pat_ID" : nTrContent[1],
-                "pat_Name" : nTrContent[2],
-               /* "pat_Birthdate" : nTrContent[3],
-                "accNumber" : nTrContent[4],*/
-                "studyDate" : nTrContent[3],
-                "studyDesc" : nTrContent[4],
-                "modality" : nTrContent[5],
-                "totalIns" : nTrContent[6],
-                "studyUID" : nTrContent[7],
-                "refPhysician" : nTrContent[8],
-                "totalSeries" : nTrContent[9],
-                "pat_gender" : nTrContent[10],
-                "serverURL" : $('.ui-tabs-selected').find('a').attr('wadoUrl'),
-                "dicomURL" : $('.ui-tabs-selected').find('a').attr('name'),
-                "bgColor" : $('.ui-widget-content').css('background-color')
-            };
-
-            $.cookies.set( 'patient', jsonObj );
-
-            window.open("viewer.html", "_blank");
+        } else {     
+        	openViewer(nTrContent);       
         }
     });
 
     $('.display tbody td img').live('click', function() {
-
         var tabIndex = $('#tabs_div').data('tabs').options.selected;
         var oTable = $.fn.dataTableInstances[tabIndex];
 
         var nTr = this.parentNode.parentNode;
-        var nTrContent = oTable.fnGetData(nTr);
+        var nTrContent = oTable.fnGetData(nTr);	
+        
+		if(this.src.match('details_close')) {
+		        this.src = "images/details_open.png";
+		        oTable.fnClose(nTr);
+	    } else if(this.src.match('details_open')) {
+		        /* Open this row */
+		        this.src = "images/details_close.png";
+		        var selectedTabTxt = $('.ui-tabs-selected').find('span').html();
+		        if(selectedTabTxt != 'Local') {
+		            var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
+		            var tmpUrl = "seriesDetails.jsp?patient=" + nTrContent[1] + "&study=" + nTrContent[7] + "&dcmURL=" + urlDcm;
+		            $.get(tmpUrl, function(series) {
+		                oTable.fnOpen(nTr, series, 'details');
+		            });
+		        } else {
+		            var sql = "select SeriesNo, SeriesDescription, Modality, BodyPartExamined, NoOfSeriesRelatedInstances from series where StudyInstanceUID='" + nTrContent[8] + "';";
+		            var content = '<head><style>.dataTables_wrapper .fg-toolbar{display: none;}</style>';
+		            content += '<script type="text/javascript">$(document).ready(function() {var now = new Date().getTime();';
+		            content += '$("#seriesTable").attr("id", now); sTable = $("#" + now).dataTable({"bJQueryUI": true,"bPaginate": false,"bFilter": false});';
+		            content += '}); </script></head></body>';
+		            content += '<body><table class="display" id="seriesTable" style="font-size:12px;"><thead>';
+		            content += '<tr><th>Series Number</th><th>Series Desc</th><th>Modality</th><th>Body Part Examined</th><th>Total Instances</th></tr>';
+		            content += '</thead><tbody>';
 
-        if(this.src.match('details_close')) {
-            this.src = "images/details_open.png";
-            oTable.fnClose(nTr);
-        } else if(this.src.match('details_open')) {
-            /* Open this row */
-            this.src = "images/details_close.png";
-            var selectedTabTxt = $('.ui-tabs-selected').find('span').html();
-            if(selectedTabTxt != 'Local') {
-                var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
-                var tmpUrl = "seriesDetails.jsp?patient=" + nTrContent[1] + "&study=" + nTrContent[7] + "&dcmURL=" + urlDcm;
-                $.get(tmpUrl, function(series) {
-                    oTable.fnOpen(nTr, series, 'details');
-                });
-            } else {
-                var sql = "select SeriesNo, SeriesDescription, Modality, BodyPartExamined, NoOfSeriesRelatedInstances from series where StudyInstanceUID='" + nTrContent[7] + "';";
-                var content = '<head><style>.dataTables_wrapper .fg-toolbar{display: none;}</style>';
-                content += '<script type="text/javascript">$(document).ready(function() {var now = new Date().getTime();';
-                content += '$("#seriesTable").attr("id", now); sTable = $("#" + now).dataTable({"bJQueryUI": true,"bPaginate": false,"bFilter": false});';
-                content += '}); </script></head></body>';
-                content += '<body><table class="display" id="seriesTable" style="font-size:12px;"><thead>';
-                content += '<tr><th>Series Number</th><th>Series Desc</th><th>Modality</th><th>Body Part Examined</th><th>Total Instances</th></tr>';
-                content += '</thead><tbody>';
-
-                var myDb = initDB();
-                myDb.transaction(function(tx) {
-                    tx.executeSql(sql, [], function(trans, results) {
-                        for(var i=0; i<results.rows.length; i++) {
-                            var row = results.rows.item(i);
-                            content += '<tr><td>' + row['SeriesNo'] + '</td><td>' + row['SeriesDescription'] + '</td>';
-                            content += '<td>' + row['Modality'] + '</td><td>' + row['BodyPartExamined'] + '</td>';
-                            content += '<td>' + row['NoOfSeriesRelatedInstances'] + '</td></tr>';
-                        }
-                        content += '</tbody></table></body>';
-                        oTable.fnOpen(nTr, content, 'details');
-                    }, errorHandler);
-                });
-            }
-        }
-
+		            var myDb = initDB();
+		            myDb.transaction(function(tx) {
+		                tx.executeSql(sql, [], function(trans, results) {
+		                    for(var i=0; i<results.rows.length; i++) {
+		                        var row = results.rows.item(i);
+		                        content += '<tr><td>' + row['SeriesNo'] + '</td><td>' + row['SeriesDescription'] + '</td>';
+		                        content += '<td>' + row['Modality'] + '</td><td>' + row['BodyPartExamined'] + '</td>';
+		                        content += '<td>' + row['NoOfSeriesRelatedInstances'] + '</td></tr>';
+		                    }
+		                    content += '</tbody></table></body>';
+		                    oTable.fnOpen(nTr, content, 'details');
+		                }, errorHandler);
+		            });
+		        }
+		    }
     });
 
     $('#liConfig').click(function() {
@@ -680,6 +664,30 @@ $(document).ready(function() {
 
 }); // for document ready
 
+function openViewer(nTrContent) {		
+	var jsonObj = {
+            "pat_ID" : nTrContent[1],
+            "pat_Name" : nTrContent[2],
+           /* "pat_Birthdate" : nTrContent[3],
+            "accNumber" : nTrContent[4],*/
+            "studyDate" : nTrContent[3],
+            "studyDesc" : nTrContent[4],
+            "modality" : nTrContent[5],
+            "totalIns" : nTrContent[6],
+            "studyUID" : nTrContent[7],
+            "refPhysician" : nTrContent[8],
+            "totalSeries" : nTrContent[9],
+            "pat_gender" : nTrContent[10],
+            "serverURL" : $('.ui-tabs-selected').find('a').attr('wadoUrl'),
+            "dicomURL" : $('.ui-tabs-selected').find('a').attr('name'),
+            "bgColor" : $('.ui-widget-content').css('background-color'),            
+        };
+
+        $.cookies.set( 'patient', jsonObj );
+
+        window.open("viewer.html", "_blank");
+}
+
 function showWestPane(iPos) {
     var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
     var urlWado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
@@ -691,6 +699,7 @@ function showWestPane(iPos) {
     var selTabText = $('.ui-tabs-selected').find('a').attr('href');
     var container = selTabText + '_westPane';
     $(container).load(encodeURI(tmpUrl));
+    
 }
 
 function getParameterByName(name) {
