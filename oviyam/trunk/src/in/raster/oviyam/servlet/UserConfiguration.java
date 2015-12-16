@@ -150,6 +150,14 @@ public class UserConfiguration extends HttpServlet {
                         List<Button> butList = qph.getAllButtons(userName);
                         JSONArray jsonArray = new JSONArray(butList);
                         str = jsonArray.toString();
+                    } else if(settings.equals("viewer")) {
+                    	String prefetch = user.getPrefetch();
+                    	if(prefetch==null) {
+                    		prefetch = "No";
+                    	}
+                    	str = "slider:" + user.getViewerSlider() + ",prefetch:" + prefetch;                    	
+                    } else if(settings.equals("prefetch")) {
+                    	str = user.getPrefetch();                    	
                     }
                     out.print(str);
                 } else if (actionToDo.equalsIgnoreCase("UPDATE")) {
@@ -159,6 +167,9 @@ public class UserConfiguration extends HttpServlet {
                         user.setSessTimeout(settingsValue);
                     } else if(settings.equals("viewerSlider")) {
                         user.setViewerSlider(settingsValue);
+                    } else if(settings.equals("viewer")) {
+                    	user.setViewerSlider(settingsValue.substring(settingsValue.indexOf("slider"), settingsValue.indexOf(",")).split(":")[1]);
+                    	user.setPrefetch(settingsValue.substring(settingsValue.indexOf("prefetch")).split(":")[1]);
                     }
                     uh.updateUser(user);
                     out.println("Success");

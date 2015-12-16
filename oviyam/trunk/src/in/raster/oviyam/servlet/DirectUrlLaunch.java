@@ -126,7 +126,7 @@ public class DirectUrlLaunch extends HttpServlet {
 		            }
 		                        
 		            PatientInfo patientInfo = new PatientInfo(); 
-		            if(patIDs.length == 1) {
+		            if(patIDs==null || patIDs.length == 1) {
 		            	patientInfo.callFindWithQuery(patId, studyId, dcmURL); 
 		            	
 		            } else {
@@ -134,14 +134,14 @@ public class DirectUrlLaunch extends HttpServlet {
 		            		patientInfo.callFindWithQuery(patIDs[i], studyId, dcmURL); 
 		            	}            	
 		            }
-//		            int totalStudies = patientInfo.getStudyList().size();	            
+		            int totalStudies = patientInfo.getStudyList().size();	            
 					
-//		            if(totalStudies == 1) {
-//		           		forwardUrl = "/viewer.html?"; 
-//		            } else if(totalStudies > 1) {
-//		            	forwardUrl = "/index.html?";
-//		            }
-		            forwardUrl = "/viewer.html?";
+		            if(totalStudies == 1) {
+		           		forwardUrl = "/viewer.html?"; 
+		            } else if(totalStudies > 1) {
+		            	forwardUrl = "/index.html?";
+		            }
+		            
 		            if(patId != null && patId.length() > 0) {
 		            	forwardUrl += "patientID=" + patId;
 		            }
