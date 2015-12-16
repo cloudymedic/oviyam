@@ -31,6 +31,7 @@ css/smartslider.css
 css/demos.css
 css/jquery.alerts.css
 css/frameContent.css
+css/jqcontextmenu.css
 
 js/lib/jquery-latest.js
 js/lib/jquery-ui-latest.js
@@ -74,6 +75,7 @@ js/lib/raphaelle.js
 js/framecontent.js
 js/lib/smartslider.js
 js/i18n/Bundle.js
+js/lib/jqcontextmenu.js
 
 
 images/three.png
@@ -124,6 +126,7 @@ css/images/selected.png
 
 NETWORK:
 westContainer.jsp
+Study.jsp
 Image.do
 UserConfig.do
 DcmStream.do

@@ -132,7 +132,7 @@ function loadStudy() {
 			+ pat.studyUID + "&patientName=" + pat.pat_Name;
 	tmpUrl += "&studyDesc=" + pat.studyDesc + "&studyDate=" + pat.studyDate
 			+ "&totalSeries=" + pat.totalSeries + "&dcmURL=" + pat.dicomURL;
-	tmpUrl += "&wadoUrl=" + pat.serverURL;	
+	tmpUrl += "&wadoUrl=" + pat.serverURL;
 	$('#westPane').load(encodeURI(tmpUrl));
 
 	document.title = pat.pat_Name;
@@ -154,7 +154,7 @@ function loadStudy() {
 	}, "json");
 }*/
 
-/*function getSeries(patId, studyUID) {	
+function getSeries(patId, studyUID) {	
 	
 	$.post("Series.do", {
 		"patientID" : patId,
@@ -169,12 +169,6 @@ function loadStudy() {
 				});
 			}
 	}, "json");	
-}*/
-
-function storeSer(studyId,data) {	
-	$.each(data, function(i, series) {
-		getInstances(pat.pat_ID, studyId, series['seriesUID']);
-	});
 }
 
 function getInstances(patId, studyUID, seriesUID) {
@@ -185,6 +179,64 @@ function getInstances(patId, studyUID, seriesUID) {
 		"dcmURL" : pat.dicomURL,
 		"serverURL" : pat.serverURL
 	}, function(data) {
-		sessionStorage[seriesUID] = JSON.stringify(data);
+		sessionStorage[seriesUID] = JSON.stringify(data);		
 	}, "json");
+}
+
+function storeSer(data) {	
+	$.each(data, function(i, series) {
+		getInstances(pat.pat_ID, pat.studyUID, series['seriesUID']);
+	});	
+}
+
+function getIns(seriesUID) {
+	jQuery.ajax({
+		url: "Instance.do?patientId=" + pat.pat_ID + "&studyUID=" + pat.studyUID + "&seriesUID=" + seriesUID + "&dcmURL=" + pat.dicomURL + "&serverURL=" + pat.serverURL,
+		dataType: 'json',
+		cache: false,
+		success: function(data) {
+			sessionStorage[seriesUID] = JSON.stringify(data);
+		}, 
+		error: function(request) {
+			console.log('error');
+		}
+	});
+}
+
+function fetchOtherStudies() {	
+	$.get("UserConfig.do", {'settings': 'prefetch', 'todo': 'READ'}, function(data) {		 
+		if(data.trim()=='Yes' && pat.pat_ID.length>0) {
+			$.post("otherStudies.do", {
+				"patientID" : pat.pat_ID,
+				"studyUID" : pat.studyUID,
+				"dcmURL" : pat.dicomURL	
+			}, function(data) {
+				if(data.length>0) {
+					$("#otherStudiesInfo").text((data.length + " archived") + (data.length>1 ? " studies" : " study") + " found.");
+				} else {
+					$("#otherStudiesInfo").text("No archived studies found.");
+				}
+				$.each(data, function(i, study) {
+					var link = encodeURI("Study.jsp?patient=" + pat.pat_ID + "&study=" + study["studyUID"] + "&dcmURL=" + pat.dicomURL	+ "&wadoUrl=" + pat.serverURL + "&studyDesc=" + study["studyDesc"] + "&descDisplay=false");
+					var div = "<div id=" + study['studyUID'] + " class='accordion close' link=" + link + " onclick='loadOther(this);'>" + study['dateDesc'] + "</div>";			
+					$('#otherStudies').append(div);
+					$('#otherStudies').append(document.createElement("div"));
+				});
+				$("#otherStudies").show();
+			}, "json");
+		} else {
+			$("#otherStudiesInfo").css("display","none");
+		}
+	},"text");
+}
+
+function loadOther(div) {	
+	var childDiv = $(div).next();	
+	if($(childDiv).children().length>0) {				
+		acc($(div));
+	} else {
+		$(childDiv).load($(div).attr('link'));
+		$(div).removeClass("close").addClass("open");
+	}
+	
 }

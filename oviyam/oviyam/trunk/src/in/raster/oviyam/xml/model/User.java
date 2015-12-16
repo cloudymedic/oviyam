@@ -66,6 +66,9 @@ public class User {
 
     @Element(name="session-timeout")
     private String sessTimeout;
+    
+    @Element(name="prefetch",required=false)
+    private String prefetch;
 
     public SearchParams getSearchParams() {
         return searchParams;
@@ -106,5 +109,12 @@ public class User {
     public void setViewerSlider(String viewerSlider) {
         this.viewerSlider = viewerSlider;
     }
+    
+    public String getPrefetch() {
+		return prefetch;
+	}
 
+	public void setPrefetch(String prefetch) {
+		this.prefetch = prefetch;
+	}
 }
