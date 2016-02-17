@@ -214,7 +214,9 @@
 						"modality" : '${modality}',
 						"seriesNumber" : '${seriesNumber}',
 						"seriesDate" : '${seriesDate}',
-						"bodyPart" : '${bodyPart}'
+						"bodyPart" : '${bodyPart}',
+						"studyDesc" : '${param.studyDesc}',
+						"studyDate" : '${param.studyDate}'	
 		            });
 	            </script>
 	            
