@@ -54,7 +54,7 @@ function doLayout() {
 		divContent+='<tr>';
 		for(var y=0;y<colIndex+1;y++) {
 			divContent += '<td><iframe id="frame' + cnt;
-            divContent += '" height="100%" width="100%" frameBorder="0" scrolling="no" ';
+            divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
             
             if(cnt < seriesData.length) {
             	var data = seriesData[cnt];
