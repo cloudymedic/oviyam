@@ -207,7 +207,8 @@ function showImg(imgSrc,image,updatePreview) {
 	
 	ctx.save();
 	ctx.setTransform(1,0,0,1,0,0);		
-	ctx.clearRect(0,0,canvas.width,canvas.height);	
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	ctx.translate(state.translationX, state.translationY);
 
 	if(state.vflip) {
 		ctx.translate(0,canvas.height);
@@ -223,11 +224,8 @@ function showImg(imgSrc,image,updatePreview) {
 		ctx.translate(canvas.width/2,canvas.height/2);
 		ctx.rotate(state.rotate===90 ? Math.PI/2 : state.rotate===180? Math.PI : (Math.PI*3)/2);
 		ctx.translate(-canvas.width/2,-canvas.height/2);	   
-	}	
-	
-	ctx.translate(state.translationX, state.translationY);	
+	}		
 	ctx.scale(state.scale,state.scale);		
-
 	ctx.drawImage(image,0,0);
 	ctx.restore();
 	
