@@ -108,9 +108,10 @@ $(document).ready(function() {
         }
 
         $('#buttonContainer').append('<input type="radio" id="' + id + '" name="radio" /><label for="' + id + '" style="font-size:13px;">' + txt + '</label>');
-        jQuery('#' + id).click(function() {
+        jQuery('#' + id).click(function() {        	
+        	var divContent = $('.ui-tabs-selected').find('a').attr('href');    
+        	$(divContent +  '_content').html('');
             var dUrl = $('.ui-tabs-selected').find('a').attr('name');
-
             $('.ui-tabs-selected').find('a').attr('searchBtn', id);
 
             //if($('.ui-tabs-selected').length == 0) {
@@ -171,39 +172,21 @@ $(document).ready(function() {
                         if(studyDesc!=null) {
                         	searchURL+='&studyDesc=' + studyDesc + "*";
                         }
-
-                        searchURL += "&dcmURL=" + dUrl;
-
-                        var divContent = $('.ui-tabs-selected').find('a').attr('href');
-                        searchURL += '&tabName=' + divContent.replace('#','');
-
-                        var tabIndex = $('#tabs_div').data('tabs').options.selected;
-                        searchURL += '&tabIndex=' + tabIndex;
                         
-                        searchURL += "&preview=" + $('.ui-tabs-selected').find('a').attr('preview');
+                        if(searchURL.trim()==('queryResult.jsp?')) {
+                        	jConfirm('No filters have been selected. The search may take long time. Do you want to proceed?', 'No search criteria',function(doQry) {
+                    			if(doQry==true) {
+                    				searchURL += "&dcmURL=" + dUrl;
+                    				doQuery(searchURL, autoRef,divContent);
+                    			} else {                    				
+                    				$('label[for="' + id + '"]').removeClass("ui-state-active");
+                    			}
+                    	    });  
+                        } else {
+                        	searchURL += "&dcmURL=" + dUrl;
+                        	doQuery(searchURL, autoRef,divContent);
+                        }
                         
-//                        searchURL += "&search=" + ((!location.search || location.search==="?q=sukraa")? 'true' : 'false');
-                        searchURL += "&search=" + ((!location.search)? 'true' : 'false');
-                        var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
-                        searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
-                                            
-                        divContent += '_content';
-
-                        $(divContent).html('<div id="loading" style="height: 100%; width: 100%; text-align: center; z-index: 10000;"><div style="position: absolute; left: 45%; top: 45%;"><img src="images/overlay_spinner.gif" alt=""><div style="font-size: 12px; font-weight: bold;">Querying...</div></div></div>');
-                        $('#westPane').html('');                        
-
-                        $(divContent).load(encodeURI(searchURL), function() {
-                            clearInterval(timer);
-                           // checkLocalStudies();
-
-                            if(parseInt(autoRef) > 0) {
-                                timer = setInterval(function() {
-                                    startTimer(searchURL)
-                                }, parseInt(autoRef));
-                            }
-                        });
-
-                        $('.ui-tabs-selected').find('a').attr('searchurl', searchURL);
                     } else {
                         var msg = "Server not available";
                         noty({
@@ -225,6 +208,31 @@ $(document).ready(function() {
             $('.ui-helper-hidden-accessible').css('display', 'none');
         }
 
+    }
+    
+    function doQuery(searchURL,autoRef,divContent) {
+        searchURL += '&tabName=' + divContent.replace('#','');
+        var tabIndex = $('#tabs_div').data('tabs').options.selected;
+        searchURL += '&tabIndex=' + tabIndex;                        
+        searchURL += "&preview=" + $('.ui-tabs-selected').find('a').attr('preview');   
+        searchURL += "&search=" + ((!location.search)? 'true' : 'false');
+        divContent += '_content';
+
+        $(divContent).html('<div id="loading" style="height: 100%; width: 100%; text-align: center; z-index: 10000;"><div style="position: absolute; left: 45%; top: 45%;"><img src="images/overlay_spinner.gif" alt=""><div style="font-size: 12px; font-weight: bold;">Querying...</div></div></div>');
+        $('#westPane').html('');                        
+
+        $(divContent).load(encodeURI(searchURL), function() {
+            clearInterval(timer);
+           // checkLocalStudies();
+
+            if(parseInt(autoRef) > 0) {
+                timer = setInterval(function() {
+                    startTimer(searchURL)
+                }, parseInt(autoRef));
+            }
+        });
+
+        $('.ui-tabs-selected').find('a').attr('searchurl', searchURL);
     }
 
     function startTimer(searchURL) {
