@@ -465,20 +465,15 @@ function resizeCanvas() { //To resize the canvas on any screen size change
 function loadPDF(src) {
 	var imgSrc = 'Image.do?serverURL=' + parent.pat.serverURL + '&study=' + getParameter(src,'study') + '&series=' + seriesUid + '&object=' + getParameter(src,'object') + '&rid=' + getParameter(src,'rid');
 	var frame = window.parent.getActiveFrame();
-	frame.src = imgSrc;
-	window.parent.hideToolbar();
+	frame.src = imgSrc;	
 }
 
 function loadSR(src) {
 	var imgSrc = 'Image.do?serverURL=' + parent.pat.serverURL + '&study=' + getParameter(src,'study') + '&series=' + seriesUid + '&object=' + getParameter(src,'object');
-	imgSrc += '&contentType=text/html';
-    jQuery('#SRContent').load(imgSrc);
-    jQuery('#SRContent').css('visibility','visible');
-    jQuery('#SRContent').css('background-color','white');
-    jQuery('#SRContent').css('overflow','auto');
-    jQuery('#canvasDiv').css('height','0px');
-    jQuery('#canvasDiv').css('display','none');
-    jQuery('.textOverlay:not(#huDisplayPanel)').hide();
+	imgSrc += '&contentType=text/html';	
+	var frame = window.parent.getActiveFrame();
+	frame.src = imgSrc;
+    jQuery(frame).css("background","white");
 }
 
 function toggleResolution() {
