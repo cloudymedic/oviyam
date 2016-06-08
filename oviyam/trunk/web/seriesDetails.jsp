@@ -57,23 +57,9 @@
         }*/
     </style>-->
 
-    <script type="text/javascript" src="js/lib/jquery.dataTables.min.js"></script>
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var now = new Date().getTime();
-                $('#seriesTable').attr('id', now);
-                sTable = $('#' + now).dataTable({
-                    "bJQueryUI": true,
-                    "bPaginate": false,
-                    "bFilter": false
-                });
-            });
-        </script>
-
 </head>
 <body>
-<table class="display" id="seriesTable" style="font-size:12px;">
+<table class="display" style="font-size:12px;">
     <thead>
         <tr>
             <th>Series Number</th>
@@ -87,7 +73,7 @@
         <ser:Series patientId="${param.patient}" study="${param.study}" dcmURL="${param.dcmURL}">
         <tr>
             <td>${seriesNumber}</td>
-            <td>${seriesDate} ${seriesTime}</td>
+            <td data-order="${dateOrder}">${seriesDate} ${seriesTime}</td>
             <td>${seriesDesc}</td>
             <td>${modality}</td>
             <td>${numberOfImages}</td>

@@ -319,28 +319,28 @@ public class PatientInfoHandler extends SimpleTagSupport {
 
                  String sDate = study.getStudyDate();
                  if(sDate != null) {
-                    SimpleDateFormat sdf;
+                    SimpleDateFormat parseFmt,displayFmt;
 
                     //if(!study.getStudyTime().equals("")) {
                     if(study.getStudyTime() != null && study.getStudyTime().length() > 0) {
                         sDate = sDate + " " + study.getStudyTime();
-                        sdf = new SimpleDateFormat("yyyyMMdd HHmmss");
+                        parseFmt = new SimpleDateFormat("yyyyMMdd HHmmss");
+                        displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     } else {
-                        sdf = new SimpleDateFormat("yyyyMMdd");
+                        parseFmt = new SimpleDateFormat("yyyyMMdd");
+                        displayFmt = new SimpleDateFormat("dd/MM/yyyy");
                     }
 
                     Date sDateTmp = null;
                     try {
-                        sDateTmp = sdf.parse(sDate);
+                        sDateTmp = parseFmt.parse(sDate);
+                        getJspContext().setAttribute("dateOrder", sDateTmp.getTime());
                     } catch(ParseException pe) {
                         getJspContext().setAttribute("studyDate", sDate);
                         getJspBody().invoke(null);
                         continue;
                     }
-                    //sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
-                    sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-                    getJspContext().setAttribute("studyDate", sdf.format(sDateTmp));
+                    getJspContext().setAttribute("studyDate", displayFmt.format(sDateTmp));
                  }
 
                  //studyIUIDs[studyCount] = study.getStudyInstanceUID();
