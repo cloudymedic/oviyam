@@ -73,15 +73,12 @@
  		border: 1px solid #2A2A2A;
  	}
  </style>
-
-
-<script type="text/javascript" src="js/lib/jquery.dataTables.min.js"></script>
-
+ 
 <script type="text/javascript">
             var dTable;
             $(document).ready(function() {
                 var tableName = '#<%=tabName%>_table';                
-                dTable = $(tableName).dataTable({
+                dTable = $(tableName).DataTable({
                     "bJQueryUI": true,
                     //"sPaginationType": "full_numbers",
                     "bPaginate": false,
@@ -94,7 +91,7 @@
                     "bAutoWidth": false,
                     "sScrollX": "100%",
                     //"sScrollXInner": "100%",
-                    "aaSorting": [[ 5, "desc" ]],
+                    "aaSorting": [[ 3, "desc" ]],
                     "aoColumnDefs": [ {
                             "aTargets": [0],
                             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -286,7 +283,7 @@
 						<td>${patientName}</td>
 						<!--<td>${birthDate}</td>
 						<td>${accessionNumber}</td>-->
-						<td>${studyDate}</td>
+						<td data-order="${dateOrder}">${studyDate}</td>
 						<td>${studyDescription}</td>
 						<td>${modality}</td>
 						<td>${totalInstances}</td>						

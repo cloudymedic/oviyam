@@ -36,7 +36,7 @@ css/jqcontextmenu.css
 js/lib/jquery-latest.js
 js/lib/jquery-ui-latest.js
 js/lib/jquery.layout-latest.js
-js/lib/jquery.dataTables.min.js
+js/lib/jquery.dataTables.js
 js/lib/jquery.cookies.min.js
 js/lib/jquery.contextMenu.js
 js/lib/jquery.sleep.js

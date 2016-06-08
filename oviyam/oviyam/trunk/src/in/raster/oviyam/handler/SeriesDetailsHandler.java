@@ -157,6 +157,7 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
                     }
 
                     serDateTmp = sdf.parse(serDate);
+                    getJspContext().setAttribute("dateOrder", serDateTmp.getTime());
                     sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
 
                     getJspContext().setAttribute("seriesDate", sdf.format(serDateTmp));

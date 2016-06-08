@@ -464,7 +464,7 @@ $(document).ready(function() {
 
         if(preview=='true') {
 	        var selTabText = $('.ui-tabs-selected').find('span').html();
-	        var iPos = oTable.fnGetData(this);
+	        var iPos = oTable.row(this).data();
 	        if( iPos == null ) {
 	    		return;
 	        }       
@@ -511,12 +511,14 @@ $(document).ready(function() {
    	
     	var tabIndex = $('#tabs_div').data('tabs').options.selected;
         var oTable = $.fn.dataTableInstances[tabIndex];
-        var nTrContent = oTable.fnGetData(this);
+//        var nTrContent = oTable.fnGetData(this);
+        var nTrContent = oTable.row(this).data();
+        
         if( nTrContent == null ) {
             return;
         } 
        
-        var ser_url = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+       /* var ser_url = $('.ui-tabs-selected').find('a').attr('wadoUrl');
         if(typeof ser_url == 'undefined') {
             var lSql = "select DicomURL, ServerURL from study where StudyInstanceUID='" + nTrContent[7] + "'";
             var myDb = initDB();
@@ -546,9 +548,9 @@ $(document).ready(function() {
                     window.open("viewer.html", "_blank");
                 }, errorHandler);
             });
-        } else {     
+        } else {*/     
         	openViewer(nTrContent);       
-        }
+        //}
     });
 
     $('.display tbody td img').live('click', function() {
@@ -556,7 +558,7 @@ $(document).ready(function() {
         var oTable = $.fn.dataTableInstances[tabIndex];
 
         var nTr = this.parentNode.parentNode;
-        var nTrContent = oTable.fnGetData(nTr);	
+        var nTrContent = oTable.row(nTr).data();
         
 		if(this.src.match('details_close')) {
 		        this.src = "images/details_open.png";
@@ -569,9 +571,19 @@ $(document).ready(function() {
 		            var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
 		            var tmpUrl = "seriesDetails.jsp?patient=" + nTrContent[1] + "&study=" + nTrContent[7] + "&dcmURL=" + urlDcm;
 		            $.get(tmpUrl, function(series) {
-		                oTable.fnOpen(nTr, series, 'details');
+		               oTable.row(nTr).child(series);
+		            	var now = new Date().getTime();
+		            	var table = oTable.row(nTr).child().find(".display");
+		            	$(table).attr("id",now);		            	
+		            	sTable = $(table).DataTable({
+				            "bJQueryUI": true,
+				            "bPaginate": false,
+				            "bFilter": false
+				        });
+				        oTable.row(nTr).child.show();	
 		            });
-		        } else {
+		        } 
+		        /*else {
 		            var sql = "select SeriesNo, SeriesDescription, Modality, BodyPartExamined, NoOfSeriesRelatedInstances from series where StudyInstanceUID='" + nTrContent[8] + "';";
 		            var content = '<head><style>.dataTables_wrapper .fg-toolbar{display: none;}</style>';
 		            content += '<script type="text/javascript">$(document).ready(function() {var now = new Date().getTime();';
@@ -594,7 +606,7 @@ $(document).ready(function() {
 		                    oTable.fnOpen(nTr, content, 'details');
 		                }, errorHandler);
 		            });
-		        }
+		        }*/
 		    }
     });
 
@@ -701,7 +713,7 @@ function showWestPane(iPos) {
     var urlWado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
 
     var tmpUrl = "westContainer1.jsp?patient=" + iPos[1] + "&study=" + iPos[7] + "&patientName=" + iPos[2];
-    tmpUrl += "&studyDesc=" + iPos[4] + "&studyDate=" + iPos[3].split(" ")[0] + "&totalSeries=" + iPos[9] + "&dcmURL=" + urlDcm;
+    tmpUrl += "&studyDesc=" + iPos[4] + "&studyDate=" + iPos[3]["display"].split(" ")[0] + "&totalSeries=" + iPos[9] + "&dcmURL=" + urlDcm;
     tmpUrl += "&wadoUrl=" + urlWado;
     
     var selTabText = $('.ui-tabs-selected').find('a').attr('href');
