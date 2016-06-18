@@ -133,7 +133,7 @@ public class StudyInfoServlet extends HttpServlet {
             try {
                 for(StudyModel sm : studyList) {
                     //if(sm.getStudyInstanceUID().equals(studyUID)) {
-                        jsonObj.put("pat_ID", patID);
+                        jsonObj.put("pat_ID", sm.getPatientID());
                         jsonObj.put("pat_Name", sm.getPatientName());
                         jsonObj.put("pat_Birthdate", sm.getPatientBirthDate());
                         jsonObj.put("accNumber", sm.getAccessionNumber());
