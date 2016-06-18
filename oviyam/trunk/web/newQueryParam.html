@@ -129,11 +129,28 @@
                             data: {'buttonLabel':$('#displayName').val(), 'dateCriteria':dateFilter, 'timeCriteria':timeFilter, 'modality':$('#modalities').val(), 'autoRefresh':autoRef,'studyDesc':$('#studyDesc').val(), 'todo':'ADD'},
                             type: 'POST',
                             success: function(msg) {
-                                alert("added");
+                                //alert("added");
+                                if(msg=="success") {
+	                            	$.ambiance({
+	                                    message: msg,
+	                                    type: 'success'
+	                                });
+                                } else {
+                                	$.ambiance({
+                                        message: msg,
+                                        type: 'error'
+                                    });
+                                }
                             }
                         });
                     } else {
-                        alert("Please enter all the details");
+                        //alert("Please enter all the details");
+                    	msg = "Please enter all the details";
+                        $.ambiance({
+                            message: msg,
+                            type: 'error'
+                        });
+                        return;
                     }
                 });
 

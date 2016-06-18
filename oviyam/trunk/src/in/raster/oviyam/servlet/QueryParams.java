@@ -45,11 +45,7 @@ package in.raster.oviyam.servlet;
 import in.raster.oviyam.xml.handler.QueryParamHandler;
 import in.raster.oviyam.xml.model.Button;
 import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import javax.naming.InitialContext;
-import javax.security.auth.Subject;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +58,8 @@ import org.apache.log4j.Logger;
  */
 public class QueryParams extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(QueryParams.class);
+	private static final long serialVersionUID = 1L;
+	private static Logger log = Logger.getLogger(QueryParams.class);
    
     /** 
      * Handles the HTTP <code>GET</code> method.
@@ -106,7 +103,10 @@ public class QueryParams extends HttpServlet {
             QueryParamHandler qph = new QueryParamHandler();
 
             if(toDo.equalsIgnoreCase("ADD")) {
-                qph.addNewButton(btn, userName);
+            	String status = qph.addNewButton(btn, userName);
+                PrintWriter out = response.getWriter();
+                out.write(status);
+                out.close();
             } else if(toDo.equalsIgnoreCase("DELETE")) {
                 qph.deleteExistingButton(btn, userName);
             }

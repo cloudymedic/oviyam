@@ -114,7 +114,7 @@ public class DirectUrlLaunch extends HttpServlet {
 		            ListenerHandler lh = new ListenerHandler();
 		            String callingAET = lh.getListener().getAetitle();
 		            if( !(callingAET != null && callingAET.length() > 0) ) {
-		                callingAET = "IPACS2";
+		                callingAET = "OVIYAM2";
 		            }
 		            String dcmURL = "DICOM://" + server.getAetitle() + ":" + callingAET + "@" + server.getHostname() + ":" + server.getPort();
 		            String serverURL = null;
