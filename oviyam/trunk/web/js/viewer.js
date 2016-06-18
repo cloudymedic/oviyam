@@ -1,8 +1,8 @@
 var pat = null;
+var directLaunch = false;
 
 function loadViewerPage() {	
 	initPage();
-
 	$("#toolbarContainer").load("viewer_tools.html");
 }
 
@@ -34,6 +34,7 @@ function getStudyDetails() {
 					return;
 				}
 			}
+			directLaunch = true;
 			pat = data;			
 			loadStudy();
 		}, "json");
@@ -204,8 +205,19 @@ function getIns(seriesUID) {
 }
 
 function fetchOtherStudies() {	
-	$.get("UserConfig.do", {'settings': 'prefetch', 'todo': 'READ'}, function(data) {		 
-		if(data.trim()=='Yes' && pat.pat_ID.length>0) {
+	$.get("UserConfig.do", {'settings': 'prefetch', 'todo': 'READ'}, function(data) {
+		var doFetch = false;
+		if(directLaunch) {
+			if(getParameter(document.location.search.substring(1), "patientID")!='null') {
+				doFetch = true;
+			}
+		} else {
+			if(data.trim()=='Yes' && pat.pat_ID.length>0) {
+				doFetch = true;
+			}
+		}
+		
+		if(doFetch) {
 			$.post("otherStudies.do", {
 				"patientID" : pat.pat_ID,
 				"studyUID" : pat.studyUID,

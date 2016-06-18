@@ -336,7 +336,7 @@ function loadInstanceText(checkForUpdate,autoplay) {
 	    	setTimeout("loadInstanceText("+checkForUpdate + "," + autoplay +")",200);
 	    } else {
 	    	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
-	    } 
+	    }		
 	} else if(checkForUpdate===true) {
 		if(window.parent.pat.studyUID==jQuery('#studyId').html()) {
 			setTimeout("loadInstanceText("+checkForUpdate + "," + autoplay +")",200);
@@ -716,47 +716,50 @@ function drawoutline() {
 
 function loadContextMenu() {
 	var queryString = window.location.href;
-	var study = getParameter(queryString,'study');
-	var seriesData = JSON.parse(sessionStorage[study]);	
+	var study = getParameter(queryString,'study');	
+	var data = sessionStorage[study];
+	if(data!=undefined) {
+		var seriesData = JSON.parse(data);		
+		var cxtContent = '<ul id="contextmenu1" class="menu"';	
 	
-	var cxtContent = '<ul id="contextmenu1" class="menu"';
-
-
-	if(isCompatible()) {
-		for(var i=0;i<seriesData.length;i++) {
-			var series = seriesData[i];
-			jQuery('#studyDesc').html(series['studyDesc']);
-			jQuery('#studyDate').html(series['studyDate']);
-			var seriesDesc = convertSplChars(series['seriesDesc']);            			
-			if(seriesDesc== undefined && seriesDesc==='') {
-				seriesDesc = 'UNKNOWN';
+		if(isCompatible()) {
+			for(var i=0;i<seriesData.length;i++) {
+				var series = seriesData[i];
+				jQuery('#studyDesc').html(series['studyDesc']);
+				jQuery('#studyDate').html(series['studyDate']);
+				var seriesDesc = convertSplChars(series['seriesDesc']);            			
+				if(seriesDesc== undefined && seriesDesc==='') {
+					seriesDesc = 'UNKNOWN';
+				}
+				cxtContent+= '<li><a class="cmenuItem" href="#" link="frameContent.html?study=' + study + '&series=' + series['seriesUID'] + '&seriesDesc=' + series['seriesDesc'] + '&images=' + series['totalInstances'] + '&modality='+ series['modality'] + '" onclick="triggerContext(jQuery(this));">' + seriesDesc + ' </a></li>';						
+			}   
+			cxtContent+='</ul>';         		
+		} else {
+			for(var i=0;i<seriesData.length;i++) {
+				var series = seriesData[i];
+				jQuery('#studyDesc').html(series['studyDesc']);
+				jQuery('#studyDate').html(series['studyDate']);
+				var seriesDesc = convertSplChars(series['seriesDesc']);
+				if(seriesDesc==undefined && seriesDesc==='') {
+					seriesDesc = 'UNKNOWN';
+				}
+				cxtContent +='<li><a href="#" link="frameContent.html?serverURL=';
+				cxtContent += getParameter(queryString, 'serverURL');
+				cxtContent += '&study=' + study;
+				cxtContent += '&series=' + series['seriesUID'];
+				cxtContent += '&seriesDesc=' + series['seriesDesc'];
+				cxtContent += '&images=' + series['totalInstances'];
+				cxtContent += '&modality=' + series['modality'] + '" onclick="triggerContext(jQuery(this));">' + seriesDesc + '</a></li>';
 			}
-			cxtContent+= '<li><a class="cmenuItem" href="#" link="frameContent.html?study=' + study + '&series=' + series['seriesUID'] + '&seriesDesc=' + series['seriesDesc'] + '&images=' + series['totalInstances'] + '&modality='+ series['modality'] + '" onclick="triggerContext(jQuery(this));">' + seriesDesc + ' </a></li>';						
-		}   
-		cxtContent+='</ul>';         		
-	} else {
-		for(var i=0;i<seriesData.length;i++) {
-			var series = seriesData[i];
-			jQuery('#studyDesc').html(series['studyDesc']);
-			jQuery('#studyDate').html(series['studyDate']);
-			var seriesDesc = convertSplChars(series['seriesDesc']);
-			if(seriesDesc==undefined && seriesDesc==='') {
-				seriesDesc = 'UNKNOWN';
-			}
-			cxtContent +='<li><a href="#" link="frameContent.html?serverURL=';
-			cxtContent += getParameter(queryString, 'serverURL');
-			cxtContent += '&study=' + study;
-			cxtContent += '&series=' + series['seriesUID'];
-			cxtContent += '&seriesDesc=' + series['seriesDesc'];
-			cxtContent += '&images=' + series['totalInstances'];
-			cxtContent += '&modality=' + series['modality'] + '" onclick="triggerContext(jQuery(this));">' + seriesDesc + '</a></li>';
+			cxtContent+='</ul>';
 		}
-		cxtContent+='</ul>';
+		var div = document.createElement("div");
+		div.innerHTML = cxtContent;
+		document.body.appendChild(div);
+		jQuery("#canvasLayer2").contextMenu({menu: 'contextmenu1'});
+	} else {
+		setTimeout("loadContextMenu", 100);
 	}
-	var div = document.createElement("div");
-	div.innerHTML = cxtContent;
-	document.body.appendChild(div);
-	jQuery("#canvasLayer2").contextMenu({menu: 'contextmenu1'});
 }
 
 function triggerContext(contextItem) {

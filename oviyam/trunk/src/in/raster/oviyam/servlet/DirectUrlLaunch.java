@@ -70,7 +70,6 @@ public class DirectUrlLaunch extends HttpServlet {
      */
     public DirectUrlLaunch() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -80,7 +79,7 @@ public class DirectUrlLaunch extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	String patId = request.getParameter("patientID");
 		String studyId = request.getParameter("studyUID");
-		String serverName = request.getParameter("serverName");		
+		String serverName = request.getParameter("serverName");	
 		
 		if(studyId == null || studyId.length() == 0) {
 			studyId = "";			
@@ -126,15 +125,15 @@ public class DirectUrlLaunch extends HttpServlet {
 		            }
 		                        
 		            PatientInfo patientInfo = new PatientInfo(); 
-		            if(patIDs==null || patIDs.length == 1) {
-		            	patientInfo.callFindWithQuery(patId, studyId, dcmURL); 
-		            	
+		            if(patIDs==null || patIDs.length == 1) {		            	
+		            	patientInfo.callFindWithQuery(patId, studyId, dcmURL);		            	
 		            } else {
 		            	for(int i=0; i<patIDs.length; i++) {
 		            		patientInfo.callFindWithQuery(patIDs[i], studyId, dcmURL); 
 		            	}            	
 		            }
-		            int totalStudies = patientInfo.getStudyList().size();	            
+		            
+		            int totalStudies = patientInfo.getStudyList().size();		            
 					
 		            if(totalStudies == 1) {
 		           		forwardUrl = "/viewer.html?"; 
