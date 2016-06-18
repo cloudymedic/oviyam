@@ -79,18 +79,24 @@ public class QueryParamHandler {
         }
     }
 
-    public void addNewButton(Button btn, String userName) {
+    public String addNewButton(Button btn, String userName) {
         UserHandler uh = new UserHandler();
         User user = uh.findUserByName(userName);
 
         if(user != null) {
             SearchParams sp = user.getSearchParams();
             List<Button> btnsList = sp.getButtonsList();
+            for(Button button : btnsList) {
+            	if(button.getLabel().equals(btn.getLabel())) {
+            		return "Duplicate";
+            	}
+            }
             btnsList.add(btn);
             uh.updateUser(user);
         } else {
             uh.addNewUser(btn, userName);
         }
+        return "success";
     }
 
     public void deleteExistingButton(Button btn, String userName) {
