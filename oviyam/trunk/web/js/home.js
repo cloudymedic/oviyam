@@ -684,13 +684,14 @@ $(document).ready(function() {
 
 }); // for document ready
 
-function openViewer(nTrContent) {		
+function openViewer(nTrContent) {
+	
 	var jsonObj = {
             "pat_ID" : nTrContent[1],
             "pat_Name" : nTrContent[2],
            /* "pat_Birthdate" : nTrContent[3],
             "accNumber" : nTrContent[4],*/
-            "studyDate" : nTrContent[3],
+            "studyDate" : nTrContent[3].display,
             "studyDesc" : nTrContent[4],
             "modality" : nTrContent[5],
             "totalIns" : nTrContent[6],

@@ -147,7 +147,7 @@
 					}                   
                 }
                 $('#<%=tabName%>_table').css('width','100%');
-                dTable.fnAdjustColumnSizing();
+				dTable.columns.adjust().draw();
             }
             
             function toggleSearch(divider) {            	
@@ -188,11 +188,12 @@
             	}               	         	            	
             } 
             
-            function loadWest() {
-            	var selected = $(dTable.find('.row_selected'));
+            function loadWest() {                
+            	var selected = dTable.$('tr.row_selected');
             	
             	if(selected.length>0) {
-		        	var iPos = dTable.fnGetData($(dTable.find('.row_selected')).get(0));
+// 		        	var iPos = dTable.fnGetData($(dTable.find('.row_selected')).get(0));
+					var iPos = dTable.row(this).data();
 				    if( iPos == null ) {
 						return;
 				    }  
