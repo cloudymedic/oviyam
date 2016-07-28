@@ -190,6 +190,7 @@
             
             function loadWest() {
             	var selected = $(dTable.find('.row_selected'));
+            	
             	if(selected.length>0) {
 		        	var iPos = dTable.fnGetData($(dTable.find('.row_selected')).get(0));
 				    if( iPos == null ) {
@@ -212,9 +213,9 @@
 	<c:choose>
 	<c:when test="${param.preview=='true'}">
 		<div id="<%=tabName%>_westPane"
-			style="width: 250px; visibility: visible; display: block; z-index: 0; float: left; height: 94%;"></div>	
+			style="width: 255px; visibility: visible; display: block; z-index: 0; float: left; height: 94%;"></div>	
 
-		<div id="Toggler" style="position: absolute; top: 13.5%; left: 254px; z-index: 3;">
+		<div id="Toggler" style="position: absolute; top: 13.5%; left: 256px; z-index: 3;">
 
 		<div id="westToggler" title="Hide Preview" class="ui-state-default"
 			onmouseover="this.className='ui-state-hover'"
@@ -231,11 +232,11 @@
 
 		<c:choose>
 			<c:when test="${param.search=='true'}">
-				<div style="float: left; height: 84%; position: absolute; top: 13%; left:250px; right: 0px; bottom: 0px; padding: 0px'">
+				<div style="float: left; height: 84%; position: absolute; top: 13%; left:257px; right: 0px; bottom: 0px; padding: 0px'">
 			</c:when>
 		
 			<c:otherwise>
-				<div style="float: left; height: 100%; position: absolute; top: 0px; left:250px; right: 0px; bottom: 0px; padding: 0px'">
+				<div style="float: left; height: 100%; position: absolute; top: 0px; left:257px; right: 0px; bottom: 0px; padding: 0px'">
 			</c:otherwise>
 		
 		</c:choose>

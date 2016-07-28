@@ -122,6 +122,22 @@
 			.close {
 				background-image:url(images/arrow_down.gif);
 			}
+			
+			#previews::-webkit-scrollbar {
+				width: 14px;
+				background: #464646;
+			}
+
+            #previews::-webkit-scrollbar-track {
+			    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+			}   
+			
+			#previews::-webkit-scrollbar-thumb {
+ 			    -webkit-border-radius: 10px; 
+ 			    border-radius: 10px;
+				background: #262626;
+			    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+			}
 		</style>
 
 		<script type="text/javascript">		
@@ -180,7 +196,7 @@
         </div>
         
         <div id="previews" style="overflow: auto; height: 90%; border-top: 2px solid black;">
-        	<jsp:include page="Study.jsp?patient=${param.patient}&study=${param.study}&dcmURL=${param.dcmURL}&wadoUrl=${param.wadoUrl}&descDisplay=true&studyDesc=<%=studyDesc %>"></jsp:include>
+        	<jsp:include page="Study.jsp?patient=${param.patient}&study=${param.study}&dcmURL=${param.dcmURL}&wadoUrl=${param.wadoUrl}&descDisplay=true&studyDesc=${param.studyDesc}&studyDate=${param.studyDate}"></jsp:include>
         	<div id="otherStudiesInfo"> 
         	</div>
         	<div id="otherStudies" style="display:none;">

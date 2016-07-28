@@ -92,71 +92,82 @@
 			});
 		
 			function changeImgView(but) {		
-				 var imgBut = $(but).attr('src');
-	                var imgCount = 0;
-	
-	                if(imgBut.indexOf("all.png") >=0 ) {
-	                    $(but).attr('src', 'images/one.png');
-	
-	                    $(but).parent().prev().children().each(function() {
-	                        if(imgCount == 0) {
-	                            $(this).css('background-color', '#00F');
-	                        } else {
-	                            $(this).css('background-color', !$(this).hasClass('waiting') ? '#a6a6a6' : '#464646');
-	                        }
-	                        imgCount++;
-	                    });
-	
-	                    imgCount = 0;
-	
-	                    $(but).parent().parent().next().children().children().each(function() {
-	                        if(imgCount == 0) {
-	                            $(this).css('display', 'inline');
-	                        } else {
-	                            $(this).css('display', 'none');
-	                        }
-	                        imgCount++;
-	                    });
-	                } else if(imgBut.indexOf("one.png") >=0 ) {
-	                    $(but).attr('src', 'images/three.png');
-	                    var serDivs = $(but).parent().prev().children();
-	                    var totserDivs = serDivs.length;
-	                    serDivs.each(function() {
-	                        if(imgCount == 0 || imgCount == Math.round(totserDivs/2)-1 || imgCount == totserDivs-1) {
-	                            $(this).css('background-color', '#00F');
-	                        } else {
-	                            $(this).css('background-color', !$(this).hasClass('waiting') ? '#a6a6a6' : '#464646');
-	                        }
-	                        imgCount++;
-	                    });
-	
-	                    imgCount = 0;
-	
-	                    var serImgs = $(but).parent().parent().next().children().children();
-	                    var serInsCnt = serImgs.length;
-	                    serImgs.each(function() {
-	                        if(imgCount == 0 || imgCount == Math.round(serInsCnt/2)-1 || imgCount == serInsCnt-1) {
-	                            $(this).css('display', 'inline');
-	                        } else {
-	                            $(this).css('display', 'none');
-	                        }
-	                        imgCount++;
-	                    });
-	                } else {
-	                    $(but).attr('src', 'images/all.png');
-	
-	                    $(but).parent().prev().children().each(function() {
-	                    	$(this).css('background-color', !$(this).hasClass('waiting') ? '#00F' : '#464646');
-	                    });
-	
-	                    $(but).parent().parent().next().children().children().each(function() {
-	                        $(this).css('display', 'inline');
-	                    });
-	                }
+				var imgBut = $(but).attr('src');
+                var imgCount = 0;
+
+                if(imgBut.indexOf("all.png") >=0 ) {
+                    $(but).attr('src', 'images/one.png');
+                	
+                    $(but).parent().prev().children().each(function() {
+                        if(imgCount == 0) {
+                            $(this).css('background-color', '#00F');
+                        } else {
+                            $(this).css('background-color', !$(this).hasClass('waiting') ? '#a6a6a6' : '#464646');
+                        }
+                        imgCount++;
+                    });
+
+                    imgCount = 0;	                   
+                   	var seriesId = $(but).attr("name");
+                    seriesId = seriesId.substring(0,seriesId.indexOf("|")-1);
+                    seriesId = seriesId.replace(/\./g,'_') + "_table";
+                    
+                    $("#" + seriesId + " tr:last").children().children().each(function() {
+                        if(imgCount == 0) {
+                            $(this).css('display', 'inline');
+                        } else {
+                            $(this).css('display', 'none');
+                        }
+                        imgCount++;
+                    });
+                } else if(imgBut.indexOf("one.png") >=0 ) {
+                    $(but).attr('src', 'images/three.png');
+                    var serDivs = $(but).parent().prev().children();
+                    var totserDivs = serDivs.length;
+                    serDivs.each(function() {
+                        if(imgCount == 0 || imgCount == Math.round(totserDivs/2)-1 || imgCount == totserDivs-1) {
+                            $(this).css('background-color', '#00F');
+                        } else {
+                            $(this).css('background-color', !$(this).hasClass('waiting') ? '#a6a6a6' : '#464646');
+                        }
+                        imgCount++;
+                    });
+
+                    imgCount = 0;
+					var seriesId = $(but).attr("name");
+                    seriesId = seriesId.substring(0,seriesId.indexOf("|")-1);
+                    seriesId = seriesId.replace(/\./g,'_') + "_table";
+                    
+                    var serImgs = $("#" + seriesId + " tr:last").children().children();
+                    var serInsCnt = serImgs.length;
+                    
+                    serImgs.each(function() {
+                        if(imgCount == 0 || imgCount == Math.round(serInsCnt/2)-1 || imgCount == serInsCnt-1) {
+                            $(this).css('display', 'inline');
+                        } else {
+                            $(this).css('display', 'none');
+                        }
+                        imgCount++;
+                    });
+                } else {
+                    $(but).attr('src', 'images/all.png');
+
+                    $(but).parent().prev().children().each(function() {
+                    	$(this).css('background-color', !$(this).hasClass('waiting') ? '#00F' : '#464646');
+                    });
+
+                    var seriesId = $(but).attr("name");
+                    seriesId = seriesId.substring(0,seriesId.indexOf("|")-1);
+                    seriesId = seriesId.replace(/\./g,'_') + "_table";
+                    
+                    $("#" + seriesId + " tr:last").children().children().each(function() {
+                        $(this).css('display', 'inline');
+                    });
+                }
 			}
 		
 			function changeSeries(image) {
-				var imgSrc = image.src;				
+				var imgSrc = image.src;							
 		
 				if (imgSrc.indexOf('images/SR_Latest.png') > 0) {
 					imgSrc = jQuery(image).attr('imgSrc');
@@ -172,7 +183,7 @@
 				url += imgSrc.substring(imgSrc.indexOf('?') + 1);
 				url += '&instanceNumber=' + parseInt(image.name - 1);
 		
-				var actFrame = getActiveFrame();
+				var actFrame = getActiveFrame();				
 				$(actFrame).css("visibility", "hidden");
 				jQuery('#loadingView', window.parent.document).show();
 				actFrame.src = url;
@@ -206,7 +217,7 @@
         		<fmt:formatNumber var="middle" maxFractionDigits="0" value="${middle}" />
        			<fmt:parseNumber var="total" type="number" value="${numberOfImages}" />			
 				
-				<script type="text/javascript">
+				<script type="text/javascript">					
 		            series.push({
 			            "seriesUID" : '${seriesId}',
 						"totalInstances" : '${numberOfImages}',

@@ -83,7 +83,23 @@
             #toggleWest {
             	cursor: pointer;
             	float: right;        	
-            }           
+            } 
+            
+            #previews::-webkit-scrollbar {
+				width: 14px;
+				background: #464646;
+			}
+
+            #previews::-webkit-scrollbar-track {
+			    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+			}   
+			
+			#previews::-webkit-scrollbar-thumb {
+ 			    -webkit-border-radius: 10px; 
+ 			    border-radius: 10px;
+				background: #262626;
+			    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+			}          
         </style>
 
         <script type="text/javascript">

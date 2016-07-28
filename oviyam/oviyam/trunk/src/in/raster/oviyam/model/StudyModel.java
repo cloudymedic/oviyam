@@ -99,7 +99,7 @@ public class StudyModel implements Serializable {
         }
         
         studyTime = ds.getString(Tags.StudyTime)!=null ? ds.getString(Tags.StudyTime) : "unknown";
-        studyDescription = ds.getString(Tags.StudyDescription) != null ? ds.getString(Tags.StudyDescription).replace("^", " ") : "";
+        studyDescription = ds.getString(Tags.StudyDescription) != null ? ds.getString(Tags.StudyDescription).replace("^", " ") : "[No study description]";
 
         String[] modalities = ds.getStrings(Tags.ModalitiesInStudy) != null ? ds.getStrings(Tags.ModalitiesInStudy) : null;
         if(modalities != null) {
