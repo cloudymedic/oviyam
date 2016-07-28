@@ -451,14 +451,17 @@ function synchronize(e) {
 		var data = sessionStorage!=null ? sessionStorage[seriesUid] : false;
 		if(data) {
 			data = JSON.parse(data);
-			for(var i=0;i<data.length;i++) {
-				var sliceLoc = (data[i])['sliceLocation'];
 			
-				if(sliceLoc>=fromTo['from'] && sliceLoc<=fromTo['to'] && parseFloat(sliceLoc)-parseFloat(fromTo['sliceLoc'])<128) {
-					imgInc = (i+1);
-					showImg(seriesUid+ '_' + imgInc);
-					loadInstanceText(false,false);
-					break;
+			if(data!=null) {
+				for(var i=0;i<data.length;i++) {
+					var sliceLoc = (data[i])['sliceLocation'];
+				
+					if(sliceLoc>=fromTo['from'] && sliceLoc<=fromTo['to'] && parseFloat(sliceLoc)-parseFloat(fromTo['sliceLoc'])<128) {
+						imgInc = (i+1);
+						showImg(seriesUid+ '_' + imgInc);
+						loadInstanceText(false,false);
+						break;
+					}
 				}
 			}
 		}
