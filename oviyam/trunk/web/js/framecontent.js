@@ -195,8 +195,8 @@ function showImage(imgSrc,image) {
 	showImg(null,image,true);	
 }
 
-function showImg(imgSrc,image,updatePreview) {
-	var image = imgSrc!=null ? jQuery('#'+imgSrc.replace(/\./g,'_'), window.parent.document).get(0) : image;
+function showImg(imgSrc,img,updatePreview) {
+	var image = imgSrc!=null ? jQuery('#'+imgSrc.replace(/\./g,'_'), window.parent.document).get(0) : img;
 	if(image.src.indexOf('rawdata.png')>=0) {
 		throw 'rawdata';
 		return;
@@ -206,25 +206,35 @@ function showImg(imgSrc,image,updatePreview) {
 	
 	ctx.save();
 	ctx.setTransform(1,0,0,1,0,0);		
-	ctx.clearRect(0,0,canvas.width,canvas.height);
-	ctx.translate(state.translationX, state.translationY);
-
+	ctx.clearRect(0,0,canvas.width,canvas.height);	
+	
+	var translate = true;
+	if(jQuery("#tool").html()=="move") {
+		ctx.translate(state.translationX, state.translationY);
+		translate = false;
+	}
+	
 	if(state.vflip) {
 		ctx.translate(0,canvas.height);
 		ctx.scale(1,-1);
 	}
-	
+
 	if(state.hflip) {
 		ctx.translate(canvas.width,0);
 		ctx.scale(-1,1);
 	}
-	
+
 	if(state.rotate!=0) {
 		ctx.translate(canvas.width/2,canvas.height/2);
 		ctx.rotate(state.rotate===90 ? Math.PI/2 : state.rotate===180? Math.PI : (Math.PI*3)/2);
 		ctx.translate(-canvas.width/2,-canvas.height/2);	   
-	}		
-	ctx.scale(state.scale,state.scale);		
+	}	
+	
+	if(translate) {
+		ctx.translate(state.translationX, state.translationY);	
+	}
+	ctx.scale(state.scale,state.scale);			
+	
 	ctx.drawImage(image,0,0);
 	ctx.restore();
 	
@@ -614,9 +624,41 @@ function loadPreview(image) {
 	previewCanvas.width = highlightCanvas.width = getScreenNavImageWidth();
 	previewCanvas.height = highlightCanvas.height = getScreenNavImageHeight();
 	var context = previewCanvas.getContext('2d');
-	context.drawImage(image,0,0,getScreenNavImageWidth(),getScreenNavImageHeight());	
+	//context.drawImage(image,0,0,getScreenNavImageWidth(),getScreenNavImageHeight());	
+	drawPreview(document.getElementById("previewCanvas"), image);
 	drawoutline();
 	addNavigationListener(highlightCanvas); 
+}
+
+/**
+ * Renders preview image in preview canvase
+ * @param canvas Preview canvas
+ * @param image Preview image
+ */
+function drawPreview(canvas,image) {
+	var context = canvas.getContext('2d');
+	context.save();
+	context.setTransform(1,0,0,1,0,0);
+	context.clearRect(0,0,canvas.width,canvas.height);	
+	if(state.vflip) {
+		context.translate(0,canvas.height);
+		context.scale(1,-1);
+	}
+	if(state.hflip) {
+		context.translate(canvas.width,0);
+		context.scale(-1,1);
+	}
+	if(state.rotate!=0) {
+		context.translate(canvas.width/2,canvas.height/2);
+		context.rotate(state.rotate===90 ? Math.PI/2 : state.rotate===180? Math.PI : (Math.PI*3)/2);
+		context.translate(-canvas.width/2,-canvas.height/2);	   
+	}
+	context.drawImage(image,0,0,getScreenNavImageWidth(),getScreenNavImageHeight());
+	context.restore();
+	
+	if(state.invert) {
+		window.parent.doInvert(jQuery('#previewCanvas').get(0),false);
+	}
 }
 
 function getScreenNavImageWidth() {
