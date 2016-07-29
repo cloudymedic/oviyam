@@ -333,10 +333,11 @@ public class PatientInfoHandler extends SimpleTagSupport {
 
                     Date sDateTmp = null;
                     try {
-                        sDateTmp = parseFmt.parse(sDate);
-                        getJspContext().setAttribute("dateOrder", sDateTmp.getTime());
-                    } catch(ParseException pe) {
+                        sDateTmp = parseFmt.parse(sDate);                        
+                        getJspContext().setAttribute("dateOrder", sDateTmp.getTime());                        
+                    } catch(ParseException pe) {                    	
                         getJspContext().setAttribute("studyDate", sDate);
+                        getJspContext().setAttribute("dateOrder", sDateTmp==null ? Long.MIN_VALUE : sDate);
                         getJspBody().invoke(null);
                         continue;
                     }
