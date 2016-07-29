@@ -208,7 +208,7 @@ function fetchOtherStudies() {
 	$.get("UserConfig.do", {'settings': 'prefetch', 'todo': 'READ'}, function(data) {
 		var doFetch = false;
 		if(directLaunch) {
-			if(getParameter(document.location.search.substring(1), "patientID")!='null') {
+			if(data.trim()=='Yes' && getParameter(document.location.search.substring(1), "patientID")!='null') {
 				doFetch = true;
 			}
 		} else {
