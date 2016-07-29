@@ -148,7 +148,7 @@ function activatestack(tool) {
 function activateVFlip(tool) {
 	var image = seriesUid + "_" + imgInc;
 	state.vflip = state.vflip? false : true;
-	showImg(image);
+	showImg(image,null,true);
 	flipOrientationToVertical();
 }
 
@@ -162,7 +162,7 @@ function flipOrientationToVertical() {
 function activateHFlip(tool) {
 	var image = seriesUid + "_" + imgInc;
 	state.hflip = state.hflip? false : true;
-	showImg(image);
+	showImg(image,null,true);
 	flipOrientationToHorizontal();
 }
 
@@ -186,7 +186,7 @@ function activateLeftRotation(tool) {
 			state.rotate = 90;
 			break;
 	}
-	showImg(image);
+	showImg(image,null,true);
 	rotateLeftTextOverlay();
 }
 
@@ -206,7 +206,7 @@ function activateRightRotation(tool) {
 	if(state.rotate>=360) {
 		state.rotate=0;
 	}
-	showImg(image);
+	showImg(image,null,true);
 	rotateRightTextOverlay();
 }
 
