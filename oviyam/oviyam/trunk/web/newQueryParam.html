@@ -49,22 +49,7 @@
                 });
 
                 $('#resetBtn').click(function() {
-                    $('#displayName').val('');
-                    $('#studyDateFilter').val('Any date');
-                    $('#studyTimeFilter').val('Last 30 min');
-                    $('#fromDate').val('');
-                    //$('#toDate').val('');
-                    $('#dateRange').hide();
-                    $('#fromTime').val('00:00');
-                    $('#toTime').val('23:59');
-                    $('#timeRange').hide();
-                    //To clear modality filter
-                    var $checked = $("#modalitiesTable :checked");
-                    $checked.each(function() {
-                        $(this).attr('checked', false);
-                    });
-                    $('#modalities').val('');
-                    $('#autoRefreshTF').val('');
+                    reset();
                 });
 
                 $('#saveBtn').click(function() {
@@ -141,6 +126,7 @@
                                         type: 'error'
                                     });
                                 }
+                                reset();
                             }
                         });
                     } else {
@@ -162,9 +148,29 @@
                         $('#autoRefreshTF').removeAttr('disabled');
                         $('#autoRefreshDD').removeAttr('disabled');
                     }
+                });   
+            }); //for document.ready 
+            
+            function reset() {
+            	$('#displayName').val('');
+                $('#studyDateFilter').val('Any date');
+                $('#studyTimeFilter').val('Last 30 min');
+                $('#fromDate').val('');
+                //$('#toDate').val('');
+                $('#dateRange').hide();
+                $('#fromTime').val('00:00');
+                $('#toTime').val('23:59');
+                $('#timeRange').hide();
+                //To clear modality filter
+                var $checked = $("#modalitiesTable :checked");
+                $checked.each(function() {
+                    $(this).attr('checked', false);
                 });
-
-            }); //for document.ready
+                $('#modalities').val('');
+                $("#studyDesc").val('');
+                $('#autoRefreshTF').val('');
+                $("#autoRefresh").attr('checked',false);
+            }
         </script>
 
         <style type="text/css">
