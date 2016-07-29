@@ -88,7 +88,7 @@ public class QueryParamHandler {
             List<Button> btnsList = sp.getButtonsList();
             for(Button button : btnsList) {
             	if(button.getLabel().equals(btn.getLabel())) {
-            		return "Duplicate";
+            		return "Filter name already exists";
             	}
             }
             btnsList.add(btn);

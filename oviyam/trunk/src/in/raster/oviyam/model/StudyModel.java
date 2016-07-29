@@ -84,10 +84,10 @@ public class StudyModel implements Serializable {
         patientGender = ds.getString(Tags.PatientSex)!=null ? ds.getString(Tags.PatientSex) : "unknown";
         patientBirthDate = ds.getString(Tags.PatientBirthDate) != null ? ds.getString(Tags.PatientBirthDate) : "";
         physicianName = ds.getString(Tags.ReferringPhysicianName) != null ? ds.getString(Tags.ReferringPhysicianName) : "";
-        studyDate = ds.getString(Tags.StudyDate)!=null ? ds.getString(Tags.StudyDate) : "unknown";
+        studyDate = ds.getString(Tags.StudyDate)!=null ? ds.getString(Tags.StudyDate) : "[No study date]";
         parsedDate = Calendar.getInstance();        
         
-        if(studyDate!=null && !studyDate.equals("unknown")) {
+        if(studyDate!=null && !studyDate.contains("[No study date]")) {
         	try {        		
         		parsedDate.set(Integer.parseInt(studyDate.substring(0,4)), Integer.parseInt(studyDate.substring(4,6))-1, Integer.parseInt(studyDate.substring(6,8)));        		
         	} catch(Exception ex) {
@@ -98,7 +98,7 @@ public class StudyModel implements Serializable {
         	parsedDate = null;
         }
         
-        studyTime = ds.getString(Tags.StudyTime)!=null ? ds.getString(Tags.StudyTime) : "unknown";
+        studyTime = ds.getString(Tags.StudyTime)!=null ? ds.getString(Tags.StudyTime) : "";
         studyDescription = ds.getString(Tags.StudyDescription) != null ? ds.getString(Tags.StudyDescription).replace("^", " ") : "[No study description]";
 
         String[] modalities = ds.getStrings(Tags.ModalitiesInStudy) != null ? ds.getStrings(Tags.ModalitiesInStudy) : null;
