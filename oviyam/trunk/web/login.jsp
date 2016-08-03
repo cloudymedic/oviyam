@@ -108,7 +108,7 @@
         <form name="login" id="login" action="j_security_check" method="POST" onsubmit="return validateForm(this);">
             <fieldset>
                 <legend><font>Login</font></legend>
-                <h1><script>document.write(languages['PageTitle']) </script></h1> <h4>DICOM Web Workstation - Version 2.2.1</h4>
+                <h1><script>document.write(languages['PageTitle']) </script></h1> <h4>DICOM Web Workstation - Version 2.3</h4>
                 
                 <label><font><script>document.write(languages['UserName'])</script> </font><span class="mandatory"><font>*</font></span><font> :</font></label>
                 <input type="text" name="j_username" class="textInput" required>
