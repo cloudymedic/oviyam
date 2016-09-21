@@ -106,6 +106,8 @@ public class StudyInfoServlet extends HttpServlet {
             server = sh.findServerByName("");
         }
 
+        response.setCharacterEncoding("UTF-8");
+        
         PrintWriter out = response.getWriter();
         JSONObject jsonObj = new JSONObject();
 
