@@ -446,7 +446,7 @@ function getFromToLoc() {
 }
 
 function synchronize(e) {
-	if(jQuery('body').css('border')!='1px solid rgb(255, 138, 0)' && e.detail.forUid===jQuery('#forUIDPanel').html()) {
+	if(document.body.style.border.indexOf("255, 138, 0")<0 && e.detail.forUid===jQuery('#forUIDPanel').html()) {
 		var fromTo = e.detail.fromTo;		
 		var data = sessionStorage!=null ? sessionStorage[seriesUid] : false;
 		if(data) {
