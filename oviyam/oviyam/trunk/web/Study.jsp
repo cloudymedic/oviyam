@@ -373,8 +373,22 @@
 				</table>      				 
 			</ser:Series>
 		</div>
-		<script type="text/javascript">
-			sessionStorage['${param.study}'] = JSON.stringify(series);							
+		<script type="text/javascript">	
+			var studyId = '${param.study}';
+			if(sessionStorage[studyId]==undefined) {
+				var study = {"studyUID":studyId,"studyDesc":"${param.studyDesc}","studyDate":"${param.studyDate}"};
+				var studyData = sessionStorage["${param.patient}"];
+
+				if(studyData == undefined) {
+					studyData = new Array();
+				} else {
+					studyData = JSON.parse(studyData);
+				}
+
+				studyData.push(study);
+				sessionStorage["${param.patient}"] = JSON.stringify(studyData);				
+			}		
+			sessionStorage[studyId] = JSON.stringify(series);							
 		</script>
 	</body>
 </html>

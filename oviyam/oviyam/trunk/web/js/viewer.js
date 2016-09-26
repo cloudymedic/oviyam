@@ -229,26 +229,30 @@ function fetchOtherStudies() {
 					$("#otherStudiesInfo").text("No archived studies found.");
 				}
 				$.each(data, function(i, study) {
-					var link = encodeURI("Study.jsp?patient=" + pat.pat_ID + "&study=" + study["studyUID"] + "&dcmURL=" + pat.dicomURL	+ "&wadoUrl=" + pat.serverURL + "&studyDesc=" + study["studyDesc"] + "&descDisplay=false");
-					var div = "<div id=" + study['studyUID'] + " class='accordion close' link=" + link + " onclick='loadOther(this);'>" + study['dateDesc'] + "</div>";			
+					var link = encodeURI("Study.jsp?patient=" + pat.pat_ID + "&study=" + study["studyUID"] + "&dcmURL=" + pat.dicomURL	+ "&wadoUrl=" + pat.serverURL + "&studyDesc=" + study["studyDesc"] + "&studyDate=" + study["studyDate"] + "&descDisplay=false");
+//					var div = "<div id=" + study['studyUID'] + " class='accordion close' link=" + link + " onclick='loadOther(this);'>" + study['dateDesc'] + "</div>";
+					var div = "<div id=" + study['studyUID'] + " class='accordion' link=" + link + " onclick='loadOther(this,false);'" + " >" + study['dateDesc'] + " <img src='images/download.png' style='padding-right: 5px; float: right;' title='Download this study' onclick='loadOther(this,true);' /> </div>";
 					$('#otherStudies').append(div);
 					$('#otherStudies').append(document.createElement("div"));
 				});
 				$("#otherStudies").show();
+				$("#otherStudiesInfo").show();
 			}, "json");
-		} else {
-			$("#otherStudiesInfo").css("display","none");
-		}
+		} 
 	},"text");
 }
 
-function loadOther(div) {	
+function loadOther(div1,isRet) {	
+	var div = isRet ? $(div1).parent() : div1;	
 	var childDiv = $(div).next();	
+	
 	if($(childDiv).children().length>0) {				
 		acc($(div));
-	} else {
+	} else if(isRet) {
+		$(div).addClass("loading");
+		$(div1).remove();
 		$(childDiv).load($(div).attr('link'));
-		$(div).removeClass("close").addClass("open");
+		acc($(div));
 	}
 	
 }

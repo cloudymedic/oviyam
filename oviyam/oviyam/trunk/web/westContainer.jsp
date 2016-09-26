@@ -103,6 +103,10 @@
 				background-color:#555;
 			}
 			
+			.loading {
+				background-image:url(images/loading.gif);
+			}
+			
 			#otherStudiesInfo {
 				padding:5px;
 				font-weight:bold;
@@ -178,12 +182,26 @@
 			}
 
 			function acc(acc1) {
-            	acc1.next().toggle();          	
+            	/*acc1.next().toggle();          	
             	if(acc1.hasClass('open')) {
             		acc1.removeClass('open').addClass('close');
             	} else {
             		acc1.removeClass('close').addClass('open');
-            	}      	
+            	} */
+            	if(acc1.hasClass("open")) {
+                	acc1.removeClass("open").addClass("close");
+                	acc1.next().hide();
+            	} else {
+                	$(".accordion").next().hide();
+                	$(".accordion").each(function() {
+                    	if($(this).hasClass("open")) {
+                        	$(this).removeClass("open").addClass("close");
+                    	}
+                	});
+                	acc1.removeClass("close").addClass("open");
+                	acc1.next().show();
+            	}
+                	     	
             }
 		</script>
 	</head>
@@ -197,8 +215,7 @@
         
         <div id="previews" style="overflow: auto; height: 90%; border-top: 2px solid black;">
         	<jsp:include page="Study.jsp?patient=${param.patient}&study=${param.study}&dcmURL=${param.dcmURL}&wadoUrl=${param.wadoUrl}&descDisplay=true&studyDesc=${param.studyDesc}&studyDate=${param.studyDate}"></jsp:include>
-        	<div id="otherStudiesInfo"> 
-        	</div>
+        	<div id="otherStudiesInfo" style="display: none;"> </div>
         	<div id="otherStudies" style="display:none;">
         	</div>
         </div>     
