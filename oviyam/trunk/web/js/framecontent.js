@@ -12,12 +12,17 @@ var mouseLocX;
 var mouseLocY;
 var mousePressed; 
 var columns;
+var isSliderLoaded = false;
 
 jQuery('#ImagePane').ready(function() {
 
-	var ht = jQuery(window).height() - 3 + 'px';
-    jQuery('body').css('height',ht );
+	var ht = jQuery(window).height();
+//	var ht = jQuery(window).height() - 3 + 'px';
+    jQuery('body').css('height',ht - 3 + 'px' );
     
+    jQuery('#footer').css("height",(ht-165) + "px");
+    jQuery('#trackbar1').css("height",(ht-200) + "px");
+    jQuery('#end').css("top",(ht-170) + "px");    
 
     jQuery("#frameSrc").html(window.location.href);  
  	jQuery('#studyId').html(getParameter(window.location.href,'study'));
@@ -98,7 +103,7 @@ jQuery('#ImagePane').ready(function() {
     window.addEventListener('resize', resizeCanvas, false);  
    	jQuery('#tool').html('');
    	
-   	jQuery.get("UserConfig.do", {
+   /*	jQuery.get("UserConfig.do", {
         'settings':'viewerSlider',
         'todo':'READ'
     }, function(data){
@@ -106,7 +111,7 @@ jQuery('#ImagePane').ready(function() {
             isSlider = true;
             loadSlider();
         }
-    },'text');	    
+    },'text');*/	    
      
 	loadInstanceText(true,true);
     
@@ -260,6 +265,7 @@ function loadTextOverlay() {
 	jQuery('#modalityDiv').html(getParameter(src,'modality'));
 	total = parseInt(getParameter(src,'images'));
 	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
+	loadSlider();
 }
 
 function loadInstanceText(checkForUpdate,autoplay) {
@@ -302,7 +308,14 @@ function loadInstanceText(checkForUpdate,autoplay) {
 						
 						var frmSrc = jQuery('#frameSrc').text();				
 						frmSrc = frmSrc.substring(0,frmSrc.indexOf("&object"));
-						jQuery('#frameSrc').html(frmSrc + "&object=" + data['SopUID']);	
+						jQuery('#frameSrc').html(frmSrc + "&object=" + data['SopUID']);
+						
+						if(!isSliderLoaded) {
+							jQuery("#totalImages").text('Frames:' + frameInc + '/' + data['numberOfFrames']);
+							loadSlider();
+							isSliderLoaded = true;
+						}						
+						
 						if(autoplay) {									
 							var frameTime = parseFloat(data['frameTime']); 
 							if(frameTime>0.0) {
@@ -474,6 +487,7 @@ function onTileSelection(e) {
 function resizeCanvas() { //To resize the canvas on any screen size change
 	var height = jQuery(window).height() - 3;
     jQuery('body').css('height',height +"px");
+    jQuery('#footer').css("height",(height-195) + "px");
     var width = jQuery(window).width()-3;
     jQuery('body').css('width',width + "px");
     
