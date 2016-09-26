@@ -333,52 +333,57 @@ function doLoop(loop) {
 }
 
 function loadSlider() {
-	if(isSlider) {			
+//	if(isSlider) {			
 		if(total>1) {
 			if(jQuery('#multiframe').css('visibility')==="hidden") {
 				setSliderRange(imgInc, total);	
 			} else {
 				setSliderRange(frameInc, total);	
 			}
+			jQuery('#footer').show();		
+			jQuery("#trackbar1").css("display","block");
+			jQuery("#imgOriRight").css("right","35px");
 		} else {
 			jQuery('#footer').hide();
+			jQuery("#imgOriRight").css("right","10px");		
 		}
-	}
-	
-	jQuery('.ui-slider-handle').css('height', '10px');
-	jQuery('.ui-slider-handle').css('width', '10px');
-	jQuery('.ui-slider-horizontal').css('height', '.4em');
-	jQuery('.ui-slider-horizontal').css('top', '8px');
-	jQuery('.ui-slider-horizontal').css('cursor', 'pointer');
+//	}
+	jQuery(jQuery("#trackbar1").children().get(0)).removeAttr("href");	
 }
 
 function setSliderRange(val,maxVal) {
 	jQuery('#trackbar1').slider({
-		range: "min",
-		value: val,
+		orientation:"vertical",		
+		value: maxVal,
 		min: 1,
 		max: maxVal,
 		slide: onTick
-	});
+	});	
+	jQuery("#start").html(1);
+	jQuery("#end").html(maxVal);
 }
 
 function onTick(event, ui) {	
 	if(jQuery('#multiframe').css('visibility')==="hidden") {
-		imgInc = ui.value;
+		imgInc = (total-ui.value)+1;	
 		showImg(seriesUid + '_' + imgInc);
 	} else {
-		frameInc = ui.value;
+		frameInc = (total-ui.value)+1;
 		showImg(getParameter(jQuery('#frameSrc').html(),'object') + '_' + frameInc);	
 	}
 	loadInstanceText(false,false);
 }
 
 function setSliderValue() {
-	if(jQuery('#multiframe').css('visibility')==="hidden") {
+	/*if(jQuery('#multiframe').css('visibility')==="hidden") {
 		jQuery('#trackbar1').slider("option","value",imgInc);
 	} else {
 		jQuery('#trackbar1').slider("option","value",frameInc);
-	}
+	}*/
+	var inst_text = jQuery("#totalImages").text().split("/");
+	var iNo = parseInt(inst_text[0].split(":")[1]);	
+	jQuery('#trackbar1').slider("option","value",(parseInt(inst_text[1])-iNo)+1);
+	jQuery(jQuery("#trackbar1").children().get(0)).text(iNo);	
 }
 
 function convertSplChars(str)
