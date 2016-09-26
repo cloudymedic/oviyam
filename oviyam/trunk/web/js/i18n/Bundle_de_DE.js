@@ -51,6 +51,7 @@ var languages = {
     StudytimeFilter: "Studienzeit Filter",
     ModalityFilter: "Modalit&auml;ten Filter",
     AutoRefresh: "Automatisch aktualisieren",
-    IOviyamCxt: "iOviyam Context"
+    IOviyamCxt: "iOviyam Context",
+    Download: "Download this study"
 
 };

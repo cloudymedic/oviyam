@@ -266,6 +266,21 @@ function loadTextOverlay() {
 	total = parseInt(getParameter(src,'images'));
 	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
 	loadSlider();
+	
+	var studyData = JSON.parse(sessionStorage[window.parent.pat.pat_ID]);
+	var thisStudy = getParameter(window.location.href,"study");
+	
+	if(studyData!=undefined) {
+		for(var st=0;st<studyData.length;st++) {
+			var curr_study = studyData[st];
+			
+			if(curr_study["studyUID"]==thisStudy) {				
+				jQuery('#studyDesc').html(curr_study['studyDesc']);
+				jQuery('#studyDate').html(curr_study['studyDate']);
+				break;
+			}
+		}
+	}
 }
 
 function loadInstanceText(checkForUpdate,autoplay) {
@@ -790,8 +805,8 @@ function loadContextMenu() {
 		if(isCompatible()) {
 			for(var i=0;i<seriesData.length;i++) {
 				var series = seriesData[i];
-				jQuery('#studyDesc').html(series['studyDesc']);
-				jQuery('#studyDate').html(series['studyDate']);
+//				jQuery('#studyDesc').html(series['studyDesc']);
+//				jQuery('#studyDate').html(series['studyDate']);
 				var seriesDesc = convertSplChars(series['seriesDesc']);            			
 				if(seriesDesc== undefined && seriesDesc==='') {
 					seriesDesc = 'UNKNOWN';
@@ -802,8 +817,8 @@ function loadContextMenu() {
 		} else {
 			for(var i=0;i<seriesData.length;i++) {
 				var series = seriesData[i];
-				jQuery('#studyDesc').html(series['studyDesc']);
-				jQuery('#studyDate').html(series['studyDate']);
+//				jQuery('#studyDesc').html(series['studyDesc']);
+//				jQuery('#studyDate').html(series['studyDate']);
 				var seriesDesc = convertSplChars(series['seriesDesc']);
 				if(seriesDesc==undefined && seriesDesc==='') {
 					seriesDesc = 'UNKNOWN';

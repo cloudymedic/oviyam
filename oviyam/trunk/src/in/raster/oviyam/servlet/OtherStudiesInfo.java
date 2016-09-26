@@ -85,8 +85,7 @@ public class OtherStudiesInfo extends HttpServlet {
     throws ServletException, IOException {
         String patID = request.getParameter("patientID");
         String studyUID = request.getParameter("studyUID");
-        String dcmURL = request.getParameter("dcmURL");
-        
+        String dcmURL = request.getParameter("dcmURL");       
         
             
             PatientInfo patientInfo = new PatientInfo(); 
