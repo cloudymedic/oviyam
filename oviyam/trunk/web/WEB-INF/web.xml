@@ -25,6 +25,10 @@
         <servlet-class>in.raster.oviyam.servlet.PixelDataServlet</servlet-class>
     </servlet>  
     <servlet>
+        <servlet-name>DicomRetrieve</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.DicomRetrieve</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ServerConfigServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.ServerConfigServlet</servlet-class>
     </servlet>
@@ -103,6 +107,10 @@
         <servlet-name>PixelData</servlet-name>
         <url-pattern>/pixel.do</url-pattern>
     </servlet-mapping> 
+    <servlet-mapping>
+        <servlet-name>DicomRetrieve</servlet-name>
+        <url-pattern>/DcmStream.do</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ServerConfigServlet</servlet-name>
         <url-pattern>/ServerConfig.do</url-pattern>
