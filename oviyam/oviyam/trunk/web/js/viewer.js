@@ -231,7 +231,7 @@ function fetchOtherStudies() {
 				$.each(data, function(i, study) {
 					var link = encodeURI("Study.jsp?patient=" + pat.pat_ID + "&study=" + study["studyUID"] + "&dcmURL=" + pat.dicomURL	+ "&wadoUrl=" + pat.serverURL + "&studyDesc=" + study["studyDesc"] + "&studyDate=" + study["studyDate"] + "&descDisplay=false");
 //					var div = "<div id=" + study['studyUID'] + " class='accordion close' link=" + link + " onclick='loadOther(this);'>" + study['dateDesc'] + "</div>";
-					var div = "<div id=" + study['studyUID'] + " class='accordion' link=" + link + " onclick='loadOther(this,false);'" + " >" + study['dateDesc'] + " <img src='images/download.png' style='padding-right: 5px; float: right;' title='Download this study' onclick='loadOther(this,true);' /> </div>";
+					var div = "<div id=" + study['studyUID'] + " class='accordion' link=" + link + " onclick='loadOther(this,false);'" + " >" + study['dateDesc'] + " <img src='images/download.png' style='padding-right: 5px; float: right;' title='Load this study' onclick='loadOther(this,true);' /> </div>";
 					$('#otherStudies').append(div);
 					$('#otherStudies').append(document.createElement("div"));
 				});

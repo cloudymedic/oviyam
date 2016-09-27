@@ -5,7 +5,6 @@ var state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false
 var navState = {screenNavImgFactor: 0.15,navigationImgFactor:0.3,scale:0,width:0,height:0,outline:{x:0,y:0,w:0,h:0},drag:false};
 var doMouseWheel = true;
 var loopTimer = null;
-var isSlider = false;
 var pixelBuffer = null, lookupObj = null, pixelData = null, tmpCanvas = null, numPixels = 0;
 var windowCenter='',windowWidth,modifiedWC=undefined,modifiedWW=undefined,maxPix=0,minPix=0;
 var mouseLocX;
@@ -17,7 +16,6 @@ var isSliderLoaded = false;
 jQuery('#ImagePane').ready(function() {
 
 	var ht = jQuery(window).height();
-//	var ht = jQuery(window).height() - 3 + 'px';
     jQuery('body').css('height',ht - 3 + 'px' );
     
     jQuery('#footer').css("height",(ht-165) + "px");
@@ -101,17 +99,7 @@ jQuery('#ImagePane').ready(function() {
     });
     
     window.addEventListener('resize', resizeCanvas, false);  
-   	jQuery('#tool').html('');
-   	
-   /*	jQuery.get("UserConfig.do", {
-        'settings':'viewerSlider',
-        'todo':'READ'
-    }, function(data){
-        if(data.trim() == 'show') {
-            isSlider = true;
-            loadSlider();
-        }
-    },'text');*/	    
+   	jQuery('#tool').html('');	    
      
 	loadInstanceText(true,true);
     

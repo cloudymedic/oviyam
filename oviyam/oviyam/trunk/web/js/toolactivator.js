@@ -332,22 +332,20 @@ function doLoop(loop) {
 	} 
 }
 
-function loadSlider() {
-//	if(isSlider) {			
-		if(total>1) {
-			if(jQuery('#multiframe').css('visibility')==="hidden") {
-				setSliderRange(imgInc, total);	
-			} else {
-				setSliderRange(frameInc, total);	
-			}
-			jQuery('#footer').show();		
-			jQuery("#trackbar1").css("display","block");
-			jQuery("#imgOriRight").css("right","35px");
+function loadSlider() {		
+	if(total>1) {
+		if(jQuery('#multiframe').css('visibility')==="hidden") {
+			setSliderRange(imgInc, total);	
 		} else {
-			jQuery('#footer').hide();
-			jQuery("#imgOriRight").css("right","10px");		
+			setSliderRange(frameInc, total);	
 		}
-//	}
+		jQuery('#footer').show();		
+		jQuery("#trackbar1").css("display","block");
+		jQuery("#imgOriRight").css("right","35px");
+	} else {
+		jQuery('#footer').hide();
+		jQuery("#imgOriRight").css("right","10px");		
+	}	
 	jQuery(jQuery("#trackbar1").children().get(0)).removeAttr("href");	
 }
 
@@ -374,12 +372,7 @@ function onTick(event, ui) {
 	loadInstanceText(false,false);
 }
 
-function setSliderValue() {
-	/*if(jQuery('#multiframe').css('visibility')==="hidden") {
-		jQuery('#trackbar1').slider("option","value",imgInc);
-	} else {
-		jQuery('#trackbar1').slider("option","value",frameInc);
-	}*/
+function setSliderValue() {	
 	var inst_text = jQuery("#totalImages").text().split("/");
 	var iNo = parseInt(inst_text[0].split(":")[1]);	
 	jQuery('#trackbar1').slider("option","value",(parseInt(inst_text[1])-iNo)+1);
