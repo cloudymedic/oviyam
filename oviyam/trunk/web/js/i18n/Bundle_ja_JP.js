@@ -53,6 +53,8 @@ var languages = {
 		StudytimeFilter: "検査時間 フィルタ",
 		ModalityFilter: "モダリティ フィルタ",
 		AutoRefresh: "自動更新",
-		IOviyamCxt: "iOviyamコンテキスト"   
+		IOviyamCxt: "iOviyamコンテキスト",
+		disclaimer: "This version of Oviyam, being a free open-source software (FOSS), is not certified as a commercial medical device (FDA or CE-1).",
+	    limitation: "Please check with local compliance office for possible limitations in its clinical use."
 
 };
