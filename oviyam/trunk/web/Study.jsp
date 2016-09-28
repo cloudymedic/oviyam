@@ -351,10 +351,10 @@
 													<c:otherwise>
 														<c:choose>
 															<c:when test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-																<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" class="image" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"  onclick="changeSeries(this)"/>
+																<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" class="image" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}&contentType=${param.contentType}"  onclick="changeSeries(this)"/>
 															</c:when>
 															<c:otherwise>
-																<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="other image" style="${thumbSize} display: none;" link="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"  onclick="changeSeries(this)" onload='showProgress("${seriesId}","${instanceNumber}");'/>
+																<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" class="other image" style="${thumbSize} display: none;" link="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}&contentType=${param.contentType}"  onclick="changeSeries(this)" onload='showProgress("${seriesId}","${instanceNumber}");'/>
 															</c:otherwise>
 														</c:choose>
 													</c:otherwise>

@@ -214,7 +214,7 @@
         </div>
         
         <div id="previews" style="overflow: auto; height: 90%; border-top: 2px solid black;">
-        	<jsp:include page="Study.jsp?patient=${param.patient}&study=${param.study}&dcmURL=${param.dcmURL}&wadoUrl=${param.wadoUrl}&descDisplay=true&studyDesc=${param.studyDesc}&studyDate=${param.studyDate}"></jsp:include>
+        	<jsp:include page="Study.jsp?patient=${param.patient}&study=${param.study}&dcmURL=${param.dcmURL}&wadoUrl=${param.wadoUrl}&descDisplay=true&studyDesc=${param.studyDesc}&studyDate=${param.studyDate}&contentType=${param.contentType}"></jsp:include>
         	<div id="otherStudiesInfo" style="display: none;"> </div>
         	<div id="otherStudies" style="display:none;">
         	</div>

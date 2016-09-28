@@ -22,6 +22,7 @@ $(document).ready(function() {
             '<td><input type="text" id="host" style="width:100%"></td><td><input type="text" id="port" style="width:100%"></td>' +
             '<td><select id="retrieve" style="width:100%" onchange="hideWadoFields()"><option value="WADO">WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET">C-GET</option></select></td>' +
             '<td><input type="text" id="wadoCxt" value="wado" style="width:100%" title="WADO Context"></td><td><input type="text" id="wadoPort" value="8080" style="width:100%" title="WADO Port">' +
+            '<td><select id="imgType" style="width:100%" onchange=""><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select></td>' +
             '<td><input type="checkbox" id="preview" style="width: 50%;" checked>' + 
             '<a href="#" onClick="insertTable();"><img src="images/save.png"></a></td></tr>';
             //var wid = $("#serverTable").css('width');
@@ -171,6 +172,7 @@ function insertTable() {
                 'retrieve':$("#retrieve").val(),
                 'wadoContext':$("#wadoCxt").val(),
                 'wadoPort':$("#wadoPort").val(),
+                'imageType':$("#imgType").val(),
                 'previews':$('#preview').prop('checked')?'true':'false',
                 'todo':'ADD'
             },
@@ -213,6 +215,7 @@ function editTable() {
             'retrieve':$("#retrieve").val(),
             'wadoContext':$("#wadoCxt").val(),
             'wadoPort':$("#wadoPort").val(),
+            'imageType':$("#imgType").val(),
             'previews':$('#preview').prop('checked')?'true':'false',
             'todo':'EDIT'
         },
@@ -247,6 +250,14 @@ function loadTable() {
                 if ( typeof row['wadoport'] != 'undefined' ) {
                     wadoPort = row['wadoport'];
                 }
+                var retrieveType = row['retrieve'];
+                
+                var imageType = 'JPEG';
+                
+                if( typeof row['imageType'] != 'undefined' &&  retrieveType=='WADO') {
+                	imageType = row['imageType'];
+                }
+
                 
                 var preview = "<input type='checkbox' class='previewChk' style='text-align:center' disabled ";
                 
@@ -262,9 +273,10 @@ function loadTable() {
                     row['aetitle'],
                     row['hostname'],
                     row['port'],
-                    row['retrieve'],
+                    retrieveType,
                     wadoCxt,
                     wadoPort,
+                    imageType,
                     preview
                     ]);
             } else {
@@ -343,20 +355,32 @@ function editSelectedRow() {
         var currRet = $selRow.find('td:nth-child(6)').html();
         var currWadoCxt = $selRow.find('td:nth-child(7)').html();
         var currWadoPort = $selRow.find('td:nth-child(8)').html();
-		var currentPreview = $selRow.find('td:nth-child(9)').find('.previewChk').prop('checked');
+        var currImageType = $selRow.find('td:nth-child(9)').html();
+		var currentPreview = $selRow.find('td:nth-child(10)').find('.previewChk').prop('checked');
 		 
         var str = '<td><input type="checkbox" disabled="true" CHECKED /></td><td><input type="text" id="desc" disabled="true" value="' + currDesc + '"></td>' +
         '<td><input type="text" id="aet" value="' + currAET + '"></td>' +
         '<td><input type="text" id="host" value="' + currHost +'"></td><td><input type="text" id="port" value="' + currPort +'"></td>';
-
+        
+        var imgTypeDisabled = '';
+        
         if(currRet == 'C-MOVE') {
             str += '<td><select id="retrieve" value="' + currRet + '" style="width:100%" onchange="hideWadoFields()"><option value="WADO" selected>WADO</option><option value="C-MOVE" selected>C-MOVE</option><option value="C-GET">C-GET</option></select></td>';
+            imgTypeDisabled = "disabled=disabled";
         } else if(currRet == 'C-GET') {
             str += '<td><select id="retrieve" value="' + currRet + '" style="width:100%" onchange="hideWadoFields()"><option value="WADO">WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET" selected>C-GET</option></select></td>';
+            imgTypeDisabled = "disabled=disabled";
         } else {
             str += '<td><select id="retrieve" value="' + currRet + '" style="width:100%" onchange="hideWadoFields()"><option value="WADO" selected>WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET">C-GET</option></select></td>';
         }
-        str += '<td><input type="text" id="wadoCxt" value="' + currWadoCxt + '" style="width:100%" title="WADO Context"></td><td><input type="text" id="wadoPort" value="' + currWadoPort + '" style="width:100%" title="WADO Port"></td>';
+        str += '<td><input type="text" id="wadoCxt" value="' + currWadoCxt + '" style="width:100%" title="WADO Context"></td><td><input type="text" id="wadoPort" value="' + currWadoPort + '" style="width:100%" title="WADO Port"></td>';        
+       
+        if(currImageType=="PNG") {
+        	str += '<td><select id="imgType" value="' + currImageType + '" style="width:100%"' + imgTypeDisabled + '><option value="JPEG">JPEG</option><option value="PNG" selected>PNG</option></select></td>';
+        } else {
+        	str += '<td><select id="imgType" value="' + currImageType + '" style="width:100%"' + imgTypeDisabled + '><option value="JPEG" selected>JPEG</option><option value="PNG">PNG</option></select></td>';
+        }
+        
         if(currentPreview!=true) {
 	        str+= '<td><input type="checkbox" id="preview" class="previewChk">';
         } else {
@@ -442,10 +466,13 @@ function hideWadoFields() {
         $('#wadoPort').attr('disabled', 'disabled');
         $("#wadoCxt").val("");
         $('#wadoPort').val("");
+        $('#imgType').val("JPEG");
+        $('#imgType').attr('disabled', 'disabled');
     } else {
         $("#wadoCxt").removeAttr('disabled');
         $('#wadoPort').removeAttr('disabled');
         $("#wadoCxt").val("wado");
         $('#wadoPort').val("8080");
+        $('#imgType').removeAttr('disabled');
     }
 }

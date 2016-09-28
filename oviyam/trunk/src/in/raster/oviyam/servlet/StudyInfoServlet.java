@@ -127,6 +127,11 @@ public class StudyInfoServlet extends HttpServlet {
                 serverURL = server.getRetrieve();
             }
             
+            String imageType = "jpeg";
+            if(server.getImageType()!=null) {
+            	imageType = server.getImageType().toLowerCase();
+            }
+            
             PatientInfo patientInfo = new PatientInfo(); 
             patientInfo.callFindWithQuery(patID, studyUID, dcmURL); 
             //patientInfo.callFindWithQuery(patID, "", "", "", "", "", "","","", dcmURL);
@@ -149,6 +154,7 @@ public class StudyInfoServlet extends HttpServlet {
                         jsonObj.put("pat_gender", sm.getPatientGender());
                         jsonObj.put("serverURL", serverURL);
                         jsonObj.put("dicomURL", dcmURL);
+                        jsonObj.put("imgType", imageType);
                         jsonObj.put("bgColor", "rgb(0, 0, 0)");
                         //break;
                     //}

@@ -75,6 +75,10 @@ public class Server {
 
 	@Element(required = false)
 	private String previews;
+	
+	/* Added on version 2.4 */
+	@Element(required = false)
+	private String imageType = "JPEG";
 
 	public String getAetitle() {
 		return aetitle;
@@ -140,4 +144,11 @@ public class Server {
 		this.previews = previews;
 	}
 
+	public String getImageType() {
+		return imageType;
+	}
+
+	public void setImageType(String imageType) {
+		this.imageType = imageType;
+	}
 }
