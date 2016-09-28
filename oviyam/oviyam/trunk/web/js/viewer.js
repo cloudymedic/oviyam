@@ -7,7 +7,7 @@ function loadViewerPage() {
 }
 
 function getStudyDetails() {
-	pat = $.cookies.get('patient');
+	pat = $.cookies.get('patient');	
 	var queryString = document.location.search.substring(1);
 	var patId = getParameter(queryString, "patientID");
 	var studyId = getParameter(queryString, "studyUID");
@@ -134,6 +134,7 @@ function loadStudy() {
 	tmpUrl += "&studyDesc=" + pat.studyDesc + "&studyDate=" + pat.studyDate
 			+ "&totalSeries=" + pat.totalSeries + "&dcmURL=" + pat.dicomURL;
 	tmpUrl += "&wadoUrl=" + pat.serverURL;
+	tmpUrl += "&contentType=image/" + pat.imgType;
 	$('#westPane').load(encodeURI(tmpUrl));
 
 	document.title = pat.pat_Name;

@@ -288,12 +288,13 @@ $(document).ready(function() {
     function loadTabs() {
     	var tabName = getParameterByName("serverName");
     	var patId = getParameterByName("patientID");
-    	var tabIndex;
+    	var tabIndex=0;
     	
         $.getJSON('DicomNodes.do', function(results) {
             var callingAET = results[results.length-1].callingAET.trim();
             for(var i=0; i<results.length-1; i++) {
-                var node = results[i];                
+                var node = results[i];  
+                console.log(node);
                 //var li = '<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tab_3"><span>Local</span></a></li>';
 
 				var showSearch = true;
@@ -324,9 +325,15 @@ $(document).ready(function() {
                 
                 if(typeof(node.previews)!="undefined") {
                 	preview = node.previews;
+                }       
+                
+                var imgType = "jpeg";
+                
+                if(typeof(node.imageType)!="undefined") {
+                	imgType = node.imageType.toLowerCase();
                 }
 
-                var li = '<li class="ui-state-default ui-corner-top"><a href="#' + node.logicalname + '" name="' + dcmUrl + '" wadoUrl="' + wadoUrl + '" preview="' + preview + '"><span>' + node.logicalname + '</span></a></li>';
+                var li = '<li class="ui-state-default ui-corner-top"><a href="#' + node.logicalname + '" name="' + dcmUrl + '" wadoUrl="' + wadoUrl + '" preview="' + preview + '" imgType="' + imgType + '"><span>' + node.logicalname + '</span></a></li>';
                 $('#tabUL').append(li);
                 
                 var div = '';
@@ -351,8 +358,9 @@ $(document).ready(function() {
                 		searchURL += '&tabIndex=' + tabIndex;
                 		searchURL += '&preview=' + preview;
                 		searchURL += '&search=' + showSearch;
-                		var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
-                	    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
+//                		searchURL += '&imgType=' + imgtype;
+//                		var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+//                	    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
                 		                   
                 		var divContent = '#' + node.logicalname + '_content';
 
@@ -701,7 +709,8 @@ function openViewer(nTrContent) {
             "pat_gender" : nTrContent[10],
             "serverURL" : $('.ui-tabs-selected').find('a').attr('wadoUrl'),
             "dicomURL" : $('.ui-tabs-selected').find('a').attr('name'),
-            "bgColor" : $('.ui-widget-content').css('background-color'),            
+            "bgColor" : $('.ui-widget-content').css('background-color'),  
+            "imgType" : $('.ui-tabs-selected').find('a').attr('imgType'),
         };
 
         $.cookies.set( 'patient', jsonObj );
@@ -712,10 +721,12 @@ function openViewer(nTrContent) {
 function showWestPane(iPos) {
     var urlDcm = $('.ui-tabs-selected').find('a').attr('name');
     var urlWado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+    var imgType = $('.ui-tabs-selected').find('a').attr('imgType'); 
 
     var tmpUrl = "westContainer1.jsp?patient=" + iPos[1] + "&study=" + iPos[7] + "&patientName=" + iPos[2];
     tmpUrl += "&studyDesc=" + iPos[4] + "&studyDate=" + iPos[3]["display"].split(" ")[0] + "&totalSeries=" + iPos[9] + "&dcmURL=" + urlDcm;
     tmpUrl += "&wadoUrl=" + urlWado;
+    tmpUrl += "&contentType=image/" + imgType; 
     
     var selTabText = $('.ui-tabs-selected').find('a').attr('href');
     var container = selTabText + '_westPane';

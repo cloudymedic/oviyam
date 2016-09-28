@@ -238,7 +238,7 @@
 	                    <td colspan="2"><%=studyDesc%></td>
 	                </tr>
 	                <tr>
-	                    <td>${param.studyDate}</td>
+	                    <td>${param.studyDate}</td>	                    
 	                    <td align="right">${param.totalSeries} Series</td>
 	                </tr>
 	            </tbody>
@@ -307,7 +307,7 @@
 	                    					        </c:when>	                    					        
 	                    					        <c:otherwise>	                    					        
 		                    				            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-		                    				                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}" ondblclick="openSeriesInViewer(this);" />
+		                    				                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}" ondblclick="openSeriesInViewer(this);" />
 		                    				            </c:if>
 	                    				            </c:otherwise>
                     				            </c:choose>

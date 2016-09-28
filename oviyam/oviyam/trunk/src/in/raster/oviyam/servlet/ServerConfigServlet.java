@@ -46,7 +46,6 @@ import in.raster.oviyam.xml.handler.ServerHandler;
 import in.raster.oviyam.xml.model.Server;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.File;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -78,6 +77,7 @@ public class ServerConfigServlet extends HttpServlet {
         String retrieve = request.getParameter("retrieve");
         String wadoCxt = request.getParameter("wadoContext");
         String wadoport = request.getParameter("wadoPort");
+        String imageType = request.getParameter("imageType");
         String previews = request.getParameter("previews");
         
         String action = request.getParameter("todo");
@@ -94,6 +94,7 @@ public class ServerConfigServlet extends HttpServlet {
             sm.setRetrieve(retrieve);
             sm.setWadocontext(wadoCxt);
             sm.setWadoport(wadoport);
+            sm.setImageType(imageType);
             sm.setPreviewStatus(previews);
 
             // Initialize the ServerHandler instance.
