@@ -51,5 +51,7 @@ var languages = {
     StudytimeFilter: "Studienzeit Filter",
     ModalityFilter: "Modalit&auml;ten Filter",
     AutoRefresh: "Automatisch aktualisieren",
-    IOviyamCxt: "iOviyam Context"
+    IOviyamCxt: "iOviyam Context",
+    disclaimer: "This version of Oviyam, being a free open-source software (FOSS), is not certified as a commercial medical device (FDA or CE-1).",
+    limitation: "Please check with local compliance office for possible limitations in its clinical use."
 };

@@ -123,7 +123,9 @@
             </fieldset>
         </form>
     </section>
-    <footer align="center"><script>document.write(languages['Footer'])</script></footer>
+<!--     <footer align="center"><script>document.write(languages['Footer'])</script></footer> -->
+<!-- 	<div style="text-align: center; margin-top: 10px; font-size: 10px;">This version of oviyam, being a free open-source software is not intended for diagnosis</div> -->
+<div style="text-align: center; margin-top: 3%; font-size: 60%;"><script>document.write(languages['disclaimer'])</script> <br> <br> <script>document.write(languages['limitation'])</script></div>
 
 <div style="width: 100%; position: absolute; bottom: 0px;">
 <table style="width:100%">
