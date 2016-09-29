@@ -46,6 +46,7 @@ import in.raster.oviyam.SeriesInfo;
 import in.raster.oviyam.model.SeriesModel;
 import in.raster.oviyam.util.SeriesComparator;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -156,11 +157,17 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
                         sdf = new SimpleDateFormat("yyyyMMdd");
                     }
 
-                    serDateTmp = sdf.parse(serDate);
-                    getJspContext().setAttribute("dateOrder", serDateTmp.getTime());
-                    sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-
-                    getJspContext().setAttribute("seriesDate", sdf.format(serDateTmp));
+                    try {
+	                    serDateTmp = sdf.parse(serDate);
+	                    getJspContext().setAttribute("dateOrder", serDateTmp.getTime());
+	                    sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	                    getJspContext().setAttribute("seriesDate", sdf.format(serDateTmp));
+                    } catch(ParseException e) {
+                    	getJspContext().setAttribute("dateOrder", "");
+                    	getJspContext().setAttribute("seriesDate", serDate);
+                    }                    
+                } else {
+                	getJspContext().setAttribute("seriesDate", "[No series date]");
                 }
 
                 /**
