@@ -22,7 +22,7 @@ $(document).ready(function() {
             '<td><input type="text" id="host" style="width:100%"></td><td><input type="text" id="port" style="width:100%"></td>' +
             '<td><select id="retrieve" style="width:100%" onchange="hideWadoFields()"><option value="WADO">WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET">C-GET</option></select></td>' +
             '<td><input type="text" id="wadoCxt" value="wado" style="width:100%" title="WADO Context"></td><td><input type="text" id="wadoPort" value="8080" style="width:100%" title="WADO Port">' +
-            '<td><select id="imgType" style="width:100%" onchange=""><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select></td>' +
+            '<td><select id="imgType" style="width:100%"><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select></td>' +
             '<td><input type="checkbox" id="preview" style="width: 50%;" checked>' + 
             '<a href="#" onClick="insertTable();"><img src="images/save.png"></a></td></tr>';
             //var wid = $("#serverTable").css('width');
