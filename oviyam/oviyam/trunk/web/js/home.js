@@ -570,7 +570,7 @@ $(document).ready(function() {
         
 		if(this.src.match('details_close')) {
 		        this.src = "images/details_open.png";
-		        oTable.fnClose(nTr);
+		        oTable.row(nTr).child.hide();
 	    } else if(this.src.match('details_open')) {
 		        /* Open this row */
 		        this.src = "images/details_close.png";
