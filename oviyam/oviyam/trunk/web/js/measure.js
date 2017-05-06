@@ -10,15 +10,25 @@ var xPxl = null, yPxl = null;
 
 function init(iNo) {
 	if(xPxl==null) {
-		var tagPxlSpacing = jQuery('#pixelSpacing').html();
+		/*var tagPxlSpacing = jQuery('#pixelSpacing').html();
 		if(tagPxlSpacing==='') {
 			loadInstanceText();
 			tagPxlSpacing = jQuery('#pixelSpacing').html();
+		}*/
+		
+		var tagPxlSpacing = '';
+		
+		if(jQuery("#imgPixelSpacing").html().length>0) {
+			tagPxlSpacing = jQuery("#imgPixelSpacing").html();
+		} else if(jQuery("#pixelSpacing").html().length>0) {
+			tagPxlSpacing = jQuery('#pixelSpacing').html();
 		}
+			
+		
 		var pxlSpacing = tagPxlSpacing.split('\\');
 		
-		xPxl = pxlSpacing.length>0?pxlSpacing[0]:1;
-		yPxl = pxlSpacing.length>1?pxlSpacing[1]:1;
+		xPxl = pxlSpacing.length>0?pxlSpacing[1]:1;
+		yPxl = pxlSpacing.length>1?pxlSpacing[0]:1;
 	}	
 	
 	if(curr_Img==-1 || curr_Img!=iNo) {

@@ -360,6 +360,7 @@ function loadInstanceText(checkForUpdate,autoplay) {
 					jQuery('#imgPosition').html(data['imagePositionPatient']);
 				    jQuery('#imgOrientation').html(data['imageOrientPatient']);		    
 				    jQuery('#pixelSpacing').html(data['pixelSpacing']);
+				    jQuery('#imgPixelSpacing').html(data['imagerPixelSpacing']);
 				} else {
 					jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
 				}
