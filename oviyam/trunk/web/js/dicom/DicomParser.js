@@ -24,6 +24,7 @@ function getPixelBuffer()
 
 function parseAll()
 {			
+	var imgPixelSpacing = this.readTag(24,0,17,100,"ImagerPixelSpacing");	
 	var monochrome1 = this.readTag(40,0,4,0,"PhotometricInterpretation");
 	var rows = this.readTagAsNumber(40,0,16,0,"Rows");
 	var columns = this.readTagAsNumber(40,0,17,0,"Columns");
@@ -33,8 +34,8 @@ function parseAll()
 	var wc = this.readTag(40,0,80,16,"windowCenter");	
 	var ww = this.readTag(40,0,81,16,"windowWidth");	
 	var rescale_Intercept = this.readTag(40,0,82,16,"rescaleIntercept");
-	var rescale_slope = this.readTag(40,0,83,16,"rescaleSlope");
-	this.imgData={"monochrome1":monochrome1=="MONOCHROME1","BitsStored":this.bitsStored,"PixelRepresentation":this.pixelRepresentation,"windowCenter":wc!=undefined? wc[0] : wc,"windowWidth":ww!=undefined ? ww[0] : ww,"rescaleIntercept":rescale_Intercept!=undefined?rescale_Intercept:0.0 ,"rescaleSlope":rescale_slope!=undefined ?rescale_slope:1.0,"nativeRows":rows,"nativeColumns":columns,"pixelSpacing":pxlSpacing};
+	var rescale_slope = this.readTag(40,0,83,16,"rescaleSlope");	
+	this.imgData={"monochrome1":monochrome1=="MONOCHROME1","BitsStored":this.bitsStored,"PixelRepresentation":this.pixelRepresentation,"windowCenter":wc!=undefined? wc[0] : wc,"windowWidth":ww!=undefined ? ww[0] : ww,"rescaleIntercept":rescale_Intercept!=undefined?rescale_Intercept:0.0 ,"rescaleSlope":rescale_slope!=undefined ?rescale_slope:1.0,"nativeRows":rows,"nativeColumns":columns,"pixelSpacing":pxlSpacing,"imagerPixelSpacing":imgPixelSpacing};
 	
     this.moveToPixelDataTag();
     this.readImage();    

@@ -151,6 +151,7 @@ public class InstanceServlet extends HttpServlet {
 	                    DicomElement sliceThick = dcmObj.get(Tag.SliceThickness);
 	                    DicomElement frameOfRefUID = dcmObj.get(Tag.FrameOfReferenceUID);
 	                    DicomElement pixelSpacingEle = dcmObj.get(Tag.PixelSpacing);
+	                    DicomElement imgPixelSpacingEle = dcmObj.get(Tag.ImagerPixelSpacing);
 	                    DicomElement totalFramesEle = dcmObj.get(Tag.NumberOfFrames);
 	                    DicomElement rescaleSlope = dcmObj.get(Tag.RescaleSlope);
 	                    DicomElement rescaleIntercept= dcmObj.get(Tag.RescaleIntercept);
@@ -213,7 +214,8 @@ public class InstanceServlet extends HttpServlet {
 	                        sliceLoc = imagePosition.substring(imagePosition.lastIndexOf("\\")+1);
 	                    }
 	
-	                    String pixelSpacing = pixelSpacingEle != null ? new String(pixelSpacingEle.getBytes()) : "1.0\\1.0";
+	                    String pixelSpacing = pixelSpacingEle != null ? new String(pixelSpacingEle.getBytes()) : "";
+	                    String imgPixelSpacing = imgPixelSpacingEle != null ? new String(imgPixelSpacingEle.getBytes()) : "";
 	                    String totalFrames = totalFramesEle != null ? new String(totalFramesEle.getBytes()) : "";
 	
 	
@@ -234,6 +236,7 @@ public class InstanceServlet extends HttpServlet {
 	                    jsonObj.put("imagePositionPatient", imagePosition);
 	                    jsonObj.put("imageOrientPatient", imgOrient);
 	                    jsonObj.put("pixelSpacing", pixelSpacing);
+	                    jsonObj.put("imagerPixelSpacing", imgPixelSpacing);
 	                    jsonObj.put("refSOPInsUID", referSopInsUid.replaceAll("\u0000", ""));
 	                    jsonObj.put("imageType", image_type);
 	                    jsonObj.put("numberOfFrames", totalFrames);

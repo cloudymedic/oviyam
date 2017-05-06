@@ -620,10 +620,11 @@ function activateMeasure(toolId) {
 function doRuler() {
 	var imageData = null;
 	try {
-		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];		
 		activateRuler(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
 	} catch(e) {
-		console.log("DICOM DATA NOT AVAILABLE.");
+		alert("DICOM DATA NOT AVAILABLE.");
+		jQuery("#loadingView",window.parent.document).hide();
 	}
 }
 
@@ -634,7 +635,8 @@ function doRect() {
 		getDICOM();
 		activateRect(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
 	} catch(e) {
-		console.log("DICOM DATA NOT AVAILABLE.");
+		alert("DICOM DATA NOT AVAILABLE.");
+		jQuery("#loadingView",window.parent.document).hide();
 	}
 }
 
@@ -645,7 +647,8 @@ function doOval() {
 		getDICOM();
 		activateOval(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
 	} catch(e) {
-		console.log("DICOM DATA NOT AVAILABLE.");
+		alert("DICOM DATA NOT AVAILABLE.");
+		jQuery("#loadingView",window.parent.document).hide();
 	}
 }
 
@@ -655,7 +658,8 @@ function doAngle() {
 		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
 		activateAngle(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
 	} catch(e) {
-		console.log("DICOM DATA NOT AVAILABLE.");
+		alert("DICOM DATA NOT AVAILABLE.");
+		jQuery("#loadingView",window.parent.document).hide();
 	}
 }
 
@@ -730,9 +734,15 @@ function getDICOM() {
 		var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
 		imageData = parseDicom(null,getParameter(imgSrc,'object'));
 		if(imageData['pixelSpacing']!=undefined) {
-			jQuery('#pixelSpacing').html((imageData['pixelSpacing'].length>1) ?  imageData['pixelSpacing'][0]+"\\"+imageData['pixelSpacing'][1] : imageData['pixelSpacing']);
+//			jQuery('#pixelSpacing').html((imageData['pixelSpacing'].length>1) ?  imageData['pixelSpacing'][0]+"\\"+imageData['pixelSpacing'][1] : imageData['pixelSpacing']);
+			jQuery('#pixelSpacing').html(imageData['pixelSpacing']);
 		} else {
-			jQuery('#pixelSpacing').html("1.0\\1.0");
+			jQuery('#pixelSpacing').html("");
+		}
+		if(imageData["imagerPixelSpacing"]!=undefined && imageData["imagerPixelSpacing"].length>0) {
+			jQuery("imgPixelSpacing").html();
+		} else {
+			jQuery("imgPixelSpacing").html("");
 		}
 		columns = imageData['nativeColumns'];
 		loadLookUp(imageData);
