@@ -6,7 +6,7 @@ var ruler = null,rect = null, oval = null, angle = null;
 var selectedShape = null, selectedHandle = -1;
 var startCoords = [];
 
-var xPxl = null, yPxl = null;
+var xPxl = null, yPxl = null,measure_Unit="cm";
 
 function init(iNo) {
 	if(xPxl==null) {
@@ -16,12 +16,14 @@ function init(iNo) {
 			tagPxlSpacing = jQuery('#pixelSpacing').html();
 		}*/
 		
-		var tagPxlSpacing = '';
+		var tagPxlSpacing = '1\\1';
 		
 		if(jQuery("#imgPixelSpacing").html().length>0) {
 			tagPxlSpacing = jQuery("#imgPixelSpacing").html();
 		} else if(jQuery("#pixelSpacing").html().length>0) {
 			tagPxlSpacing = jQuery('#pixelSpacing').html();
+		} else {
+			measure_Unit = "pix";
 		}
 			
 		
@@ -54,7 +56,7 @@ function activateRuler(iNo,columns) {
 	tool = "ruler";
 	nativeColumns = columns;
 	if(ruler==null) {
-		ruler = new ovm.shape.ruler(xPxl,yPxl);
+		ruler = new ovm.shape.ruler(xPxl,yPxl,measure_Unit);
 	}
 }
 
@@ -68,7 +70,7 @@ function activateRect(iNo,columns) {
 	tool = "rectangle";
 	nativeColumns = columns;
 	if(rect==null) {
-		rect = new ovm.shape.rect(xPxl,yPxl);
+		rect = new ovm.shape.rect(xPxl,yPxl,measure_Unit);
 	}
 }
 
@@ -82,7 +84,7 @@ function activateOval(iNo,columns) {
 	tool = "oval";
 	nativeColumns = columns;
 	if(oval==null) {
-		oval = new ovm.shape.oval(xPxl,yPxl);
+		oval = new ovm.shape.oval(xPxl,yPxl,measure_Unit);
 	}
 }
 

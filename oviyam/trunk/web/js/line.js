@@ -6,13 +6,14 @@ ovm.shape = ovm.shape || {};
 /**
  * Definition of shape Lines
 */
-ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing) {		
+ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing,measure_Unit) {		
 	var handle = 5;	
 	var lines = [];
 	var curr_line=null;
 	
 	var xPxlSpcing = xPixelSpacing;
 	var yPxlSpcing = yPixelSpacing;
+	var measureUnit = measure_Unit;
 	
 	this.createNewLine = function(x1,y1,x2,y2) {
 		if(curr_line!=undefined) {
@@ -25,7 +26,7 @@ ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing) {
 	};
 	
 	this.initNewLine = function() {
-		curr_line = new ovm.line(xPxlSpcing, yPxlSpcing, 0, 0, 0, 0, 0);
+		curr_line = new ovm.line(xPxlSpcing, yPxlSpcing,measureUnit, 0, 0, 0, 0, 0);
 	};	
 	
 	this.draw = function(graphic,ctx) {		
@@ -43,11 +44,11 @@ ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing) {
 		ctx.fillStyle = graphic.txtActive? "blue" : "maroon";
 		ctx.globalAlpha = 0.7;	
 		ctx.font = "14px Arial";	
-		var text = ctx.measureText(graphic.len + " cm");	
+		var text = ctx.measureText(graphic.len + " " + measureUnit);	
 		ctx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+5,20);
 		ctx.globalAlpha = 0.9;
 		ctx.fillStyle = "white";		
-		ctx.fillText(graphic.len+" cm",graphic.textX+2,graphic.textY+14);
+		ctx.fillText(graphic.len+" " + measureUnit,graphic.textX+2,graphic.textY+14);
 		// Reference lines
 		if(graphic.x1!=graphic.textX) {
 			ctx.save();
@@ -146,11 +147,12 @@ ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing) {
  * @namespace line
  */
 
-ovm.line = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
+ovm.line = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 	// Variables
 	var handle = 5;
 	this.xPxlSpcing = xPixelSpacing;
 	this.yPxlSpcing = yPixelSpacing;
+	this.measureUnit = measure_Unit;
 	this.x1=a;
 	this.y1=b;
 	this.x2=c;
@@ -265,7 +267,7 @@ ovm.line = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 		var x = (mouseX-state.translationX)/state.scale;
 		var y = (mouseY-state.translationY)/state.scale;
 		
-		var textWid = Math.ceil(canvasCtx.measureText(this.len + " cm").width)+5;
+		var textWid = Math.ceil(canvasCtx.measureText(this.len + " " + this.measureUnit).width)+5;
 		this.txtActive = (x>=this.textX && x<=this.textX+(textWid/state.scale) && y>=this.textY && y<=(this.textY+(20/state.scale)));
 		return this.txtActive;		
 	};
