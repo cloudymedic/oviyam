@@ -2,12 +2,13 @@
  * Definition of shape Oval
 */
 
-ovm.shape.oval = function(xPixelSpacing,yPixelSpacing) {
+ovm.shape.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	var handle = 5;
 	var ovals = [];
 	var curr_oval = null;
 	var xPxlSpcing = xPixelSpacing;
 	var yPxlSpcing = yPixelSpacing;
+	var measureUnit = measure_Unit;
 	
 	this.createNewOval = function(x1,y1,x2,y2) {
 		if(curr_oval!=undefined) {
@@ -22,7 +23,7 @@ ovm.shape.oval = function(xPixelSpacing,yPixelSpacing) {
 	};
 	
 	this.initNewOval = function() {
-		curr_oval = new ovm.oval(xPxlSpcing, yPxlSpcing, 0, 0, 0, 0, 0);
+		curr_oval = new ovm.oval(xPxlSpcing, yPxlSpcing,measureUnit, 0, 0, 0, 0, 0);
 	};
 	
 	this.draw = function(graphic,canvasCtx) {
@@ -59,7 +60,7 @@ ovm.shape.oval = function(xPixelSpacing,yPixelSpacing) {
 		canvasCtx.font = "14px Arial";	
 
 		var text = canvasCtx.measureText(graphic.stdDev.length>graphic.area.length? graphic.stdDev : graphic.area);			
-		canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+10,60);
+		canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+20,60);
 		canvasCtx.globalAlpha = 0.9;
 		canvasCtx.fillStyle = "white";		
 		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
@@ -159,11 +160,15 @@ ovm.shape.oval = function(xPixelSpacing,yPixelSpacing) {
  * @namespace oval
 */
 
-ovm.oval = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
+ovm.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 	// Variables
 	var handle = 5;
 	this.xPxlSpcing = xPixelSpacing;
 	this.yPxlSpcing = yPixelSpacing;
+	this.measureUnit = measure_Unit;
+	if(this.measureUnit=="mm") {
+		this.measureUnit = this.measureUnit + String.fromCharCode(178);
+	}
 	this.centerX=a;
 	this.centerY=b;
 	this.endX=c;
@@ -179,7 +184,7 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 	this.textX = a;
 	this.textY = b-50;
 	this.txtActive = false;
-	this.txtArea = "Area     : " + this.area + " cm" + String.fromCharCode(178);
+	this.txtArea = "Area     : " + this.area + " " +  this.measureUnit;
 	this.txtMean = "Mean    : ";
 	this.txtStdDev = "StdDev : ";
 	this.refX = 0;
@@ -195,7 +200,7 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 		this.radiusY = Math.round((this.endY-this.centerY)*this.yPxlSpcing);		
 		this.active = active;		
 		this.area = ((Math.PI * this.radiusX*this.radiusY)/100).toFixed(3);
-		this.txtArea = "Area     : " + this.area + " cm" + String.fromCharCode(178);
+		this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 		this.textX = this.centerX;
 		this.textY = this.centerY - (this.endY-this.centerY) - (100/state.scale);
 		this.findClosestPointOnOval();
@@ -304,7 +309,7 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 		this.radiusX = Math.round((this.endX-this.centerX)*this.xPxlSpcing);
 		this.radiusY = Math.round((this.endY-this.centerY)*this.yPxlSpcing);		
 		this.area = ((Math.PI * this.radiusX*this.radiusY)/100).toFixed(3);
-		this.txtArea = "Area     : " + this.area + " cm" + String.fromCharCode(178);
+		this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 		this.txtMean = "Mean    : ";
 		this.txtStdDev = "StdDev : ";
 		this.findClosestPointOnOval();

@@ -2,12 +2,13 @@
  * Definition of shape Rectangles
 */
 
-ovm.shape.rect = function(xPixelSpacing,yPixelSpacing) {
+ovm.shape.rect = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	var handle = 5;
 	var rects = [];
 	var curr_rect = null;
 	var xPxlSpcing = xPixelSpacing;
 	var yPxlSpcing = yPixelSpacing;
+	var measureUnit = measure_Unit;
 	
 	this.createNewRect = function(x1,y1,x2,y2) {
 		if(curr_rect!=undefined) {
@@ -22,7 +23,7 @@ ovm.shape.rect = function(xPixelSpacing,yPixelSpacing) {
 	};
 	
 	this.initNewRect = function() {
-		curr_rect = new ovm.rect(xPxlSpcing, yPxlSpcing, 0, 0, 0, 0, 0);
+		curr_rect = new ovm.rect(xPxlSpcing, yPxlSpcing, measureUnit, 0, 0, 0, 0, 0);
 	};
 	
 	this.draw = function(graphic,canvasCtx) {
@@ -157,11 +158,15 @@ ovm.shape.rect = function(xPixelSpacing,yPixelSpacing) {
  * @namespace rect
 */
 
-ovm.rect = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
+ovm.rect = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 	// Variables
 	var handle = 5;
 	this.xPxlSpcing = xPixelSpacing;
 	this.yPxlSpcing = yPixelSpacing;
+	this.measureUnit = measure_Unit;
+	if(this.measureUnit=="cm") {
+		this.measureUnit = this.measureUnit + String.fromCharCode(178);
+	}
 	this.x1=a;
 	this.y1=b;
 	this.x2=c;
@@ -177,7 +182,7 @@ ovm.rect = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 	this.textX = a;
 	this.textY = b-50;
 	this.txtActive = false;
-	this.txtArea = "Area     : " + this.area + " cm" + String.fromCharCode(178);
+	this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 	this.txtMean = "Mean    : ";
 	this.txtStdDev = "StdDev : ";
 	this.refX = 0;
@@ -193,7 +198,7 @@ ovm.rect = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 		this.height = Math.round((this.y2-this.y1)*this.yPxlSpcing);		
 		this.active = active;		
 		this.area = ((this.width*this.height)/100).toFixed(3);
-		this.txtArea = "Area     : " + this.area + " cm" + String.fromCharCode(178);
+		this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 		this.textX = this.x1;
 		this.textY = this.y1-(100/state.scale);
 		this.fixReferenceLinePoints();
@@ -311,7 +316,7 @@ ovm.rect = function(xPixelSpacing,yPixelSpacing,a,b,c,d,e) {
 		this.width = Math.round((this.x2-this.x1)*this.xPxlSpcing);
 		this.height = Math.round((this.y2-this.y1)*this.yPxlSpcing);
 		this.area = ((this.width*this.height)/100).toFixed(3);
-		this.txtArea = "Area     : " + this.area + " cm" + String.fromCharCode(178);
+		this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 		this.txtMean = "Mean    : ";
 		this.txtStdDev = "StdDev : ";
 		this.fixReferenceLinePoints();
