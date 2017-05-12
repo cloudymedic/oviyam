@@ -221,6 +221,8 @@ function doReset(toolid) {
 		jQuery('#' + jQuery('#tool').html(), window.parent.document).removeClass('toggleOff');
 		jQuery('#tool').html('');	
 	}
+	modifiedWC = windowCenter;
+	modifiedWW = windowWidth;
 	doMouseWheel = true;
 	disableOtherTools(toolid);	
 	resetAnnotation();
@@ -228,9 +230,7 @@ function doReset(toolid) {
 	loadInstanceText(false,false);
 	drawoutline();	
 	doLoop(false);
-	window.parent.document.getElementById('loopChkBox').checked = false;
-	modifiedWC = windowCenter;
-	modifiedWW = windowWidth;
+	window.parent.document.getElementById('loopChkBox').checked = false;	
 	showImage(seriesUid+"_"+imgInc);
 }
 
@@ -466,10 +466,10 @@ function doScout(toolId) {
 function getPixelData(firstTime) {	
 	setTimeout(function() {
 		var imageData = null;
-		try {
-			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-			var iNo = isMultiframe ? this.frameInc : this.imgInc;
-			
+		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+		var iNo = isMultiframe ? this.frameInc : this.imgInc;
+		
+		try {			
 			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];				
 
 			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;				
@@ -539,9 +539,10 @@ function getPixelData(firstTime) {
 				 winProgress = 0;
 				 xhr.send();
 			 }
-		} catch(exception) { 
+		} catch(exception) {			
 			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
 			imageData = parseDicom(null,getParameter(imgSrc,'object'));
+			state.winPtr = iNo;
 			doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'),firstTime);
 		}
 	},1);
@@ -573,9 +574,11 @@ function unbindWindowing(toolId) {
 	doMouseWheel = true;
 	state.winPtr = -1;
 	winProgress = 100;	
-	var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-	var iNo = isMultiframe ? frameInc : imgInc;		
-	loadImg(isMultiframe,iNo);	
+	if(modifiedWC!=windowCenter && modifiedWW != windowWidth) {
+		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+		var iNo = isMultiframe ? frameInc : imgInc;		
+		loadImg(isMultiframe,iNo);	
+	}
 }
 
 function activateMeasure(toolId) {
@@ -751,6 +754,7 @@ function deactivateMeasure(toolId) {
 		jQuery('#thickLocationPanel').show();
 	}
 	jQuery('#canvasLayer2').unbind('mousedown').unbind('mousemove').unbind('mouseup');
+	document.getElementById("canvasLayer2").style.cursor = 'default';
 	window.parent.disableMeasureContext();	
 }
 
@@ -799,7 +803,7 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 				state.drag = false;
 				evt.target.style.cursor = "default";
 				jQuery('.contextMenu').hide();
-				jQuery('.selected').removeClass('selected');
+//				jQuery('.selected').removeClass('selected');
 			}
 		}).mousedown(function(evt) {
 			if(evt.which==1) {
@@ -820,7 +824,7 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 	       evt.stopPropagation();    
 	       
 		}).mousemove(function(evt) {
-			jQuery('.selected',window.parent.document).removeClass('selected');
+//			jQuery('.selected',window.parent.document).removeClass('selected');
 			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
 			var iNo = isMultiframe ? frameInc : imgInc;
 			/*var x = parseInt(evt.pageX/state.scale);
@@ -835,6 +839,7 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 			}		
 	
 			if(state.drag && state.winPtr==iNo) {
+				jQuery('.selected',window.parent.document).removeClass('selected');
 				var diffX = parseInt(evt.pageX-mouseLocX);
 				var diffY = parseInt(evt.pageY-mouseLocY);
 				
