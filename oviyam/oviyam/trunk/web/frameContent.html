@@ -64,7 +64,7 @@
                 <canvas id="previewCanvas" class="preview" style="z-index:4; position:absolute; top: 52px; right: 2px;"></canvas>
                 <canvas id="highlightCanvas" class="preview" style="z-index:5; position:absolute; top: 52px; right: 2px;"></canvas>
             </div>
-            <div id="applyWLDiv" class="textOverlay" style="bottom:100px; left:7px; cursor:pointer; display:none" divState="false" onclick="applyWL();">Apply All</div>
+<!--             <div id="applyWLDiv" class="textOverlay" style="bottom:100px; left:7px; cursor:pointer; display:none" divState="false" onclick="applyWL();">Apply All</div> -->
             <div id="multiframe" class="textOverlay" style="bottom:75px; left: 7px; background-color:#B76432; visibility:hidden;">Multiframe</div>
             <div id="totalImages" class="textOverlay" style="left:5px; bottom:55px"></div>
             <div id="windowLevel" class="textOverlay" style="left:5px; bottom:35px"></div>
@@ -96,6 +96,7 @@
             
             <div id="progressbar"></div>            
             <div id="progresslbl"></div>
+            <img id="wltmpImg" style="display:none;" onload="showImg(null,jQuery(this).get(0),true);"/>
         </div>        
     </body>
 </html>
