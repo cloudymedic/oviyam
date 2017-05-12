@@ -27,7 +27,7 @@ function disableOtherTools(tool) {
 
 function onToolSelection(e) {
 	if(e.detail.tool==="txtOverlay") {
-		jQuery('.textOverlay:not(#huDisplayPanel, #applyWLDiv)').toggle();
+		jQuery('.textOverlay:not(#huDisplayPanel)').toggle();
 	} else if(e.detail.tool==="loop") {
 		doLoop(e.detail.isLoop);
 	}
@@ -145,10 +145,9 @@ function activatestack(tool) {
 	}
 }
 
-function activateVFlip(tool) {
-	var image = seriesUid + "_" + imgInc;
+function activateVFlip(tool) {	
 	state.vflip = state.vflip? false : true;
-	showImg(image,null,true);
+	oneTimeTool();
 	flipOrientationToVertical();
 }
 
@@ -159,10 +158,9 @@ function flipOrientationToVertical() {
 	jQuery('#imgOriBottom').text(tmpTop);
 }
 
-function activateHFlip(tool) {
-	var image = seriesUid + "_" + imgInc;
+function activateHFlip(tool) {	
 	state.hflip = state.hflip? false : true;
-	showImg(image,null,true);
+	oneTimeTool();
 	flipOrientationToHorizontal();
 }
 
@@ -173,8 +171,7 @@ function flipOrientationToHorizontal() {
 	jQuery('#imgOriRight').text(tmpLeft);
 }
 
-function activateLeftRotation(tool) {
-	var image = seriesUid + "_" + imgInc;
+function activateLeftRotation(tool) {	
 	state.rotate-=90;
 	switch(state.rotate) {
 		case -90:
@@ -186,7 +183,7 @@ function activateLeftRotation(tool) {
 			state.rotate = 90;
 			break;
 	}
-	showImg(image,null,true);
+	oneTimeTool();
 	rotateLeftTextOverlay();
 }
 
@@ -200,13 +197,12 @@ function rotateLeftTextOverlay() {
 	jQuery('#imgOriLeft').text(tmpTop);
 }
 
-function activateRightRotation(tool) {
-	var image = seriesUid + "_" + imgInc;
+function activateRightRotation(tool) {	
 	state.rotate+=90;
 	if(state.rotate>=360) {
 		state.rotate=0;
 	}
-	showImg(image,null,true);
+	oneTimeTool();
 	rotateRightTextOverlay();
 }
 
@@ -226,33 +222,16 @@ function doReset(toolid) {
 		jQuery('#tool').html('');	
 	}
 	doMouseWheel = true;
-
 	disableOtherTools(toolid);	
 	resetAnnotation();
-	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};	
-
+	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
 	loadInstanceText(false,false);
-	drawoutline();
-	
+	drawoutline();	
 	doLoop(false);
-	window.parent.document.getElementById('loopChkBox').checked = false;	
-
-	if(jQuery('#applyWLDiv').attr('divState')=="true") {
-		modifiedWC = windowCenter;
-		modifiedWW = windowWidth;
-		getWLAppliedImages();
-		jQuery('#applyWLDiv').attr('divState',"false");
-		jQuery('#applyWLDiv').hide();
-		jQuery('#windowLevel').html("WL: "+modifiedWC+" / WW: "+modifiedWW);
-		var image = jQuery('#'+(seriesUid+"_"+imgInc).replace(/\./g,'_'), window.parent.document).get(0);
-		jQuery(image).load(function() {
-//			showImage(null,image);
-			showImage(seriesUid+"_"+imgInc);	
-			window.parent.wlApplied = false;
-		});		
-	} else {
-		showImage(seriesUid+"_"+imgInc);	
-	}
+	window.parent.document.getElementById('loopChkBox').checked = false;
+	modifiedWC = windowCenter;
+	modifiedWW = windowWidth;
+	showImage(seriesUid+"_"+imgInc);
 }
 
 function doInvert(toolid) {
@@ -269,7 +248,7 @@ function doMove() {
 	canvasLayer2.onmousedown = function(e) {
 		if(e.which==1) {
 			state.drag = true;
-			 img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
+			img = getCurrentImage();
 	
 	        startCoords = [
 	        e.pageX - state.translationX,
@@ -363,13 +342,16 @@ function setSliderRange(val,maxVal) {
 
 function onTick(event, ui) {	
 	if(jQuery('#multiframe').css('visibility')==="hidden") {
-		imgInc = (total-ui.value)+1;	
-		showImg(seriesUid + '_' + imgInc);
+		imgInc = (total-ui.value)+1;
+		loadImg(false,imgInc);
 	} else {
 		frameInc = (total-ui.value)+1;
-		showImg(getParameter(jQuery('#frameSrc').html(),'object') + '_' + frameInc);	
+		loadImg(true,frameInc);	
 	}
-	loadInstanceText(false,false);
+	imgLoaded();
+	if(jQuery("#tool").html()=="measure") {
+		deactivateMeasure(jQuery("#tool").html());
+	}
 }
 
 function setSliderValue() {	
@@ -481,93 +463,100 @@ function doScout(toolId) {
 	}
 }
 
+function getPixelData(firstTime) {	
+	setTimeout(function() {
+		var imageData = null;
+		try {
+			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+			var iNo = isMultiframe ? this.frameInc : this.imgInc;
+			
+			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];				
+
+			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;				
+
+			if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
+				url+="&frameNumber=" + (frameInc-1);
+			}
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", url, true);
+			xhr.responseType = "arraybuffer";  
+			
+			xhr.onload = function(e) {
+				if (this.status == 200) {
+					if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
+						pixelBuffer = new Uint8Array(this.response);
+					} else if(imageData['PixelRepresentation']==0 && imageData['BitsStored']>8) {
+						pixelBuffer = new Uint16Array(this.response);
+					} else if(imageData['PixelRepresentation']==1 && imageData['BitsStored']>8) {
+						pixelBuffer = new Int16Array(this.response);
+					} else {
+						pixelBuffer = this.response;
+					}
+					
+					for(var i=0;i<pixelBuffer.length;i++) {
+						var pix = pixelBuffer[i];
+						minPix = Math.min(minPix,pix);
+						maxPix = Math.max(maxPix,pix);
+					}
+						
+					lookupObj = new LookupTable();
+					lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
+					columns = imageData['nativeColumns'];
+					state.winPtr = iNo; 
+					doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'),firstTime);
+				}
+			};
+			
+			// Progress
+			xhr.onreadystatechange = function(evt) {
+				if(xhr.readyState==4) {
+					jQuery('#progressbar').progressbar("value",100);
+					jQuery('#progressbar').hide();
+					jQuery('#progresslbl').hide();
+				}
+				
+				if(xhr.readyState==2) {
+					jQuery('#progressbar').progressbar({
+						value: false,
+						change: function() {
+							jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(winProgress) + "%" );
+						},							
+					});
+					jQuery('#progressbar').show();
+					jQuery('#progresslbl').show();
+				}
+			};
+			
+			 xhr.addEventListener("progress", function(evt){					 
+			      if (evt.lengthComputable) {  				     
+			    	  winProgress = 100*evt.loaded/evt.total;				        
+			        jQuery('#progressbar').progressbar("value",winProgress);				       
+			      }
+			    }, true); 
+			 
+			 if(winProgress==100) { // Prevents multiple requests to server
+				 winProgress = 0;
+				 xhr.send();
+			 }
+		} catch(exception) { 
+			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
+			imageData = parseDicom(null,getParameter(imgSrc,'object'));
+			doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'),firstTime);
+		}
+	},1);
+}
+
 function activateWindowing(toolId) {
 	if(jQuery('#tool').html()!=toolId) {
 		disableOtherTools(toolId);
-		enableTool(toolId);	
-		doMouseWheel = false;
+		enableTool(toolId);
+		doMouseWheel = (window.parent.pat.serverURL.indexOf("wado")>0);		
 
 		jQuery('#thickLocationPanel').hide();
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
-		var progress = 0;
-		
-		setTimeout(function() {
-			var imageData = null;
-			try {
-				imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];				
-
-				var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;				
-
-				if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
-					url+="&frameNumber=" + (frameInc-1);
-				}
-				
-				var xhr = new XMLHttpRequest();
-				xhr.open("POST", url, true);
-				xhr.responseType = "arraybuffer";  
-				
-				xhr.onload = function(e) {
-					if (this.status == 200) {
-						if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
-							pixelBuffer = new Uint8Array(this.response);
-						} else if(imageData['PixelRepresentation']==0 && imageData['BitsStored']>8) {
-							pixelBuffer = new Uint16Array(this.response);
-						} else if(imageData['PixelRepresentation']==1 && imageData['BitsStored']>8) {
-							pixelBuffer = new Int16Array(this.response);
-						} else {
-							pixelBuffer = this.response;
-						}
-						
-						for(var i=0;i<pixelBuffer.length;i++) {
-							var pix = pixelBuffer[i];
-							minPix = Math.min(minPix,pix);
-							maxPix = Math.max(maxPix,pix);
-						}
-							
-						lookupObj = new LookupTable();
-						lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
-						columns = imageData['nativeColumns'];
-						doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'));
-					}
-				};
-				
-				// Progress
-				xhr.onreadystatechange = function(evt) {
-					if(xhr.readyState==4) {
-						jQuery('#progressbar').progressbar("value",100);
-						jQuery('#progressbar').hide();
-						jQuery('#progresslbl').hide();
-					}
-					
-					if(xhr.readyState==2) {
-						jQuery('#progressbar').progressbar({
-							value: false,
-							change: function() {
-								jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(progress) + "%" );
-							},							
-						});
-						jQuery('#progressbar').show();
-						jQuery('#progresslbl').show();
-					}
-				};
-				
-				 xhr.addEventListener("progress", function(evt){					 
-				      if (evt.lengthComputable) {  				     
-				        progress = 100*evt.loaded/evt.total;				        
-				        jQuery('#progressbar').progressbar("value",progress);				       
-				      }
-				    }, true); 
-				 
-				xhr.send();
-			} catch(exception) { 
-				var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
-				imageData = parseDicom(null,getParameter(imgSrc,'object'));
-				doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'));
-			}
-			
-			//doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'));
-		},1);
+		getPixelData(true);
 	} else {
 		unbindWindowing(toolId);
 	}
@@ -575,12 +564,18 @@ function activateWindowing(toolId) {
 
 function unbindWindowing(toolId) {	
 	disableTool(toolId);
-	jQuery('#huDisplayPanel').hide();
-	jQuery('#thickLocationPanel').show();
+	jQuery('#huDisplayPanel').hide();	
+	if(jQuery("#patID").css("display").indexOf('none')<0) {
+		jQuery('#thickLocationPanel').show();
+	}
 	jQuery('#canvasLayer2').unbind('mousemove').unbind('mousedown').unbind('mouseup');
-	window.parent.disableWindowingContext();
-	jQuery('#applyWLDiv').hide();
+	window.parent.disableWindowingContext();	
 	doMouseWheel = true;
+	state.winPtr = -1;
+	winProgress = 100;	
+	var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+	var iNo = isMultiframe ? frameInc : imgInc;		
+	loadImg(isMultiframe,iNo);	
 }
 
 function activateMeasure(toolId) {
@@ -752,113 +747,116 @@ function getDICOM() {
 function deactivateMeasure(toolId) {
 	disableTool(toolId);
 	jQuery('#huDisplayPanel').hide();
-	jQuery('#thickLocationPanel').show();
+	if(jQuery("#patID").css("display").indexOf('none')<0) {
+		jQuery('#thickLocationPanel').show();
+	}
 	jQuery('#canvasLayer2').unbind('mousedown').unbind('mousemove').unbind('mouseup');
 	window.parent.disableMeasureContext();	
 }
 
-function doWindowing(imageData,huDisplay,wlDisplay) {
+function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 	var rescaleSlope = parseFloat(imageData['rescaleSlope']), rescaleIntercept = parseFloat(imageData['rescaleIntercept']);
-			
 	windowCenter = imageData['windowCenter'],windowWidth = imageData['windowWidth'];
 	
 	if(windowCenter!=undefined && windowCenter.length>0) {
 		if(windowCenter && windowCenter.indexOf('|') >=0) {
    	 		windowCenter = parseInt(windowCenter.substring(0, windowCenter.indexOf('|')));
-		}
-		
+		}		
 		if(windowWidth && windowWidth.indexOf('|') >=0) {
 		    windowWidth = parseInt(windowWidth.substring(0, windowWidth.indexOf('|')));
 		}
 	} else {
 		var maxVoi = maxPix * rescaleSlope + rescaleIntercept;
-		var minVoi = minPix * rescaleSlope + rescaleIntercept;
-		
+		var minVoi = minPix * rescaleSlope + rescaleIntercept;		
 		windowCenter = (maxVoi+minVoi) /2;
-		windowWidth = maxVoi - minVoi;
-		
+		windowWidth = maxVoi - minVoi;		
 		wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
 	}
 
 	if(modifiedWC==undefined) {
 		modifiedWC = windowCenter;
 		modifiedWW = windowWidth;
+		wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
 	}
 
 	lookupObj.setData(modifiedWC, modifiedWW, rescaleSlope, rescaleIntercept, imageData['BitsStored'],imageData['monochrome1']);
-	
 	this.tmpCanvas = document.createElement('canvas');
 	tmpCanvas.width = tmpCanvas.style.width = imageData['nativeColumns'];
-	tmpCanvas.height = tmpCanvas.style.height = imageData['nativeRows'];
-	
-	var tmpCtx = tmpCanvas.getContext('2d');
-	
+	tmpCanvas.height = tmpCanvas.style.height = imageData['nativeRows'];	
+	var tmpCtx = tmpCanvas.getContext('2d');	
 	tmpCtx.fillStyle = 'white';
-	tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
-	
+	tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);	
 	this.pixelData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
-	this.numPixels = tmpCanvas.width*tmpCanvas.height;
-	
-	iterateOverPixels();
-	
+	this.numPixels = tmpCanvas.width*tmpCanvas.height;	
+	iterateOverPixels();	
 	renderImg();
 	jQuery('#loadingView', window.parent.document).hide();
 	huDisplay.show();
 	
-	if(window.parent.pat.serverURL.indexOf('C-GET')<0 && window.parent.pat.serverURL.indexOf('C-MOVE')<0) {
-		jQuery('#applyWLDiv').show();
-	}
+	if(firstTime) {	
+		jQuery('#canvasLayer2').mouseup(function(evt) {
+			if(evt.which==1) {
+				state.drag = false;
+				evt.target.style.cursor = "default";
+				jQuery('.contextMenu').hide();
+				jQuery('.selected').removeClass('selected');
+			}
+		}).mousedown(function(evt) {
+			if(evt.which==1) {
+				var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+				var iNo = isMultiframe ? frameInc : imgInc;				
+				
+				if(iNo!=state.winPtr) {				
+					getPixelData(false);
+				} else {					
+					state.drag = true;
+				}
+			} 
+					
+			mouseLocX = evt.pageX;
+			mouseLocY = evt.pageY;	
+	       evt.target.style.cursor = "url(images/wincursor.png), auto";	       
+	       evt.preventDefault();
+	       evt.stopPropagation();    
+	       
+		}).mousemove(function(evt) {
+			jQuery('.selected',window.parent.document).removeClass('selected');
+			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+			var iNo = isMultiframe ? frameInc : imgInc;
+			/*var x = parseInt(evt.pageX/state.scale);
+			var y = parseInt(evt.pageY/state.scale);*/
+			if(state.winPtr==iNo && state.rotate==0) {
+				var x = parseInt((evt.pageX-state.translationX)/state.scale);
+				var y = parseInt((evt.pageY-state.translationY)/state.scale);
+				
+				huDisplay.html("X :"+x+" Y :"+y+" HU :"+lookupObj.getPixelAt(pixelBuffer[(y*imageData['nativeColumns'])+x]));
+			} else { // May be a different image
+				huDisplay.html("");
+			}		
 	
-	jQuery('#canvasLayer2').mouseup(function(evt) {
-		if(evt.which==1) {
-			state.drag = false;
-			evt.target.style.cursor = "default";
-			jQuery('.contextMenu').hide();
-			jQuery('.selected').removeClass('selected');
-		}
-	}).mousedown(function(evt) {
-		doMouseWheel = false;
-		state.drag = true;		
-		mouseLocX = evt.pageX;
-		mouseLocY = evt.pageY; 
-
-       evt.target.style.cursor = "url(images/wincursor.png), auto";
-       
-       evt.preventDefault();
-       evt.stopPropagation();    
-       
-	}).mousemove(function(evt) {
-		jQuery('.selected',window.parent.document).removeClass('selected');
-		/*var x = parseInt(evt.pageX/state.scale);
-		var y = parseInt(evt.pageY/state.scale);*/
-		
-		var x = parseInt((evt.pageX-state.translationX)/state.scale);
-		var y = parseInt((evt.pageY-state.translationY)/state.scale);
-		
-		huDisplay.html("X :"+x+" Y :"+y+" HU :"+lookupObj.getPixelAt(pixelBuffer[(y*imageData['nativeColumns'])+x]));
-
-		if(state.drag) {
-			var diffX = parseInt(evt.pageX-mouseLocX);
-			var diffY = parseInt(evt.pageY-mouseLocY);
+			if(state.drag && state.winPtr==iNo) {
+				var diffX = parseInt(evt.pageX-mouseLocX);
+				var diffY = parseInt(evt.pageY-mouseLocY);
+				
+				modifiedWC=parseInt(modifiedWC)+diffY;
+	            modifiedWW=parseInt(modifiedWW)+diffX;                    
+	
+	            if(modifiedWW < 1) {
+	                modifiedWW = 1;
+	            }
 			
-			modifiedWC=parseInt(modifiedWC)+diffY;
-            modifiedWW=parseInt(modifiedWW)+diffX;                    
-
-            if(modifiedWW < 1) {
-                modifiedWW = 1;
-            }
-		
-			lookupObj.setWindowingdata(modifiedWC,modifiedWW);
-			iterateOverPixels();
-			renderImg();
-			
-			mouseLocX=evt.pageX;
-            mouseLocY=evt.pageY;
-            
-           wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
-		}		
-	});
-	window.parent.enableWindowingContext();
+				lookupObj.setWindowingdata(modifiedWC,modifiedWW);
+				iterateOverPixels();
+				renderImg();
+				
+				mouseLocX=evt.pageX;
+	            mouseLocY=evt.pageY;
+	            
+	           wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
+			}		
+		});
+		window.parent.enableWindowingContext();
+	}
 }
 
 function applyPreset(wc,ww) {
@@ -891,21 +889,13 @@ function getPixelValAt(i,j) {
 
 function doZoom() {
 	var img = null;
-	var offScreenCanvas = document.createElement('canvas');
 	var canvasLayer2 = document.getElementById('canvasLayer2');	
-	var canvas = document.getElementById('imageCanvas');
-	var ctx = canvas.getContext('2d');	
-	
-	offScreenCanvas.width = canvas.width;
-	offScreenCanvas.height = canvas.height;
-	
-	var lastY = 0,mY = 0,zoomInc = 1,scaleFac = 1.01,originX = 0,originY = 0;
-	
+	var canvas = document.getElementById('imageCanvas');	
+	var lastY = 0,mY = 0,zoomInc = 1,scaleFac = 1.01,originX = 0,originY = 0;	
 	
 	jQuery(canvasLayer2).mousedown(function(e) {
 		if(e.which==1) {
 			document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
-			img = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).get(0);
 			originX = e.offsetX || (e.pageX-canvas.offsetLeft);
 			originY = lastY = e.offsetY || (e.pageY-canvas.offsetTop);
 			mY = lastY;
@@ -914,6 +904,7 @@ function doZoom() {
 			e.preventDefault();
 	   		e.stopPropagation();
 	   		e.target.style.cursor = "url(images/zoomin.png), auto";
+	   		img = getCurrentImage();
 	   		loadPreview(img);
 		}
 	}).mousemove(function(e1) {	
@@ -935,13 +926,7 @@ function doZoom() {
 			var newY = (imgPosY * state.scale)+state.translationY;
 		
 			state.translationX+=(originX-newX);
-			state.translationY+=(originY-newY);			
-			
-			/*renderOffScreenCanvas(offScreenCanvas,img);
-			ctx.save();
-			ctx.clearRect(0,0,canvas.width,canvas.height);			
-			ctx.drawImage(offScreenCanvas,0,0);
-			ctx.restore();*/
+			state.translationY+=(originY-newY);	
 			
 			showImg(null,img);
 			jQuery('#zoomPercent').html('Zoom: ' + parseInt(state.scale * 100) + '%');
@@ -992,27 +977,15 @@ function stopZoom() {
 	ctx.restore();
 }*/
 
-function applyWL() {	
-	getWLAppliedImages();
-	unbindWindowing('windowing');
-}
-
-function getWLAppliedImages() {
-	var tmp_Ser_Uid = seriesUid.replace(/\./g, '_')+"_1";
-	var imgs = jQuery('#' + tmp_Ser_Uid,parent.document).parent().children();	
-	jQuery('#applyWLDiv').attr('divState','true');
-	
-	imgs.each(function(){
-var imgSrc = jQuery(this).attr('src');
-		
-		if(imgSrc.indexOf('windowCenter') >= 0) {
-            imgSrc = imgSrc.substring(0, imgSrc.indexOf('&windowCenter='));
-        }       
-		
-		imgSrc += '&windowCenter=' + modifiedWC;
-		imgSrc = imgSrc.trim() + '&windowWidth=' + modifiedWW;	
-
-		window.parent.wlApplied = true;
-        jQuery(this).attr('src', imgSrc);        
-	});	
+function oneTimeTool() {
+	var inst_text = jQuery("#totalImages").text().split("/");
+	var isMultiframe = (inst_text[0].indexOf("Frame")>=0);
+	var iNo = inst_text[0].split(":")[1];
+	var winPos = jQuery("#wltmpImg").attr("pos");		
+	if(state.winPtr>=0 && state.winPtr==iNo && winPos!=iNo) {	
+		loadImg(isMultiframe,iNo,inst_text[1]);		
+	} else {
+		showImg(null,getCurrentImage(),true);
+	}
+	drawAllShapes();
 }
