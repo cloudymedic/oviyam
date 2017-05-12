@@ -879,8 +879,12 @@ function applyPreset(wc,ww) {
 		lookupObj.setWindowingdata(windowCenter,windowWidth);
 		jQuery('#windowLevel').html("WL: "+windowCenter+" / WW: "+windowWidth);
 	}	
-	iterateOverPixels();
-	renderImg();
+	var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+	var iNo = isMultiframe ? this.frameInc : this.imgInc;
+	loadImg(isMultiframe,iNo);
+	/*iterateOverPixels();
+	renderImg();*/
+	
 }
 
 function loadLookUp(imageData) {
