@@ -108,7 +108,7 @@ public class WadoServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		boolean isgzip = false;
-		String encodings = request.getHeader("Accept-Encoding");
+		/*String encodings = request.getHeader("Accept-Encoding");
 		String[] browserflags = encodings.split(",");
 
 		for (int i = 0; i < browserflags.length; i++) {
@@ -118,7 +118,7 @@ public class WadoServlet extends HttpServlet {
 				response.setHeader("Content-Encoding", "deflate");
 				response.setHeader("Vary", "Accept-Encoding");
 			}
-		}
+		}*/
 		
 		// Reads the parameters from the request object which is sent by user.
 		String dcmUrl = request.getParameter("dicomURL");
@@ -300,11 +300,12 @@ public class WadoServlet extends HttpServlet {
 		response.setContentType(contentType);
 		try {
 			fis = new FileInputStream(file);
-			if (isGzip) {
+			os = response.getOutputStream();
+			/*if (isGzip) {
 				os = new DeflaterOutputStream(response.getOutputStream());
 			} else {
 				os = response.getOutputStream();
-			}
+			}*/
 
 			byte[] buffer = new byte[4096];
 			int bytes_read;
@@ -341,12 +342,13 @@ public class WadoServlet extends HttpServlet {
 	private void startStream(HttpServletResponse response, byte[] bytes,String contentType,boolean isGzip) {
 		OutputStream os = null;
 		response.setContentType(contentType);
-		try {			
-			if (isGzip) {
+		try {	
+			os = response.getOutputStream();
+			/*if (isGzip) {
 				os = new DeflaterOutputStream(response.getOutputStream());
 			} else {
 				os = response.getOutputStream();
-			}		
+			}*/		
 			os.write(bytes);
 			os.flush();
 

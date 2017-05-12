@@ -560,12 +560,14 @@ function parseDicom(imageData,sopUID) {
 
 	var reader = new DicomInputStreamReader();
 
-	if (!(!(wadoUrl.indexOf('C-GET') >= 0) && !(wadoUrl.indexOf('C-MOVE') >= 0))) {
-		var urlTmp = "Wado.do?study=" + getParameter(wadoUrl, "studyUID")
+	if (!(!(wadoUrl.indexOf('C-GET') >= 0) && !(wadoUrl.indexOf('C-MOVE') >= 0))) {	
+		var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'), window.parent.document).attr('src');
+		/*var urlTmp = "Wado.do?study=" + getParameter(wadoUrl, "studyUID") + "&series=" + getParameter(wadoUrl,"seriesUID")
 				+ "&object=" + getParameter(wadoUrl, "objectUID")
-				+ "&contentType=application/dicom";
+				+ "&contentType=application/dicom" + "&retrieveType=" + window.parent.pat.serverURL + "&dicomURL=" + window.parent.pat.dicomURL;*/
+		var urlTmp = imgSrc + "&contentType=application/dicom";
 		reader.readDicom(urlTmp);
-	} else {
+	} else {		
 		reader.readDicom("DcmStream.do?wadourl="
 						+ wadoUrl.replaceAll("&", "_"));
 	}	
