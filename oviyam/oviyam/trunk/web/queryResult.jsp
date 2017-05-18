@@ -197,15 +197,7 @@
 				    if( iPos == null ) {
 						return;
 				    }  
-				    if(document.getElementById(iPos[7]).style.visibility == 'hidden') {
-		            	showWestPane(iPos);
-			        } else {
-			            if(!!(window.requestFileSystem || window.webkitRequestFileSystem)) {
-			                viewWPSeries(this);
-			            } else {
-			                showWestPane(iPos);
-			            }
-    	        	}    
+				    showWestPane(iPos);				        
 		        }            
            	}
         </script>
@@ -279,7 +271,7 @@
 					fromTime="${param.fromTime}" toTime="${param.toTime}">
 					<tr>
 						<td><img src="images/details_open.png" alt="" /> <img
-							src="images/green.png" style="visibility: hidden"
+							src="images/green.png" style="display: none;"
 							id="${studyIUID}" alt="" /></td>
 						<td>${patientId}</td>
 						<td>${patientName}</td>

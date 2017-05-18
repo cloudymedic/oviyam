@@ -470,23 +470,12 @@ $(document).ready(function() {
         
         var preview = $('.ui-tabs-selected').find('a').attr('preview'); 
 
-        if(preview=='true') {
-	        var selTabText = $('.ui-tabs-selected').find('span').html();
+        if(preview=='true') {	        
 	        var iPos = oTable.row(this).data();
 	        if( iPos == null ) {
 	    		return;
 	        }       
-
-       // if(selTabText != 'Local') {
-            if(document.getElementById(iPos[7]).style.visibility == 'hidden') {
-                showWestPane(iPos);
-            } else {
-                if(!!(window.requestFileSystem || window.webkitRequestFileSystem)) {
-                    viewWPSeries(this);
-                } else {
-                    showWestPane(iPos);
-                }
-            }
+	        showWestPane(iPos);       
        /* } else {
             if(!!(window.requestFileSystem || window.webkitRequestFileSystem)) {
                 viewWPSeries(this);
