@@ -627,7 +627,18 @@ function iterateOverPixels() {
 		localData[canvasIndex] = lookupTable[pixelBuffer[pixelIndex++]];
 		canvasIndex+=4;
 	}
-	tmpCanvas.getContext('2d').putImageData(pixelData,0,0);
+	//tmpCanvas.getContext('2d').putImageData(pixelData,0,0); 
+	if(state.invert) { 
+		for (var i = 0; i < pixelData.data.length; i += 4) {     
+			pixelData.data[i] = pixelData.data[i]; 
+	    	pixelData.data[i+1] = pixelData.data[i+1]; 
+	    	pixelData.data[i+2] = pixelData.data[i+2]; 
+	        pixelData.data[i+3] = 255 - pixelData.data[i+3]; 
+		} 
+		tmpCanvas.getContext('2d').putImageData(pixelData,0,0); 
+	} else { 
+		tmpCanvas.getContext('2d').putImageData(pixelData,0,0);
+	}		
 }
 
 function doAutoplay(frameTime) {

@@ -236,7 +236,13 @@ function doReset(toolid) {
 
 function doInvert(toolid) {
 	state.invert = state.invert ? false : true;
-	window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');	
+	//window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing'); 	
+	if(modifiedWC!=undefined && modifiedWW!=undefined && (modifiedWC!=windowCenter || modifiedWW!=windowWidth) || (modifiedWC==windowCenter || modifiedWW==windowWidth)){		
+		iterateOverPixels();
+		renderImg();
+	}else {		
+		window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
+	}	
 }
 
 function doMove() {
