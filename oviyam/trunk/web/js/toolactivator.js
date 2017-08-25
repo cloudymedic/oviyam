@@ -1,13 +1,13 @@
 function enableTool(tool) {
 	jQuery('#tool').text(tool);
 	jQuery('.toggleOff', window.parent.document).not('#scoutLine').removeClass('toggleOff');
-	jQuery('#'+tool,window.parent.document).addClass('toggleOff');	
+	jQuery('#'+tool,window.parent.document).addClass('toggleOff');
 }
 
 function disableTool(tool) {
 	jQuery('#tool').html('');
 	jQuery('#' + tool, parent.document).removeClass('toggleOff');
-	jQuery('#canvasDiv').css('cursor',"default");	
+	jQuery('#canvasDiv').css('cursor',"default");
 }
 
 function disableOtherTools(tool) {
@@ -22,7 +22,7 @@ function disableOtherTools(tool) {
 	}
 	if(tool!='measure') { // Deactivates Measure
 		deactivateMeasure('measure');
-	} 
+	}
 }
 
 function onToolSelection(e) {
@@ -31,7 +31,7 @@ function onToolSelection(e) {
 	} else if(e.detail.tool==="loop") {
 		doLoop(e.detail.isLoop);
 	}
-	
+
 	if(document!=undefined && document.body.style.border==='1px solid rgb(255, 138, 0)') { // Determines whether this is a Selected Tile
 		switch(e.detail.tool) {
 			case 'windowing':
@@ -39,13 +39,13 @@ function onToolSelection(e) {
 				break;
 			case 'zoom':
 				activateZoom(e.detail.tool);
-				break;	
+				break;
 			case 'move':
 				activateMove(e.detail.tool);
-				break;	
+				break;
 			case 'stackImage':
 				activatestack(e.detail.tool);
-				break;	
+				break;
 			case 'vflip':
 				activateVFlip(e.detail.tool);
 				break;
@@ -65,8 +65,8 @@ function onToolSelection(e) {
 				doReset(tool);
 				break;
 			case 'invert':
-				doInvert(tool);				
-				break;			
+				doInvert(tool);
+				break;
 			case 'fullScreen':
 				window.parent.doFullScreen(window.parent.document);
 				break;
@@ -107,15 +107,15 @@ function onToolSelection(e) {
 	}
 }
 
-function activateZoom(toolid) {	
+function activateZoom(toolid) {
 	if(jQuery('#tool').html()!=toolid) {
 		disableOtherTools(toolid);
-		enableTool(toolid);		
+		enableTool(toolid);
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
 		doZoom();
 	} else {
-		disableTool(toolid);				
+		disableTool(toolid);
 		stopZoom();
 	}
 }
@@ -123,20 +123,20 @@ function activateZoom(toolid) {
 function activateMove(toolid) {
 	if(jQuery('#tool').html()!=toolid) {
 		disableOtherTools(toolid);
-		enableTool(toolid);			
+		enableTool(toolid);
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
 		doMove();
 	} else {
-		disableTool(toolid);		
+		disableTool(toolid);
 		stopMove();
 	}
 }
 
 function activatestack(tool) {
 	if(jQuery('#tool').html()!=tool) {
-		disableOtherTools(tool);		
-		enableTool(tool);		
+		disableOtherTools(tool);
+		enableTool(tool);
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
 		doMouseWheel = true;
@@ -145,7 +145,7 @@ function activatestack(tool) {
 	}
 }
 
-function activateVFlip(tool) {	
+function activateVFlip(tool) {
 	state.vflip = state.vflip? false : true;
 	oneTimeTool();
 	flipOrientationToVertical();
@@ -153,12 +153,12 @@ function activateVFlip(tool) {
 
 function flipOrientationToVertical() {
 	var tmpTop = jQuery('#imgOriTop').text();
-	
+
 	jQuery('#imgOriTop').text(jQuery('#imgOriBottom').text());
 	jQuery('#imgOriBottom').text(tmpTop);
 }
 
-function activateHFlip(tool) {	
+function activateHFlip(tool) {
 	state.hflip = state.hflip? false : true;
 	oneTimeTool();
 	flipOrientationToHorizontal();
@@ -166,12 +166,12 @@ function activateHFlip(tool) {
 
 function flipOrientationToHorizontal() {
 	var tmpLeft = jQuery('#imgOriLeft').text();
-	
+
 	jQuery('#imgOriLeft').text(jQuery('#imgOriRight').text());
 	jQuery('#imgOriRight').text(tmpLeft);
 }
 
-function activateLeftRotation(tool) {	
+function activateLeftRotation(tool) {
 	state.rotate-=90;
 	switch(state.rotate) {
 		case -90:
@@ -190,14 +190,14 @@ function activateLeftRotation(tool) {
 function rotateLeftTextOverlay() {
 	var tmpLeft = jQuery('#imgOriLeft').text();
 	var tmpTop = jQuery('#imgOriTop').text();
-	
+
 	jQuery('#imgOriTop').text(jQuery('#imgOriRight').text());
 	jQuery('#imgOriRight').text(jQuery('#imgOriBottom').text());
 	jQuery('#imgOriBottom').text(tmpLeft);
 	jQuery('#imgOriLeft').text(tmpTop);
 }
 
-function activateRightRotation(tool) {	
+function activateRightRotation(tool) {
 	state.rotate+=90;
 	if(state.rotate>=360) {
 		state.rotate=0;
@@ -209,98 +209,98 @@ function activateRightRotation(tool) {
 function rotateRightTextOverlay() {
 	var tmpTop = jQuery('#imgOriTop').text();
 	var tmpBottom = jQuery('#imgOriBottom').text();
-	
+
 	jQuery('#imgOriTop').text(jQuery('#imgOriLeft').text());
 	jQuery('#imgOriBottom').text(jQuery('#imgOriRight').text());
-	jQuery('#imgOriRight').text(tmpTop);	
-	jQuery('#imgOriLeft').text(tmpBottom);	
+	jQuery('#imgOriRight').text(tmpTop);
+	jQuery('#imgOriLeft').text(tmpBottom);
 }
 
 function doReset(toolid) {
 	if(jQuery('#tool').html()!='') {
 		jQuery('#' + jQuery('#tool').html(), window.parent.document).removeClass('toggleOff');
-		jQuery('#tool').html('');	
+		jQuery('#tool').html('');
 	}
 	modifiedWC = windowCenter;
 	modifiedWW = windowWidth;
 	doMouseWheel = true;
-	disableOtherTools(toolid);	
+	disableOtherTools(toolid);
 	resetAnnotation();
 	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
 	loadInstanceText(false,false);
-	drawoutline();	
+	drawoutline();
 	doLoop(false);
-	window.parent.document.getElementById('loopChkBox').checked = false;	
+	window.parent.document.getElementById('loopChkBox').checked = false;
 	showImage(seriesUid+"_"+imgInc);
 }
 
 function doInvert(toolid) {
 	state.invert = state.invert ? false : true;
-	//window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing'); 	
-	if(modifiedWC!=undefined && modifiedWW!=undefined && (modifiedWC!=windowCenter || modifiedWW!=windowWidth) || (modifiedWC==windowCenter || modifiedWW==windowWidth)){		
+	//window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
+	if(modifiedWC!=undefined && modifiedWW!=undefined && (modifiedWC!=windowCenter || modifiedWW!=windowWidth) || (modifiedWC==windowCenter || modifiedWW==windowWidth)){
 		iterateOverPixels();
 		renderImg();
-	}else {		
+	}else {
 		window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
-	}	
+	}
 }
 
 function doMove() {
 	var img = null;
 	var canvasLayer2 = document.getElementById('canvasLayer2');
-	
-	var startCoords = [];	
-	
+
+	var startCoords = [];
+
 	canvasLayer2.onmousedown = function(e) {
 		if(e.which==1) {
 			state.drag = true;
 			img = getCurrentImage();
-	
+
 	        startCoords = [
 	        e.pageX - state.translationX,
 	        e.pageY - state.translationY
 	        ];
-	
+
 	        e.preventDefault();
 	        e.stopPropagation();
 	        e.target.style.cursor = "url(images/move.png), auto";
 		}
 	};
-	
+
 	 canvasLayer2.onmouseup = function(e) {
-        state.drag = false;   
+        state.drag = false;
         e.target.style.cursor = "default";
     };
-    
+
     canvasLayer2.onmousemove = function(e) {
         if(!state.drag) return;
         var x = e.pageX;
         var y = e.pageY;
-        
+
         state.translationX = x-startCoords[0];
         state.translationY = y-startCoords[1];
-        
+
 		showImg(null,img);
 		drawoutline();
 		drawAllShapes();
-    };	
+    };
 }
 
 function stopMove() {
 	var canvasLayer2 = document.getElementById('canvasLayer2');
-	
+
 	canvasLayer2.onmousedown = function(e) {
 		 if(e.preventDefault) {
         	e.preventDefault();
     	}
     };
-    
+
     canvasLayer2.onmouseup = function(e) {
 		 if(e.preventDefault) {
         	e.preventDefault();
     	}
     };
-    
+
     canvasLayer2.onmousemove = function(e) {
 		 if(e.preventDefault) {
         	e.preventDefault();
@@ -310,49 +310,50 @@ function stopMove() {
 
 function doLoop(loop) {
 	clearInterval(loopTimer);
-	if(loop && document.body.style.border==='1px solid rgb(255, 138, 0)') { // Determines whether this is a Selected Tile) 		
+	if(loop && document.body.style.border==='1px solid rgb(255, 138, 0)') { // Determines whether this is a Selected Tile)
 		loopTimer = setInterval(function() {
-			nextImage();			
-		}, parent.loopSpeed);		
-	} 
+			nextImage();
+		}, parent.loopSpeed);
+	}
 }
 
-function loadSlider() {		
+function loadSlider() {
 	if(total>1) {
 		if(jQuery('#multiframe').css('visibility')==="hidden") {
-			setSliderRange(imgInc, total);	
+			setSliderRange(imgInc, total);
 		} else {
-			setSliderRange(frameInc, total);	
+			setSliderRange(frameInc, total);
 		}
-		jQuery('#footer').show();		
+		jQuery('#footer').show();
 		jQuery("#trackbar1").css("display","block");
 		jQuery("#imgOriRight").css("right","35px");
+		jQuery('#trackbar1').css("visibility", "visible");
 	} else {
 		jQuery('#footer').hide();
-		jQuery("#imgOriRight").css("right","10px");		
-	}	
-	jQuery(jQuery("#trackbar1").children().get(0)).removeAttr("href");	
+		jQuery("#imgOriRight").css("right","10px");
+	}
+	jQuery(jQuery("#trackbar1").children().get(0)).removeAttr("href");
 }
 
 function setSliderRange(val,maxVal) {
 	jQuery('#trackbar1').slider({
-		orientation:"vertical",		
+		orientation:"vertical",
 		value: maxVal,
 		min: 1,
 		max: maxVal,
 		slide: onTick
-	});	
+	});
 	jQuery("#start").html(1);
 	jQuery("#end").html(maxVal);
 }
 
-function onTick(event, ui) {	
+function onTick(event, ui) {
 	if(jQuery('#multiframe').css('visibility')==="hidden") {
 		imgInc = (total-ui.value)+1;
 		loadImg(false,imgInc);
 	} else {
 		frameInc = (total-ui.value)+1;
-		loadImg(true,frameInc);	
+		loadImg(true,frameInc);
 	}
 	imgLoaded();
 	if(jQuery("#tool").html()=="measure") {
@@ -360,11 +361,11 @@ function onTick(event, ui) {
 	}
 }
 
-function setSliderValue() {	
+function setSliderValue() {
 	var inst_text = jQuery("#totalImages").text().split("/");
-	var iNo = parseInt(inst_text[0].split(":")[1]);	
+	var iNo = parseInt(inst_text[0].split(":")[1]);
 	jQuery('#trackbar1').slider("option","value",(parseInt(inst_text[1])-iNo)+1);
-	jQuery(jQuery("#trackbar1").children().get(0)).text(iNo);	
+	jQuery(jQuery("#trackbar1").children().get(0)).text(iNo);
 }
 
 function convertSplChars(str)
@@ -415,11 +416,11 @@ function getOppositeOrientation(str) {
 
 function getFromToLoc() {
 	var selThickLoc = jQuery('#thickLocationPanel').text();
-		
-	if(selThickLoc==null || selThickLoc.length == 0) {   
+
+	if(selThickLoc==null || selThickLoc.length == 0) {
         return {from:undefined, to:undefined,sliceLoc:undefined};
 	}
-	
+
 	var selThick = selThickLoc.match("Thick:(.*)mm Loc");
 	if(selThick!=null) {
 		selThick = selThick[1];
@@ -428,20 +429,20 @@ function getFromToLoc() {
 	}
 	var selLoc = selThickLoc.match("Loc:(.*)mm")[1];
 
-	return {from:parseFloat(selLoc) - parseFloat(selThick), to:parseFloat(selLoc) + parseFloat(selThick),sliceLoc:parseFloat(selLoc)};	
+	return {from:parseFloat(selLoc) - parseFloat(selThick), to:parseFloat(selLoc) + parseFloat(selThick),sliceLoc:parseFloat(selLoc)};
 }
 
 function synchronize(e) {
 	if(document.body.style.border.indexOf("255, 138, 0")<0 && e.detail.forUid===jQuery('#forUIDPanel').html()) {
-		var fromTo = e.detail.fromTo;		
+		var fromTo = e.detail.fromTo;
 		var data = sessionStorage!=null ? sessionStorage[seriesUid] : false;
 		if(data) {
 			data = JSON.parse(data);
-			
+
 			if(data!=null) {
 				for(var i=0;i<data.length;i++) {
 					var sliceLoc = (data[i])['sliceLocation'];
-				
+
 					if(sliceLoc>=fromTo['from'] && sliceLoc<=fromTo['to'] && parseFloat(sliceLoc)-parseFloat(fromTo['sliceLoc'])<128) {
 						imgInc = (i+1);
 						showImg(seriesUid+ '_' + imgInc);
@@ -458,7 +459,7 @@ function doScout(toolId) {
 	var modality = jQuery('#modalityDiv').html();
 	if(jQuery(window.parent.document).find('iframe').length>1 && (modality.indexOf('CT')>=0 || modality.indexOf('MR')>=0)) {
 		if(!window.parent.displayScout) {
-			window.parent.displayScout = true;			
+			window.parent.displayScout = true;
 			jQuery('#scoutLine', window.parent.document).addClass('toggleOff');
 			Localizer.drawScout();
 		} else {
@@ -469,25 +470,25 @@ function doScout(toolId) {
 	}
 }
 
-function getPixelData(firstTime) {	
+function getPixelData(firstTime) {
 	setTimeout(function() {
 		var imageData = null;
 		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
 		var iNo = isMultiframe ? this.frameInc : this.imgInc;
-		
-		try {			
-			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];				
 
-			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;				
+		try {
+			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+
+			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;
 
 			if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
 				url+="&frameNumber=" + (frameInc-1);
 			}
-			
+
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", url, true);
-			xhr.responseType = "arraybuffer";  
-			
+			xhr.responseType = "arraybuffer";
+
 			xhr.onload = function(e) {
 				if (this.status == 200) {
 					if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
@@ -499,21 +500,21 @@ function getPixelData(firstTime) {
 					} else {
 						pixelBuffer = this.response;
 					}
-					
+
 					for(var i=0;i<pixelBuffer.length;i++) {
 						var pix = pixelBuffer[i];
 						minPix = Math.min(minPix,pix);
 						maxPix = Math.max(maxPix,pix);
 					}
-						
+
 					lookupObj = new LookupTable();
 					lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
 					columns = imageData['nativeColumns'];
-					state.winPtr = iNo; 
+					state.winPtr = iNo;
 					doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'),firstTime);
 				}
 			};
-			
+
 			// Progress
 			xhr.onreadystatechange = function(evt) {
 				if(xhr.readyState==4) {
@@ -521,31 +522,31 @@ function getPixelData(firstTime) {
 					jQuery('#progressbar').hide();
 					jQuery('#progresslbl').hide();
 				}
-				
+
 				if(xhr.readyState==2) {
 					jQuery('#progressbar').progressbar({
 						value: false,
 						change: function() {
 							jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(winProgress) + "%" );
-						},							
+						},
 					});
 					jQuery('#progressbar').show();
 					jQuery('#progresslbl').show();
 				}
 			};
-			
-			 xhr.addEventListener("progress", function(evt){					 
-			      if (evt.lengthComputable) {  				     
-			    	  winProgress = 100*evt.loaded/evt.total;				        
-			        jQuery('#progressbar').progressbar("value",winProgress);				       
+
+			 xhr.addEventListener("progress", function(evt){
+			      if (evt.lengthComputable) {
+			    	  winProgress = 100*evt.loaded/evt.total;
+			        jQuery('#progressbar').progressbar("value",winProgress);
 			      }
-			    }, true); 
-			 
+			    }, true);
+
 			 if(winProgress==100) { // Prevents multiple requests to server
 				 winProgress = 0;
 				 xhr.send();
 			 }
-		} catch(exception) {			
+		} catch(exception) {
 			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
 			imageData = parseDicom(null,getParameter(imgSrc,'object'));
 			state.winPtr = iNo;
@@ -558,7 +559,7 @@ function activateWindowing(toolId) {
 	if(jQuery('#tool').html()!=toolId) {
 		disableOtherTools(toolId);
 		enableTool(toolId);
-		doMouseWheel = (window.parent.pat.serverURL.indexOf("wado")>0);		
+		doMouseWheel = (window.parent.pat.serverURL.indexOf("wado")>0);
 
 		jQuery('#thickLocationPanel').hide();
 		doLoop(false);
@@ -569,35 +570,35 @@ function activateWindowing(toolId) {
 	}
 }
 
-function unbindWindowing(toolId) {	
+function unbindWindowing(toolId) {
 	disableTool(toolId);
-	jQuery('#huDisplayPanel').hide();	
+	jQuery('#huDisplayPanel').hide();
 	if(jQuery("#patID").css("display").indexOf('none')<0) {
 		jQuery('#thickLocationPanel').show();
 	}
 	jQuery('#canvasLayer2').unbind('mousemove').unbind('mousedown').unbind('mouseup');
-	window.parent.disableWindowingContext();	
+	window.parent.disableWindowingContext();
 	doMouseWheel = true;
 	state.winPtr = -1;
-	winProgress = 100;	
+	winProgress = 100;
 	if(modifiedWC!=windowCenter && modifiedWW != windowWidth) {
 		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-		var iNo = isMultiframe ? frameInc : imgInc;		
-		loadImg(isMultiframe,iNo);	
+		var iNo = isMultiframe ? frameInc : imgInc;
+		loadImg(isMultiframe,iNo);
 	}
 }
 
 function activateMeasure(toolId) {
 	if(jQuery('#tool').html()!=toolId) {
 		disableOtherTools(toolId);
-		enableTool(toolId);	
+		enableTool(toolId);
 		doMouseWheel = false;
-		
+
 		jQuery('#thickLocationPanel').hide();
 		jQuery('#loadingView', window.parent.document).show();
 		doLoop(false);
-		window.parent.document.getElementById('loopChkBox').checked = false;	
-		
+		window.parent.document.getElementById('loopChkBox').checked = false;
+
 		var shape = jQuery('.selectedshape',window.parent.document).attr('id');
 
 		switch(shape) {
@@ -624,7 +625,7 @@ function activateMeasure(toolId) {
 function doRuler() {
 	var imageData = null;
 	try {
-		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];		
+		imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
 		activateRuler(jQuery('#totalImages').html().indexOf('Frame')<0 ? imgInc : frameInc,imageData['nativeColumns']);
 	} catch(e) {
 		alert("DICOM DATA NOT AVAILABLE.");
@@ -676,11 +677,11 @@ function getDICOM() {
 			url+="&frameNumber=" + (frameInc-1);
 		}
 		var progress = 0;
-		
+
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, true);
-		xhr.responseType = "arraybuffer";  
-		
+		xhr.responseType = "arraybuffer";
+
 		xhr.onload = function(e) {
 			if (this.status == 200) {
 				if(imageData['PixelRepresentation']==0 && imageData['BitsStored']==8) {
@@ -692,20 +693,20 @@ function getDICOM() {
 				} else {
 					pixelBuffer = this.response;
 				}
-				
+
 				for(var i=0;i<pixelBuffer.length;i++) {
 					var pix = pixelBuffer[i];
 					minPix = Math.min(minPix,pix);
 					maxPix = Math.max(maxPix,pix);
 				}
-					
+
 				lookupObj = new LookupTable();
 				lookupObj.setPixelInfo(minPix,maxPix,imageData['monochrome1']);
 				columns = imageData['nativeColumns'];
 				loadLookUp(imageData);
 			}
 		};
-		
+
 		// Progress
 		xhr.onreadystatechange = function(evt) {
 			if(xhr.readyState==4) {
@@ -713,28 +714,28 @@ function getDICOM() {
 				jQuery('#progressbar').hide();
 				jQuery('#progresslbl').hide();
 			}
-			
+
 			if(xhr.readyState==2) {
 				jQuery('#progressbar').progressbar({
 					value: false,
 					change: function() {
 						jQuery('#progresslbl').text("Retrieving pixel data : " + Math.round(progress) + "%" );
-					},							
+					},
 				});
 				jQuery('#progressbar').show();
 				jQuery('#progresslbl').show();
 			}
 		};
-		
-		 xhr.addEventListener("progress", function(evt){					 
-		      if (evt.lengthComputable) {  				     
-		        progress = 100*evt.loaded/evt.total;				        
-		        jQuery('#progressbar').progressbar("value",progress);				       
+
+		 xhr.addEventListener("progress", function(evt){
+		      if (evt.lengthComputable) {
+		        progress = 100*evt.loaded/evt.total;
+		        jQuery('#progressbar').progressbar("value",progress);
 		      }
-		    }, true); 
-		
+		    }, true);
+
 		xhr.send();
-	} catch(exception) {			
+	} catch(exception) {
 		var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
 		imageData = parseDicom(null,getParameter(imgSrc,'object'));
 		if(imageData['pixelSpacing']!=undefined) {
@@ -750,7 +751,7 @@ function getDICOM() {
 		}
 		columns = imageData['nativeColumns'];
 		loadLookUp(imageData);
-	}	
+	}
 }
 
 function deactivateMeasure(toolId) {
@@ -761,25 +762,25 @@ function deactivateMeasure(toolId) {
 	}
 	jQuery('#canvasLayer2').unbind('mousedown').unbind('mousemove').unbind('mouseup');
 	document.getElementById("canvasLayer2").style.cursor = 'default';
-	window.parent.disableMeasureContext();	
+	window.parent.disableMeasureContext();
 }
 
 function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 	var rescaleSlope = parseFloat(imageData['rescaleSlope']), rescaleIntercept = parseFloat(imageData['rescaleIntercept']);
 	windowCenter = imageData['windowCenter'],windowWidth = imageData['windowWidth'];
-	
+
 	if(windowCenter!=undefined && windowCenter.length>0) {
 		if(windowCenter && windowCenter.indexOf('|') >=0) {
    	 		windowCenter = parseInt(windowCenter.substring(0, windowCenter.indexOf('|')));
-		}		
+		}
 		if(windowWidth && windowWidth.indexOf('|') >=0) {
 		    windowWidth = parseInt(windowWidth.substring(0, windowWidth.indexOf('|')));
 		}
 	} else {
 		var maxVoi = maxPix * rescaleSlope + rescaleIntercept;
-		var minVoi = minPix * rescaleSlope + rescaleIntercept;		
+		var minVoi = minPix * rescaleSlope + rescaleIntercept;
 		windowCenter = (maxVoi+minVoi) /2;
-		windowWidth = maxVoi - minVoi;		
+		windowWidth = maxVoi - minVoi;
 		wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
 	}
 
@@ -792,18 +793,18 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 	lookupObj.setData(modifiedWC, modifiedWW, rescaleSlope, rescaleIntercept, imageData['BitsStored'],imageData['monochrome1']);
 	this.tmpCanvas = document.createElement('canvas');
 	tmpCanvas.width = tmpCanvas.style.width = imageData['nativeColumns'];
-	tmpCanvas.height = tmpCanvas.style.height = imageData['nativeRows'];	
-	var tmpCtx = tmpCanvas.getContext('2d');	
+	tmpCanvas.height = tmpCanvas.style.height = imageData['nativeRows'];
+	var tmpCtx = tmpCanvas.getContext('2d');
 	tmpCtx.fillStyle = 'white';
-	tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);	
+	tmpCtx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
 	this.pixelData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
-	this.numPixels = tmpCanvas.width*tmpCanvas.height;	
-	iterateOverPixels();	
+	this.numPixels = tmpCanvas.width*tmpCanvas.height;
+	iterateOverPixels();
 	renderImg();
 	jQuery('#loadingView', window.parent.document).hide();
 	huDisplay.show();
-	
-	if(firstTime) {	
+
+	if(firstTime) {
 		jQuery('#canvasLayer2').mouseup(function(evt) {
 			if(evt.which==1) {
 				state.drag = false;
@@ -814,21 +815,21 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 		}).mousedown(function(evt) {
 			if(evt.which==1) {
 				var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-				var iNo = isMultiframe ? frameInc : imgInc;				
-				
-				if(iNo!=state.winPtr) {				
+				var iNo = isMultiframe ? frameInc : imgInc;
+
+				if(iNo!=state.winPtr) {
 					getPixelData(false);
-				} else {					
+				} else {
 					state.drag = true;
 				}
-			} 
-					
+			}
+
 			mouseLocX = evt.pageX;
-			mouseLocY = evt.pageY;	
-	       evt.target.style.cursor = "url(images/wincursor.png), auto";	       
+			mouseLocY = evt.pageY;
+	       evt.target.style.cursor = "url(images/wincursor.png), auto";
 	       evt.preventDefault();
-	       evt.stopPropagation();    
-	       
+	       evt.stopPropagation();
+
 		}).mousemove(function(evt) {
 //			jQuery('.selected',window.parent.document).removeClass('selected');
 			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
@@ -838,33 +839,33 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 			if(state.winPtr==iNo && state.rotate==0) {
 				var x = parseInt((evt.pageX-state.translationX)/state.scale);
 				var y = parseInt((evt.pageY-state.translationY)/state.scale);
-				
+
 				huDisplay.html("X :"+x+" Y :"+y+" HU :"+lookupObj.getPixelAt(pixelBuffer[(y*imageData['nativeColumns'])+x]));
 			} else { // May be a different image
 				huDisplay.html("");
-			}		
-	
+			}
+
 			if(state.drag && state.winPtr==iNo) {
 				jQuery('.selected',window.parent.document).removeClass('selected');
 				var diffX = parseInt(evt.pageX-mouseLocX);
 				var diffY = parseInt(evt.pageY-mouseLocY);
-				
+
 				modifiedWC=parseInt(modifiedWC)+diffY;
-	            modifiedWW=parseInt(modifiedWW)+diffX;                    
-	
+	            modifiedWW=parseInt(modifiedWW)+diffX;
+
 	            if(modifiedWW < 1) {
 	                modifiedWW = 1;
 	            }
-			
+
 				lookupObj.setWindowingdata(modifiedWC,modifiedWW);
 				iterateOverPixels();
 				renderImg();
-				
+
 				mouseLocX=evt.pageX;
 	            mouseLocY=evt.pageY;
-	            
+
 	           wlDisplay.html("WL: "+modifiedWC+" / WW: "+modifiedWW);
-			}		
+			}
 		});
 		window.parent.enableWindowingContext();
 	}
@@ -874,27 +875,27 @@ function applyPreset(wc,ww) {
 	jQuery('.selected',window.parent.document).removeClass('selected');
 	jQuery('.contextMenu',window.parent.document).hide();
 
-	if(wc!=undefined) {	
+	if(wc!=undefined) {
 		modifiedWC = wc;
-		modifiedWW = ww;	
-		lookupObj.setWindowingdata(modifiedWC,modifiedWW);				
+		modifiedWW = ww;
+		lookupObj.setWindowingdata(modifiedWC,modifiedWW);
 		jQuery('#windowLevel').html("WL: "+modifiedWC+" / WW: "+modifiedWW);
 	} else {
 		modifedWC = windowCenter;
 		modifiedWW = windowWidth;
 		lookupObj.setWindowingdata(windowCenter,windowWidth);
 		jQuery('#windowLevel').html("WL: "+windowCenter+" / WW: "+windowWidth);
-	}	
+	}
 	var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
 	var iNo = isMultiframe ? this.frameInc : this.imgInc;
 	loadImg(isMultiframe,iNo);
 	/*iterateOverPixels();
 	renderImg();*/
-	
+
 }
 
 function loadLookUp(imageData) {
-	lookupObj.setData(modifiedWC, modifiedWW, parseFloat(imageData['rescaleSlope']), parseFloat(imageData['rescaleIntercept']), imageData['BitsStored'],imageData['monochrome1']);	
+	lookupObj.setData(modifiedWC, modifiedWW, parseFloat(imageData['rescaleSlope']), parseFloat(imageData['rescaleIntercept']), imageData['BitsStored'],imageData['monochrome1']);
 }
 
 function getPixelValAt(i,j) {
@@ -904,10 +905,10 @@ function getPixelValAt(i,j) {
 
 function doZoom() {
 	var img = null;
-	var canvasLayer2 = document.getElementById('canvasLayer2');	
-	var canvas = document.getElementById('imageCanvas');	
-	var lastY = 0,mY = 0,zoomInc = 1,scaleFac = 1.01,originX = 0,originY = 0;	
-	
+	var canvasLayer2 = document.getElementById('canvasLayer2');
+	var canvas = document.getElementById('imageCanvas');
+	var lastY = 0,mY = 0,zoomInc = 1,scaleFac = 1.01,originX = 0,originY = 0;
+
 	jQuery(canvasLayer2).mousedown(function(e) {
 		if(e.which==1) {
 			document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
@@ -915,40 +916,40 @@ function doZoom() {
 			originY = lastY = e.offsetY || (e.pageY-canvas.offsetTop);
 			mY = lastY;
 			state.drag = true;
-			
+
 			e.preventDefault();
 	   		e.stopPropagation();
 	   		e.target.style.cursor = "url(images/zoomin.png), auto";
 	   		img = getCurrentImage();
 	   		loadPreview(img);
 		}
-	}).mousemove(function(e1) {	
+	}).mousemove(function(e1) {
 		lastY = e1.offsetY || (e1.pageY-canvas.offsetTop);
-		
+
 		if(state.drag) {
 			if(lastY<mY) {
 				zoomInc = 1;
 			} else {
 				zoomInc = -1;
 			}
-			
+
 			var imgPosX = (originX-state.translationX)/state.scale;
-			var imgPosY = (originY-state.translationY)/state.scale;		
-		
+			var imgPosY = (originY-state.translationY)/state.scale;
+
 			state.scale*=Math.pow(scaleFac,zoomInc);
-		
+
 			var newX = (imgPosX * state.scale)+state.translationX;
 			var newY = (imgPosY * state.scale)+state.translationY;
-		
+
 			state.translationX+=(originX-newX);
-			state.translationY+=(originY-newY);	
-			
+			state.translationY+=(originY-newY);
+
 			showImg(null,img);
 			jQuery('#zoomPercent').html('Zoom: ' + parseInt(state.scale * 100) + '%');
-			
-		
+
+
 			mY = lastY;
-			
+
 			drawoutline();
 			drawAllShapes();
 		}
@@ -962,31 +963,31 @@ function stopZoom() {
 	jQuery('#canvasLayer2').unbind('mousedown mousemove mouseup');
 }
 
-/*function renderOffScreenCanvas(offScreenCanvas,image) {	
+/*function renderOffScreenCanvas(offScreenCanvas,image) {
 	var ctx = offScreenCanvas.getContext('2d');
-	
+
 	ctx.save();
-	ctx.setTransform(1,0,0,1,0,0);		
-	ctx.clearRect(0,0,offScreenCanvas.width,offScreenCanvas.height);	
+	ctx.setTransform(1,0,0,1,0,0);
+	ctx.clearRect(0,0,offScreenCanvas.width,offScreenCanvas.height);
 
 	if(state.vflip) {
 		ctx.translate(0,offScreenCanvas.height);
 		ctx.scale(1,-1);
 	}
-	
+
 	if(state.hflip) {
 		ctx.translate(offScreenCanvas.width,0);
 		ctx.scale(-1,1);
 	}
-	
+
 	if(state.rotate!=0) {
 		ctx.translate(offScreenCanvas.width/2,offScreenCanvas.height/2);
 		ctx.rotate(state.rotate===90 ? Math.PI/2 : state.rotate===180? Math.PI : (Math.PI*3)/2);
-		ctx.translate(-offScreenCanvas.offScreenCanvas/2,-canvas.height/2);	   
-	}	
-	
-	ctx.translate(state.translationX, state.translationY);	
-	ctx.scale(state.scale,state.scale);		
+		ctx.translate(-offScreenCanvas.offScreenCanvas/2,-canvas.height/2);
+	}
+
+	ctx.translate(state.translationX, state.translationY);
+	ctx.scale(state.scale,state.scale);
 
 	ctx.drawImage(image,0,0);
 	ctx.restore();
@@ -996,9 +997,9 @@ function oneTimeTool() {
 	var inst_text = jQuery("#totalImages").text().split("/");
 	var isMultiframe = (inst_text[0].indexOf("Frame")>=0);
 	var iNo = inst_text[0].split(":")[1];
-	var winPos = jQuery("#wltmpImg").attr("pos");		
-	if(state.winPtr>=0 && state.winPtr==iNo && winPos!=iNo) {	
-		loadImg(isMultiframe,iNo,inst_text[1]);		
+	var winPos = jQuery("#wltmpImg").attr("pos");
+	if(state.winPtr>=0 && state.winPtr==iNo && winPos!=iNo) {
+		loadImg(isMultiframe,iNo,inst_text[1]);
 	} else {
 		showImg(null,getCurrentImage(),true);
 	}
