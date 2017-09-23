@@ -324,8 +324,15 @@ public class PatientInfoHandler extends SimpleTagSupport {
                     //if(!study.getStudyTime().equals("")) {
                     if(study.getStudyTime() != null && study.getStudyTime().length() > 0) {
                         sDate = sDate + " " + study.getStudyTime();
-                        parseFmt = new SimpleDateFormat("yyyyMMdd HHmmss");
-                        displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        //parseFmt = new SimpleDateFormat("yyyyMMdd HHmmss");
+                        //displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        if(!study.getStudyTime().contains(".") && study.getStudyTime().length() == 4) {
+                            parseFmt = new SimpleDateFormat("yyyyMMdd HHmm");
+                            displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                        }else {
+                            parseFmt = new SimpleDateFormat("yyyyMMdd HHmmss");
+                            displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        }
                     } else {
                         parseFmt = new SimpleDateFormat("yyyyMMdd");
                         displayFmt = new SimpleDateFormat("dd/MM/yyyy");
