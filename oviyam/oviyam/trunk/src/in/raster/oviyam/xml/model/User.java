@@ -70,6 +70,9 @@ public class User {
     @Element(name="prefetch",required=false)
     private String prefetch;
 
+    @Element(name="downloadstudy", required=false)
+    private String downloadStudy;
+    
     public SearchParams getSearchParams() {
         return searchParams;
     }
@@ -100,6 +103,14 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+    
+    public String getDownloadStudy() {
+		return downloadStudy;
+	}
+    
+    public void setDownloadStudy(String downloadStudy) {
+    	this.downloadStudy = downloadStudy;
     }
 
     public String getViewerSlider() {
