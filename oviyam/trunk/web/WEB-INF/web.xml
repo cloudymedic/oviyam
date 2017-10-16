@@ -28,6 +28,14 @@
         <servlet-name>DicomRetrieve</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.DicomRetrieve</servlet-class>
     </servlet>
+     <servlet>
+        <servlet-name>DownloadStudyServlet</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.DownloadStudyServlet</servlet-class>
+    </servlet> 
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.DownloadServlet</servlet-class>
+    </servlet> 
     <servlet>
         <servlet-name>ServerConfigServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.ServerConfigServlet</servlet-class>
@@ -98,6 +106,14 @@
     <servlet-mapping>
         <servlet-name>InstanceServlet</servlet-name>
         <url-pattern>/Instance.do</url-pattern>
+    </servlet-mapping>
+     <servlet-mapping>
+        <servlet-name>DownloadStudyServlet</servlet-name>
+        <url-pattern>/downloadStudy.do</url-pattern>
+    </servlet-mapping>
+     <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/download.do</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DcmImage</servlet-name>

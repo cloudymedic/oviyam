@@ -96,11 +96,11 @@ public class ImageInfo {
         }
 
         //Setting filter values for query
-        cfgProperties.put("key.PatientID", patientID);
-        cfgProperties.put("key.StudyInstanceUID", studyInstanceUID);
-        cfgProperties.put("key.SeriesInstanceUID", seriesInstanceUID);
+        cfgProperties.put("key.PatientID", patientID.trim());
+        cfgProperties.put("key.StudyInstanceUID", studyInstanceUID.trim());
+        cfgProperties.put("key.SeriesInstanceUID", seriesInstanceUID.trim());
         if(SOPInstanceUID != null) {
-            cfgProperties.put("key.SOPInstanceUID", SOPInstanceUID);
+            cfgProperties.put("key.SOPInstanceUID", SOPInstanceUID.trim());
         }
 
         //Create object for DcmURL
