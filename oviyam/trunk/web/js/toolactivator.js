@@ -142,6 +142,7 @@ function activatestack(tool) {
 		doMouseWheel = true;
 	} else {
 		disableTool(tool);
+		//window.focus();
 	}
 }
 
@@ -149,6 +150,7 @@ function activateVFlip(tool) {
 	state.vflip = state.vflip? false : true;
 	oneTimeTool();
 	flipOrientationToVertical();
+	window.focus();	 
 }
 
 function flipOrientationToVertical() {
@@ -162,6 +164,7 @@ function activateHFlip(tool) {
 	state.hflip = state.hflip? false : true;
 	oneTimeTool();
 	flipOrientationToHorizontal();
+	window.focus();
 }
 
 function flipOrientationToHorizontal() {
@@ -185,6 +188,7 @@ function activateLeftRotation(tool) {
 	}
 	oneTimeTool();
 	rotateLeftTextOverlay();
+	window.focus();
 }
 
 function rotateLeftTextOverlay() {
@@ -204,6 +208,7 @@ function activateRightRotation(tool) {
 	}
 	oneTimeTool();
 	rotateRightTextOverlay();
+	window.focus();
 }
 
 function rotateRightTextOverlay() {
@@ -260,7 +265,8 @@ function doMove() {
 	        e.pageX - state.translationX,
 	        e.pageY - state.translationY
 	        ];
-
+			
+			window.focus();
 	        e.preventDefault();
 	        e.stopPropagation();
 	        e.target.style.cursor = "url(images/move.png), auto";
@@ -288,21 +294,24 @@ function doMove() {
 
 function stopMove() {
 	var canvasLayer2 = document.getElementById('canvasLayer2');
-
+		
 	canvasLayer2.onmousedown = function(e) {
-		 if(e.preventDefault) {
+		 if(e.preventDefault) {			 
+			window.focus();
         	e.preventDefault();
     	}
     };
 
     canvasLayer2.onmouseup = function(e) {
 		 if(e.preventDefault) {
+			window.focus();
         	e.preventDefault();
     	}
     };
 
     canvasLayer2.onmousemove = function(e) {
 		 if(e.preventDefault) {
+			window.focus();
         	e.preventDefault();
     	}
     };

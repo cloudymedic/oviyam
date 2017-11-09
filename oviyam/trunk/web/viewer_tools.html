@@ -378,9 +378,10 @@
 
         jQuery(document).keyup(function(e) {
             var curr = jQuery('#containerBox').find('.current');
-
+         
+         if(e.keyCode !=37 && e.keyCode !=39) {
             switch (e.keyCode) {
-                case 37: //Executed when LEFT arrow pressed
+               /* case 37: //Executed when LEFT arrow pressed
                     if (curr.length) {
                         jQuery(curr).removeClass('current');
                         jQuery(curr).prev().addClass('current');
@@ -388,14 +389,14 @@
                         jQuery('#containerBox div:last-child').addClass('current');
                     }
                     break;
-                case 39: //Executed when RIGHT arrow pressed			
+                case 39: //Executed when RIGHT arrow pressed	
                     if (curr.length) {
                         jQuery(curr).removeClass('current');
                         jQuery(curr).next().addClass('current');
                     } else {
                         jQuery('#containerBox div:first-child').addClass('current');
                     }
-                    break;
+                    break;  */
                 case 13: //Executed when ENTER key pressed 
                     jQuery(curr).removeClass('current');
 
@@ -425,13 +426,16 @@
                     doTool('delete');
                     break;
             }
-        });
-
+            } 
+        }); 
+         
         jQuery(document).mouseup(function(e) {
             createEvent("ToolSelection", {
                 tool: "mouseup"
             });
         });
+        
+           
     </script>
 </head>
 

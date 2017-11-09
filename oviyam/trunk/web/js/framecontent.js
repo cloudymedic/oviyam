@@ -36,7 +36,7 @@ jQuery('#ImagePane').ready(function() {
     var canvasDiv = jQuery('#canvasDiv');
     
     canvasDiv.on('mousewheel DOMMouseScroll', function (e) {
-    	
+   
     	if(jQuery('body').css('border').indexOf('none')>=0){ 
 	    	window.parent.createEvent('selection',{"ImagePane":jQuery('#ImagePane')});
     	}
@@ -52,7 +52,7 @@ jQuery('#ImagePane').ready(function() {
 		return false;	
 	});
 	
-	jQuery(document).keydown(function(e) {		
+     jQuery(document).keydown(function(e) {     
 		if(doMouseWheel) {
 		    if(e.which == 38 || e.which == 37) {        	
 		        prevImage();
@@ -60,8 +60,12 @@ jQuery('#ImagePane').ready(function() {
 			    nextImage();
 		    }
 	    }
-    });
-    
+		if(e.which==46) { 
+	    	deleteSelectedMeasurement(); 
+	    }
+    }); 
+	
+      
     var oy,ny;
     canvasDiv.mousedown(function(e) {
     	if(e.which==1) {
