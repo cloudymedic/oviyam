@@ -9,16 +9,17 @@ ovm.shape.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	var xPxlSpcing = xPixelSpacing;
 	var yPxlSpcing = yPixelSpacing;
 	var measureUnit = measure_Unit;
+	this.isCurrentDrawingOval = false; 
 	
 	this.createNewOval = function(x1,y1,x2,y2) {
 		if(curr_oval!=undefined) {
 			curr_oval.setCoords(x1,y1,x2,y2,false);
-			if(parseFloat(curr_oval.area)>0.0) {
+		//	if(parseFloat(curr_oval.area)>0.0) { // To avoid oval in negative area 
 				curr_oval.meanOfOval();
 				curr_oval.stdDevOfOval();
 				ovals.push(curr_oval);
 				curr_oval = undefined;
-			}
+		//	}
 		}
 	};
 	
@@ -60,13 +61,123 @@ ovm.shape.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 		canvasCtx.font = "14px Arial";	
 
 		var text = canvasCtx.measureText(graphic.stdDev.length>graphic.area.length? graphic.stdDev : graphic.area);			
-		canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+20,60);
-		canvasCtx.globalAlpha = 0.9;
-		canvasCtx.fillStyle = "white";		
+		canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+20,60); 
+		canvasCtx.globalAlpha = 0.9; 
+		canvasCtx.fillStyle = "white";			
+		//canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15); 
+		//canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35); 
+		//canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55); 
+
+		if(state.hflip && !state.vflip &&  !state.rotate!=0 && !this.isCurrentDrawingOval){
+			canvasCtx.save();
+			canvasCtx.translate(drawCanvas.width,0);
+			canvasCtx.scale(-1,1);			
+			canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-135,graphic.textY+15);
+			canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-135,graphic.textY+35); 
+			canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-135,graphic.textY+55); 
+			canvasCtx.restore();
+		}
+		if(state.vflip &&  !state.hflip &&  !state.rotate!=0 && !this.isCurrentDrawingOval){
+			canvasCtx.save();
+			canvasCtx.translate(0,drawCanvas.height);
+			canvasCtx.scale(1,-1);	
+			canvasCtx.fillText(graphic.area,  graphic.textX+2,(drawCanvas.height -graphic.textY)-48); 
+			canvasCtx.fillText(graphic.mean,  graphic.textX+2,(drawCanvas.height -graphic.textY)-28); 
+			canvasCtx.fillText(graphic.stdDev,  graphic.textX+2,(drawCanvas.height -graphic.textY)-8); 
+			canvasCtx.restore();	
+		}
+
+		if(!state.vflip && state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingOval){		
+		if(state.rotate===90 || state.rotate===180 || state.rotate===270) {
+		canvasCtx.save();
+		canvasCtx.translate(0,drawCanvas.height);
+		canvasCtx.scale(1,-1);	
+
+		canvasCtx.fillText(graphic.area,graphic.textX+2,(drawCanvas.height -graphic.textY)-50);
+		canvasCtx.fillText(graphic.mean,graphic.textX+2,(drawCanvas.height -graphic.textY)-30);
+		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,(drawCanvas.height -graphic.textY)-10);
+		canvasCtx.restore();
+		}
+		}
+
+	if(state.vflip && !state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingOval){
+	if(state.rotate===90 || state.rotate===180 || state.rotate===270) { 
+		canvasCtx.save(); 
+		canvasCtx.translate(drawCanvas.width,0); 
+		canvasCtx.scale(-1,1);
+	
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-130,graphic.textY+15);
+		canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-130,graphic.textY+35);
+		canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-130,graphic.textY+55);
+
+		canvasCtx.restore();
+		}	
+	}
+
+		
+	if(state.rotate!=0  && !state.vflip &&  !state.hflip && !this.isCurrentDrawingOval) {
+	if(state.rotate===180) {
+		canvasCtx.save();
+		canvasCtx.translate(drawCanvas.width/2,drawCanvas.height/2);
+		canvasCtx.rotate(Math.PI);			
+		canvasCtx.translate(-drawCanvas.width/2,-drawCanvas.height/2);	
+		
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX)-130, (drawCanvas.height -graphic.textY)-50); //, 
+		canvasCtx.fillText(graphic.mean, (drawCanvas.width -graphic.textX)-130, (drawCanvas.height -graphic.textY)-30); //
+		canvasCtx.fillText(graphic.stdDev, (drawCanvas.width -graphic.textX)-130, (drawCanvas.height -graphic.textY)-10);// 
+		canvasCtx.restore();
+		} 
+		
+		else { 
 		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
 		canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
 		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		}
+		}
+		
+		if((state.rotate===0 || state.rotate===90 || state.rotate===180 || state.rotate===270) && state.vflip && state.hflip && !this.isCurrentDrawingOval) { 		
+		if(state.rotate===0) {
+		canvasCtx.save();
+		canvasCtx.translate(drawCanvas.width,drawCanvas.height);
+		canvasCtx.scale(-1,-1);	
 
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-50);
+		canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-30); 
+		canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-10); 
+		canvasCtx.restore();	
+		}
+		else {
+		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
+		canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
+		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		}
+		}
+
+		if((!state.rotate===0 || !state.rotate===90 || !state.rotate===180 || !state.rotate===270) && state.hflip && state.vflip && !this.isCurrentDrawingOval) {
+		canvasCtx.save();
+		canvasCtx.translate(drawCanvas.width,drawCanvas.height);
+		canvasCtx.scale(-1,-1);	
+
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-50);
+		canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-30); 
+		canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-10); 
+		canvasCtx.restore();	
+		}
+		
+		if(!state.hflip && !state.vflip && !state.rotate!=0) {
+		//canvasCtx.save();
+		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
+		canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
+		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		//canvasCtx.restore();
+		}			
+		
+		if(this.isCurrentDrawingOval) {
+			canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
+			canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
+			canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		}
+		
 		// Reference Lines
 		if(graphic.centerX!=graphic.textX) {
 			canvasCtx.save();
@@ -93,9 +204,11 @@ ovm.shape.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	
 	this.drawOval = function(canvasCtx,x1,y1,x2,y2) {
 		curr_oval.setCoords(x1,y1,x2,y2,true);
+		this.isCurrentDrawingOval = true; 
 		canvasCtx.strokeStyle=canvasCtx.fillStyle='orange';
 		canvasCtx.lineWidth='2';
 		this.draw(this.viewPortGraphic(curr_oval),canvasCtx);
+		this.isCurrentDrawingOval = false; 
 	};
 	
 	this.getActiveOval = function(canvasCtx,x,y) {
@@ -200,6 +313,7 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 		this.radiusY = Math.round((this.endY-this.centerY)*this.yPxlSpcing);		
 		this.active = active;		
 		this.area = ((Math.PI * this.radiusX*this.radiusY)/100).toFixed(3);
+		this.area = (this.area<0) ? Math.abs(this.area) : this.area; //change (-)ve to (+)ve
 		this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 		this.textX = this.centerX;
 		this.textY = this.centerY - (this.endY-this.centerY) - (100/state.scale);
@@ -317,6 +431,31 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 	};
 	
 	this.meanOfOval = function() {
+
+	var tempX,tempY,tempX2,tempY2,xAxisDifference = false,yAxisDifference =false,xyAxisDifference = false;
+ 	if (this.centerX>this.endX && this.centerY < this.endY) {	
+	tempX = this.centerX;
+	this.centerX = this.endX;
+	this.endX = tempX;
+	xAxisDifference = true;
+	} 
+
+	if(this.centerX < this.endX && this.centerY > this.endY) {	
+	tempY = this.centerY; 
+	this.centerY = this.endY; 
+	this.endY = tempY;
+	yAxisDifference = true;	
+	}
+	if(this.centerX>this.endX && this.centerY > this.endY){
+	tempX2 = this.centerX;
+	tempY2 = this.centerY;
+	this.centerX = this.endX;
+	this.centerY = this.endY;	
+	this.endX = tempX2;
+	this.endY = tempY2;
+	xyAxisDifference = true;
+	}
+
 		var sum = 0, pixelCount = 0;
 		for(var i = this.centerX;i<this.endX;i++) {
 			for(var j = this.centerY;j<this.endY;j++) {
@@ -330,6 +469,28 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 			}
 		}
 
+		if(xAxisDifference == true) {
+			tempX = this.centerX;
+			this.centerX = this.endX;
+			this.endX = tempX;
+			xAxisDifference =	false;
+		}
+		if(yAxisDifference == true) {
+			tempY = this.centerY; 
+			this.centerY = this.endY; 
+			this.endY = tempY; 
+			yAxisDifference = false;
+		}
+		if(xyAxisDifference == true) {
+			tempX2 = this.centerX; 
+			tempY2 = this.centerY;
+			this.centerX = this.endX; 
+			this.centerY = this.endY; 	 
+			this.endX = tempX2; 
+			this.endY = tempY2;
+			xyAxisDifference = false;
+		} 
+		
 		if(pixelCount==0) {
 			return 0;
 		}
@@ -339,6 +500,30 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 	};
 	
 	this.stdDevOfOval = function() {
+
+		var tempX,tempY,tempX2,tempY2,xAxisDifference = false,yAxisDifference =false,xyAxisDifference = false;
+		if ( this.centerX>this.endX && this.centerY < this.endY) {		
+			tempX = this.centerX;
+			this.centerX = this.endX;
+			this.endX = tempX;
+			xAxisDifference = true;
+		} 
+		if(this.centerX < this.endX && this.centerY > this.endY) {	
+			tempY = this.centerY; 
+			this.centerY = this.endY; 
+			this.endY = tempY;
+			yAxisDifference = true;
+		}
+		if(this.centerX>this.endX && this.centerY > this.endY){
+			tempX2 = this.centerX;
+			tempY2 = this.centerY;
+			this.centerX = this.endX;
+			this.centerY = this.endY;	
+			this.endX = tempX2;
+			this.endY = tempY2;
+			xyAxisDifference = true;
+		}
+	
 		var sum = 0,pixelCount = 0;
 		for(var i = this.centerX;i<this.endX;i++) {
 			for(var j = this.centerY;j<this.endY;j++) {
@@ -352,6 +537,29 @@ ovm.oval = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 				}				
 			}
 		}
+
+		if(xAxisDifference == true) {
+			tempX = this.centerX;
+			this.centerX = this.endX;
+			this.endX = tempX;
+			xAxisDifference =	false;
+		}
+		if(yAxisDifference == true) {
+			tempY = this.centerY; 
+			this.centerY = this.endY; 
+			this.endY = tempY;
+			yAxisDifference = false;
+		}
+		if(xyAxisDifference == true) {
+			tempX2 = this.centerX; 
+			tempY2 = this.centerY; 
+			this.centerX = this.endX; 
+			this.centerY = this.endY; 
+			this.endX = tempX2; 
+			this.endY = tempY2; 
+			xyAxisDifference = false;
+		} 
+	
 		if(pixelCount==0) {
 			return 0;
 		}

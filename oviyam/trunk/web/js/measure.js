@@ -182,7 +182,7 @@ function mouseMoveHandler(evt) {
 		
 		if(selectedShape==null ) { // New Shape
 			switch(tool) { 
-				case 'ruler':					
+				case 'ruler':		
 					ruler.drawRuler(context,mouseLocX,mouseLocY,x,y);
 					break;
 				case 'rectangle':									
@@ -214,13 +214,19 @@ function mouseUpHandler(evt) {
 	if(selectedShape==null) { // New Shape
 		switch(tool) {
 			case 'ruler':
-				ruler.createNewLine(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
+			    //ruler.createNewLine(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop)); 
+				var newLocation = changeMouseCoordinate(mouseLocX,mouseLocY,(evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop)); 
+			    ruler.createNewLine(newLocation.mouseLocX, newLocation.mouseLocY, newLocation.pageX, newLocation.pageY);  
 				break;
 			case 'rectangle':
-				rect.createNewRect(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
+				//rect.createNewRect(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
+				var newLocation = changeMouseCoordinate(mouseLocX,mouseLocY,(evt.pageX-drawCanvas.offsetLeft),(evt.pageY-drawCanvas.offsetTop)); 
+				rect.createNewRect(newLocation.mouseLocX, newLocation.mouseLocY, newLocation.pageX, newLocation.pageY);
 				break;
 			case 'oval':
-				oval.createNewOval(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop));
+				//oval.createNewOval(mouseLocX, mouseLocY, (evt.pageX-drawCanvas.offsetLeft), (evt.pageY-drawCanvas.offsetTop)); 
+				var newLocation = changeMouseCoordinate(mouseLocX,mouseLocY,(evt.pageX-drawCanvas.offsetLeft),(evt.pageY-drawCanvas.offsetTop));
+				oval.createNewOval(newLocation.mouseLocX, newLocation.mouseLocY, newLocation.pageX, newLocation.pageY);
 				break;
 			case 'angle':
 				if(angle.angleStarted() && angle.curr_angle.lineOAValid() && angle.curr_angle.lineOBValid()) {
@@ -231,11 +237,66 @@ function mouseUpHandler(evt) {
 		drawAllShapes();
 		if(tool!="angle") {
 			state.drag = false;					
-		}					
+		}				
 	} else {
 		state.drag = false;
 	}
 }
+
+function changeMouseCoordinate(mouseLocX,mouseLocY,pageX,pageY) {
+	if(state.hflip){
+	mouseLocX = drawCanvas.width - mouseLocX;	
+	pageX = drawCanvas.width - pageX;		
+	}
+	if(state.vflip){
+		mouseLocY  = drawCanvas.height - mouseLocY;	
+		pageY = drawCanvas.height - pageY;			
+	}
+	if(state.rotate!=0) {	
+		var tempMouseLocX,tempMouseLocY,tempPageX,tempPageY; // These variable is necessary otherwise it will subtract from original(mouseLocX,evt.pageY)	
+	if(state.rotate===90) {
+	var	newWidth = drawCanvas.width - drawCanvas.height;	
+		newWidth = newWidth/2;
+	tempMouseLocX = mouseLocY + newWidth; 
+	tempMouseLocY = (drawCanvas.width - newWidth) - mouseLocX;   
+	tempPageX =pageY + newWidth; 
+	tempPageY = (drawCanvas.width-newWidth) - pageX;	
+	mouseLocX = tempMouseLocX;
+	mouseLocY = tempMouseLocY;
+	pageX = tempPageX;
+	pageY = tempPageY; 
+		
+	} else if(state.rotate===180) {
+		tempMouseLocX = drawCanvas.width - mouseLocX;
+	    tempMouseLocY =	drawCanvas.height - mouseLocY;
+		tempPageX = drawCanvas.width - pageX;
+		tempPageY = drawCanvas.height - pageY;
+				
+		mouseLocX = tempMouseLocX;
+		mouseLocY = tempMouseLocY;
+		pageX = tempPageX;
+		pageY = tempPageY; 
+		
+		}
+
+	else { //270
+	var	newWidth = drawCanvas.width - drawCanvas.height;	
+	newWidth = newWidth/2;
+	tempMouseLocX = (drawCanvas.width - newWidth) - mouseLocY; 
+	tempMouseLocY = mouseLocX - newWidth;   
+	tempPageX = (drawCanvas.width - newWidth) - pageY;  
+	tempPageY = pageX - newWidth;	
+		
+	mouseLocX = tempMouseLocX;
+	mouseLocY = tempMouseLocY;
+	pageX = tempPageX;
+	pageY = tempPageY; 
+	}
+	}
+
+	return {mouseLocX:mouseLocX, mouseLocY:mouseLocY, pageX:pageX, pageY:pageY};
+	} 
+
 
 function setShape(shape) {
 	tool = shape;
