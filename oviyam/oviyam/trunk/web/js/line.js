@@ -14,6 +14,7 @@ ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	var xPxlSpcing = xPixelSpacing;
 	var yPxlSpcing = yPixelSpacing;
 	var measureUnit = measure_Unit;
+	var isCurrentDrawingLine = false; 
 	
 	this.createNewLine = function(x1,y1,x2,y2) {
 		if(curr_line!=undefined) {
@@ -48,7 +49,79 @@ ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 		ctx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+5,20);
 		ctx.globalAlpha = 0.9;
 		ctx.fillStyle = "white";		
-		ctx.fillText(graphic.len+" " + measureUnit,graphic.textX+2,graphic.textY+14);
+		//ctx.fillText(graphic.len+" " + measureUnit,graphic.textX+2,graphic.textY+14); 
+		
+		if(state.hflip && !state.vflip &&  !state.rotate!=0 && !this.isCurrentDrawingLine){
+			ctx.save();
+			ctx.translate(drawCanvas.width,0);
+			ctx.scale(-1,1);	
+			ctx.fillText(graphic.len+ " " + measureUnit,(drawCanvas.width - graphic.textX)-60,graphic.textY+14);  
+			ctx.restore();
+		}
+
+		if(state.vflip && !state.hflip && !state.rotate!=0 && !this.isCurrentDrawingLine){ 
+			ctx.save();
+			ctx.translate(0,drawCanvas.height);
+			ctx.scale(1,-1);	
+		    ctx.fillText(graphic.len+ " " + measureUnit,  graphic.textX,(drawCanvas.height -graphic.textY)); 
+			ctx.restore();	
+		}
+		
+		if(!state.vflip && state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingLine){
+		if(state.rotate===90|| state.rotate===180 || state.rotate===270) { 
+		ctx.save();
+		ctx.translate(0,drawCanvas.height);
+		ctx.scale(1,-1);
+ 		ctx.fillText(graphic.len+ " " + measureUnit,  graphic.textX,(drawCanvas.height -graphic.textY)); 
+		ctx.restore();	
+		}
+		}
+
+		if(state.vflip && !state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingLine){
+		if(state.rotate===90 || state.rotate===180 || state.rotate===270) { 			
+		ctx.save();
+			ctx.translate(drawCanvas.width,0);
+			ctx.scale(-1,1);	
+			ctx.fillText(graphic.len+ " " + measureUnit,(drawCanvas.width - graphic.textX)-60,graphic.textY+14); 
+			ctx.restore();
+		}
+		}
+
+		if(state.rotate!=0  && !state.vflip &&  !state.hflip && !this.isCurrentDrawingLine) {
+		if(state.rotate===180) {
+		ctx.save();
+		ctx.translate(drawCanvas.width/2,drawCanvas.height/2);
+			ctx.rotate(Math.PI);			
+			ctx.translate(-drawCanvas.width/2,-drawCanvas.height/2);	
+			ctx.fillText(graphic.len+ " " + measureUnit,  (drawCanvas.width -graphic.textX)-60,(drawCanvas.height -graphic.textY)); 
+			ctx.restore();	
+		} 		
+		else { 
+		ctx.fillText(graphic.len+ " " + measureUnit,graphic.textX+2,graphic.textY+14); 
+		}
+		}
+
+		if((state.rotate===0 || state.rotate===90 || state.rotate===180 || state.rotate===270) && state.vflip && state.hflip && !this.isCurrentDrawingLine) { 
+		if(state.rotate===0) {	 
+ 		ctx.save();
+		ctx.translate(drawCanvas.width,drawCanvas.height);
+		ctx.scale(-1,-1);	
+		ctx.fillText(graphic.len+ " " + measureUnit,  (drawCanvas.width -graphic.textX)-60,(drawCanvas.height -graphic.textY)); 
+		ctx.restore();	
+		} else {
+			ctx.fillText(graphic.len+ " " + measureUnit,graphic.textX+2,graphic.textY+14); 
+		}
+		}
+
+		if(!state.hflip && !state.vflip && !state.rotate!=0) { 
+		ctx.fillText(graphic.len+ " " + measureUnit,graphic.textX+2,graphic.textY+14); 
+		}	
+		
+		if(this.isCurrentDrawingLine) {
+			ctx.fillText(graphic.len+ " " + measureUnit,  graphic.textX+2,graphic.textY+14);
+		}
+	
+			
 		// Reference lines
 		if(graphic.x1!=graphic.textX) {
 			ctx.save();
@@ -77,9 +150,11 @@ ovm.shape.ruler = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	
 	this.drawRuler = function(canvasCtx,x1,y1,x2,y2) {
 		curr_line.setCoords(x1,y1,x2,y2,true);
+		this.isCurrentDrawingLine = true; 
 		canvasCtx.save();	
 		canvasCtx.lineWidth='2';
 		this.draw(this.viewPortGraphic(curr_line),canvasCtx);
+		this.isCurrentDrawingLine = false; 
 		canvasCtx.restore();
 	};
 	

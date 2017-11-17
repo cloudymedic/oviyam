@@ -9,16 +9,17 @@ ovm.shape.rect = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	var xPxlSpcing = xPixelSpacing;
 	var yPxlSpcing = yPixelSpacing;
 	var measureUnit = measure_Unit;
+	var isCurrentDrawingRect = false; 
 	
 	this.createNewRect = function(x1,y1,x2,y2) {
 		if(curr_rect!=undefined) {
 			curr_rect.setCoords(x1,y1,x2,y2,false);
-			if(parseFloat(curr_rect.area)>0.0) {
+		//	if(parseFloat(curr_rect.area)>0.0) { // To avoid rectangle in (-)ve area 
 				curr_rect.meanOfRect();
 				curr_rect.stdDevOfRect();
 				rects.push(curr_rect);
 				curr_rect = undefined;
-			}
+		//	}
 		}
 	};
 	
@@ -52,12 +53,120 @@ ovm.shape.rect = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 		canvasCtx.font = "14px Arial";	
 
 		var text = canvasCtx.measureText(graphic.stdDev.length>graphic.area.length? graphic.stdDev : graphic.area);			
-		canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+10,60);
-		canvasCtx.globalAlpha = 0.9;
-		canvasCtx.fillStyle = "white";		
+		canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+10,60); 
+		canvasCtx.globalAlpha = 0.9; 
+		canvasCtx.fillStyle = "white";	
+		//canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15); 
+		//canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35); 
+		//canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55); 
+
+		if(state.hflip && !state.vflip &&  !state.rotate!=0 && !this.isCurrentDrawingRect){
+			canvasCtx.save();
+			canvasCtx.translate(drawCanvas.width,0);
+			canvasCtx.scale(-1,1);			
+			canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-135,graphic.textY+15);
+			canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-135,graphic.textY+35); 
+			canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-135,graphic.textY+55); 
+			canvasCtx.restore();
+		}
+		if(state.vflip &&  !state.hflip && !state.rotate!=0 && !this.isCurrentDrawingRect){
+			canvasCtx.save();
+			canvasCtx.translate(0,drawCanvas.height);
+			canvasCtx.scale(1,-1);	
+			canvasCtx.fillText(graphic.area,  graphic.textX+2,(drawCanvas.height -graphic.textY)-48); 
+			canvasCtx.fillText(graphic.mean,  graphic.textX+2,(drawCanvas.height -graphic.textY)-28); 
+			canvasCtx.fillText(graphic.stdDev,  graphic.textX+2,(drawCanvas.height -graphic.textY)-8); 
+			canvasCtx.restore();	
+		}
+		
+		if(!state.vflip && state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingRect){
+		if(state.rotate===90 || state.rotate===180 || state.rotate===270) {
+		canvasCtx.save();
+		canvasCtx.translate(0,drawCanvas.height);
+		canvasCtx.scale(1,-1);
+
+		canvasCtx.fillText(graphic.area,graphic.textX+2,(drawCanvas.height -graphic.textY)-50);
+		canvasCtx.fillText(graphic.mean,graphic.textX+2,(drawCanvas.height -graphic.textY)-30);
+		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,(drawCanvas.height -graphic.textY)-10);
+		canvasCtx.restore();		
+		}
+		}
+
+		if(state.vflip && !state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingRect){
+		if(state.rotate===90 || state.rotate===180 || state.rotate===270) { 
+		canvasCtx.save(); 
+		canvasCtx.translate(drawCanvas.width,0); 
+		canvasCtx.scale(-1,1); 
+
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-130,graphic.textY+15);
+		canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-130,graphic.textY+35);
+		canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-130,graphic.textY+55);
+		canvasCtx.restore();
+		}		
+		}
+
+		if(state.rotate!=0  && !state.vflip &&  !state.hflip && !this.isCurrentDrawingRect) {
+    	if(state.rotate===180) {
+		canvasCtx.save();
+		canvasCtx.translate(drawCanvas.width/2,drawCanvas.height/2);
+		canvasCtx.rotate(Math.PI);			
+		canvasCtx.translate(-drawCanvas.width/2,-drawCanvas.height/2);	
+			
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX)-130, (drawCanvas.height -graphic.textY)-50);  
+		canvasCtx.fillText(graphic.mean, (drawCanvas.width -graphic.textX)-130, (drawCanvas.height -graphic.textY)-30); 
+		canvasCtx.fillText(graphic.stdDev, (drawCanvas.width -graphic.textX)-130, (drawCanvas.height -graphic.textY)-10);
+		canvasCtx.restore();	
+		} 
+		
+		else { 
 		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
 		canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
 		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		}
+		}
+		
+		if((state.rotate===0 || state.rotate===90 || state.rotate===180 || state.rotate===270) && state.vflip && state.hflip && !this.isCurrentDrawingRect) { 				
+		if(state.rotate===0) {
+	 	canvasCtx.save();
+		canvasCtx.translate(drawCanvas.width,drawCanvas.height);
+		canvasCtx.scale(-1,-1);	
+
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-50);
+		canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-30); 
+		canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-10); 
+		canvasCtx.restore();	
+		}
+		else {
+		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
+		canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
+		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		}
+		}
+
+		if((!state.rotate===0 || !state.rotate===90 || !state.rotate===180 || !state.rotate===270) && state.hflip && state.vflip && !this.isCurrentDrawingRect) { 
+		canvasCtx.save();
+		canvasCtx.translate(drawCanvas.width,drawCanvas.height);
+		canvasCtx.scale(-1,-1);	
+
+		canvasCtx.fillText(graphic.area,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-50);
+		canvasCtx.fillText(graphic.mean,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-30); 
+		canvasCtx.fillText(graphic.stdDev,(drawCanvas.width -graphic.textX+2)-135,(drawCanvas.height -graphic.textY)-10); 
+		canvasCtx.restore();	
+		}
+		
+		if(!state.hflip && !state.vflip  && !state.rotate!=0 ) { 
+		//canvasCtx.save();
+		canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
+		canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
+		canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		//canvasCtx.restore();
+		}	
+		
+		if(this.isCurrentDrawingRect) {
+			canvasCtx.fillText(graphic.area,graphic.textX+2,graphic.textY+15);
+			canvasCtx.fillText(graphic.mean,graphic.textX+2,graphic.textY+35);
+			canvasCtx.fillText(graphic.stdDev,graphic.textX+2,graphic.textY+55);
+		}
 		
 		// Reference Lines
 		if(graphic.x1!=graphic.textX) {
@@ -85,10 +194,12 @@ ovm.shape.rect = function(xPixelSpacing,yPixelSpacing,measure_Unit) {
 	
 	this.drawRect = function(canvasCtx,x1,y1,x2,y2) {
 		curr_rect.setCoords(x1,y1,x2,y2,true);
+		this.isCurrentDrawingRect = true; 
 		canvasCtx.save();	
 		canvasCtx.strokeStyle=canvasCtx.fillStyle='orange';
 		canvasCtx.lineWidth='2';
 		this.draw(this.viewPortGraphic(curr_rect),canvasCtx);
+		this.isCurrentDrawingRect = false; 
 		canvasCtx.restore();
 	};
 	
@@ -195,9 +306,12 @@ ovm.rect = function(xPixelSpacing,yPixelSpacing,measure_Unit,a,b,c,d,e) {
 		this.x2 = Math.round((c-state.translationX)/state.scale);
 		this.y2 = Math.round((d-state.translationY)/state.scale);
 		this.width = Math.round((this.x2-this.x1)*this.xPxlSpcing);
-		this.height = Math.round((this.y2-this.y1)*this.yPxlSpcing);		
+		this.width = (this.width<0) ? Math.abs(this.width) : this.width; //Mouse drag opposite canvas direction (-)ve
+		this.height = Math.round((this.y2-this.y1)*this.yPxlSpcing);	
+		this.height = (this.height<0) ? Math.abs(this.height) : this.height; //Mouse drag opposite canvas direction (-)ve	
 		this.active = active;		
 		this.area = ((this.width*this.height)/100).toFixed(3);
+		this.area = (this.area<0) ? Math.abs(this.area) : this.area; //width or height (-)ve, change to (+)ve
 		this.txtArea = "Area     : " + this.area + " " + this.measureUnit;
 		this.textX = this.x1;
 		this.textY = this.y1-(100/state.scale);

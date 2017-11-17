@@ -5,6 +5,7 @@ ovm.shape.angle = function() {
 	var handleSize = 5;
 	var angles = [];	
 	this.curr_angle = null;	
+	this.isCurrentDrawingAngle = false; 
 	
 	this.initAngle = function() {		
 		this.curr_angle = new ovm.angle();
@@ -60,7 +61,86 @@ ovm.shape.angle = function() {
 			canvasCtx.fillRect(graphic.textX,graphic.textY,Math.ceil(text.width)+5,20);
 			canvasCtx.globalAlpha = 0.9;
 			canvasCtx.fillStyle = "white";
-			canvasCtx.fillText(graphic.angle,graphic.textX+2,graphic.textY+15);
+			//canvasCtx.fillText(graphic.angle,graphic.textX+2,graphic.textY+15); 
+
+		if(state.hflip && !state.vflip &&  !state.rotate!=0 && !this.isCurrentDrawingAngle){
+			canvasCtx.save();
+			canvasCtx.translate(drawCanvas.width,0);
+			canvasCtx.scale(-1,1);	
+			canvasCtx.fillText(graphic.angle,(drawCanvas.width - graphic.textX)-60,graphic.textY+14);  
+			canvasCtx.restore();
+		}
+		if(state.vflip &&  !state.hflip &&  !state.rotate!=0 && !this.isCurrentDrawingAngle){
+			canvasCtx.save();
+			canvasCtx.translate(0,drawCanvas.height);
+			canvasCtx.scale(1,-1);	
+		    canvasCtx.fillText(graphic.angle,  graphic.textX,(drawCanvas.height -graphic.textY)); 
+			canvasCtx.restore();	
+		}
+			
+		if(!state.vflip && state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingAngle){		
+		if(state.rotate===90 || state.rotate===180 || state.rotate===270) {
+			canvasCtx.save();
+			canvasCtx.translate(0,drawCanvas.height);
+			canvasCtx.scale(1,-1);
+			canvasCtx.fillText(graphic.angle,graphic.textX,(drawCanvas.height -graphic.textY)); 
+			canvasCtx.restore();
+		}
+		}
+
+		if(state.vflip && !state.hflip && (state.rotate===90 || state.rotate===180 || state.rotate===270) && !this.isCurrentDrawingAngle){		
+		if(state.rotate===90 || state.rotate===180 || state.rotate===270) {
+			canvasCtx.save();
+			canvasCtx.translate(drawCanvas.width,0);
+			canvasCtx.scale(-1,1);	
+			canvasCtx.fillText(graphic.angle, (drawCanvas.width - graphic.textX)-60, graphic.textY+14); 
+			canvasCtx.restore();
+		}
+		}
+		
+		if(state.rotate!=0  && !state.vflip &&  !state.hflip && !this.isCurrentDrawingAngle) {		
+		if(state.rotate===180) {
+			canvasCtx.save();
+			canvasCtx.translate(drawCanvas.width/2,drawCanvas.height/2);
+			canvasCtx.rotate(Math.PI);			
+			canvasCtx.translate(-drawCanvas.width/2,-drawCanvas.height/2);	
+			canvasCtx.fillText(graphic.angle,  (drawCanvas.width -graphic.textX)-60,(drawCanvas.height -graphic.textY)); 
+			canvasCtx.restore();	
+		} 			
+		else { 
+			canvasCtx.fillText(graphic.angle,graphic.textX+2,graphic.textY+14); 
+		}
+		}
+			
+		if((state.rotate===0 || state.rotate===90 || state.rotate===180 || state.rotate===270) && state.vflip && state.hflip && !this.isCurrentDrawingAngle) { 
+		if(state.rotate===0) {
+			canvasCtx.save();
+			canvasCtx.translate(drawCanvas.width,drawCanvas.height);
+			canvasCtx.scale(-1,-1);	
+			canvasCtx.fillText(graphic.angle,  (drawCanvas.width -graphic.textX)-60,(drawCanvas.height -graphic.textY)); 
+			canvasCtx.restore();	
+		}
+		else {
+			canvasCtx.fillText(graphic.angle,graphic.textX+2,graphic.textY+14); 
+		}
+		}
+		 //if((!state.rotate===0 || !state.rotate===90 || !state.rotate===180 || !state.rotate===270) && state.hflip && state.vflip) {
+			//console.log("if(state.hflip && state.vflip) called state.rotate="+state.rotate);
+			//canvasCtx.save();
+			//canvasCtx.translate(drawCanvas.width,drawCanvas.height);
+			//canvasCtx.scale(-1,-1);	
+			//canvasCtx.fillText(graphic.angle,  (drawCanvas.width -graphic.textX)-60,(drawCanvas.height -graphic.textY)); 
+			//canvasCtx.restore();	
+		//}
+			
+		if(!state.hflip && !state.vflip && !state.rotate!=0) {
+			canvasCtx.fillText(graphic.angle,graphic.textX+2,graphic.textY+14); 
+		}
+		
+		if(this.isCurrentDrawingAngle) {
+			canvasCtx.fillText(graphic.angle,graphic.textX+2,graphic.textY+14); 
+		}
+	
 			canvasCtx.closePath();
 			
 			// Reference Lines
@@ -107,7 +187,9 @@ ovm.shape.angle = function() {
 	
 	this.setOAorOB = function(canvasCtx,x1,y1,x2,y2) {
 		this.curr_angle.setLine(x1,y1,x2,y2);
+		this.isCurrentDrawingAngle = true;
 		this.drawAngle(canvasCtx);
+		this.isCurrentDrawingAngle = false; 
 	};	
 	
 	this.getActiveAngleText = function(canvasCtx,mouseX,mouseY) {
@@ -248,6 +330,78 @@ ovm.angle = function() {
 	};
 	
 	this.generateTrueGraphic = function() {
+		
+	var	tmpDrawCanvas = document.getElementById("canvasLayer2");
+	if(state.hflip){
+	this.xA = tmpDrawCanvas.width - this.xA;	
+	this.x0 = tmpDrawCanvas.width - this.x0;	
+	this.xB = tmpDrawCanvas.width - this.xB;
+	this.textX = this.xB+15;
+	this.validate();
+	}
+	if(state.vflip){
+	this.yA = tmpDrawCanvas.height - this.yA;	
+	this.y0 = tmpDrawCanvas.height - this.y0;	
+	this.yB = tmpDrawCanvas.height - this.yB;
+	this.textY = this.yB+15;
+	this.validate();	
+	}
+	if(state.rotate!=0) {
+	var tempXA,tempYA,tempX0,tempY0,tempXB,tempYB ;	
+	var	widthHeightDifference = tmpDrawCanvas.width - tmpDrawCanvas.height;	
+	widthHeightDifference = widthHeightDifference/2; 
+	if(state.rotate===90) {
+	tempXA = this.yA + widthHeightDifference;
+	tempYA = (tmpDrawCanvas.width - widthHeightDifference) - this.xA;
+	tempX0 = this.y0 + widthHeightDifference;
+	tempY0 = (tmpDrawCanvas.width - widthHeightDifference) - this.x0;
+	tempXB = this.yB + widthHeightDifference;
+	tempYB = (tmpDrawCanvas.width - widthHeightDifference) - this.xB;
+	this.xA = tempXA;	
+	this.yA = tempYA; 	
+	this.x0 = tempX0;
+	this.y0 = tempY0;
+	this.xB = tempXB;
+	this.yB = tempYB;
+	this.textX = this.xB+15;
+	this.textY = this.yB+15;
+	this.validate();
+	}
+	else if(state.rotate===180) {
+	tempXA = tmpDrawCanvas.width - this.xA;
+	tempYA = tmpDrawCanvas.height - this.yA;
+	tempX0 = tmpDrawCanvas.width - this.x0;
+	tempY0 = tmpDrawCanvas.height - this.y0;
+	tempXB = tmpDrawCanvas.width - this.xB;
+	tempYB = tmpDrawCanvas.height - this.yB;
+	this.xA = tempXA;	
+	this.yA = tempYA; 	
+	this.x0 = tempX0;
+	this.y0 = tempY0;
+	this.xB = tempXB;
+	this.yB = tempYB;
+	this.textX = this.xB+15;
+	this.textY = this.yB+15;
+	this.validate();
+	} else {	
+	tempXA = (tmpDrawCanvas.width - widthHeightDifference) - this.yA; 
+	tempYA = this.xA - widthHeightDifference;
+	tempX0 = (tmpDrawCanvas.width - widthHeightDifference) - this.y0; 
+	tempY0 = this.x0 - widthHeightDifference;	
+	tempXB = (tmpDrawCanvas.width - widthHeightDifference) - this.yB; 
+	tempYB = this.xB - widthHeightDifference;	
+	this.xA = tempXA;	
+	this.yA = tempYA; 	
+	this.x0 = tempX0;
+	this.y0 = tempY0;
+	this.xB = tempXB;
+	this.yB = tempYB;
+	this.textX = this.xB+15;
+	this.textY = this.yB+15;
+	this.validate();
+	}
+	}
+
 		this.xA = ((this.xA-state.translationX)/state.scale);
 		this.yA = ((this.yA-state.translationY)/state.scale);
 		this.x0 = ((this.x0-state.translationX)/state.scale);
