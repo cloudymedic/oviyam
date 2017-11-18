@@ -16,7 +16,7 @@ if (typeof lang == 'undefined' || lang.trim() == 'en_GB') {
 function loadLabels() {
     //index.html
 	$(document).attr('title', languages['PageTitle']);	
-    $('#productName').html(languages['PageTitle']);
+	$('#productName').html(languages['PageTitle'] + "<span style='font-size:15px; '>  "+languages['Version'] + "</span> " );
     $('#lblPatientName').html(languages['PatientName']);
     $('#lblPatientID').html(languages['PatientId']);
     $('#lblDOB').html(languages['BirthDate']);
