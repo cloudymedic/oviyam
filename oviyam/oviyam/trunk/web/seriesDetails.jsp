@@ -49,17 +49,24 @@
 <html>
 <head>
 
-   <!--  <style>
+     <style>
         /* To hide toolbar (top curve) */
        /* .dataTables_wrapper .fg-toolbar
         {
             display: none;
         }*/
-    </style>-->
+        .dataTables_wrapper{
+            border-collapse: collapse;
+            border: none;
+        }
+        .display{
+            border-collapse: collapse;
+        }
+    </style>
 
 </head>
 <body>
-<table class="display" style="font-size:12px;">
+<table class="display" cellspacing="20" style="font-size:14px;">
     <thead>
         <tr>
             <th>Series Number</th>

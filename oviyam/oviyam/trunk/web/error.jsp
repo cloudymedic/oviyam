@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>OVIYAM2 Login Page</title>
+        <title>OVIYAM 2.6 Login Page</title>
 
         <script type="text/javascript" src="js/lib/jquery-latest.js"></script>
         <script type="text/javascript" src="js/lib/jquery-ui-latest.js"></script>
@@ -51,17 +51,17 @@
         <form name="login" id="login" action="j_security_check" method="POST">
             <fieldset>
                 <legend><font>Login</font></legend>
-                <h1>OVIYAM2</h1> <h4>HTML5 Web DICOM Viewer</h4>
-                <label><font>Username </font><span class="mandatory"><font>*</font></span><font> :</font></label>
-                <input type="text" name="j_username" class="textInput" required>
+                <h1>Oviyam</h1> <h4>DICOM Web Workstation - Version 2.6</h4>
+                <label><font>Username </font><span class="mandatory"><font>*</font></span><font></font></label>
+                <input type="text" name="j_username" class="textInput" placeholder="Username" required>
 
-                <label><font>Password </font><span class="mandatory"><font>*</font></span><font> :</font></label>
-                <input type="password" name="j_password" class="textInput" required>
+                <label><font>Password </font><span class="mandatory"><font>*</font></span><font></font></label>
+                <input type="password" name="j_password" class="textInput" placeholder="Password" required>
 
                 <input type="submit" name="submit" id="loginButton" value="Login" class="button disabled">
             </fieldset>
         </form>
     </section>
-    <footer style="text-align: center;">OVIYAM2 requires latest version of Google Chrome / Safari / Mozila Firefox.</footer>
+    <footer style="text-align: center;">OVIYAM 2.6 requires latest version of Google Chrome / Safari / Mozila Firefox.</footer>
 </body>
 </html>

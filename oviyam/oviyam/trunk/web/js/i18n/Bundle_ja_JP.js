@@ -1,9 +1,10 @@
 var languages = {
-		PageTitle: "Oviyam2",
+		PageTitle: "Oviyam",
+		Version:"2.6",
 		UserName: "ユーザ名",
 		Password: "パスワード",
 		Login: "ログイン",
-		Footer: "Oviyam2 は Google Chrome もしくは Safari の最新バージョンが必要です",
+		Footer: "Oviyam2.6 は Google Chrome もしくは Safari の最新バージョンが必要です",
 		PatientName: "患者名",
 		PatientId: "患者ID",
 		BirthDate: "生年月日",

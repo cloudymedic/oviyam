@@ -23,9 +23,36 @@
                 background:#000;
             }
 
-            table {
-                font-size: 100%;
-            }
+            #serverTable table {
+	            width: 100%;
+	            font-size: 100%;
+        	}
+
+	        #serverTable th,
+	        td {	
+	            padding: 14px !important;
+	        }
+
+	        #serverTable th,
+	        td {
+	            text-align: justify;
+	        }
+	
+	        #serverTable tr.odd {
+	            background-color: #bbbbbb;	
+	        }
+	
+	        #serverTable tr.even {
+	            background-color: #fff;	
+	        }
+	
+	        table#serverTable tr.even.row_selected td {
+	            background-color: #718ea0;
+	        }
+	
+	        table#serverTable tr.odd.row_selected td {
+	            background-color: #718ea0;
+	        }
 
         </style>
     </head>
@@ -37,7 +64,7 @@
             <button id="deleteBtn" class="cssButton">Delete</button>
         </div>
         <div id="serversDiv" style="margin-top: 15px;">
-            <table id="serverTable" width="100%" style="font-size: 12px;">
+            <table id="serverTable" width="100%" style="font-size: 14px;border-collapse: collapse;">
                 <thead>
                     <tr>
                         <th style="text-align: center"></th>
@@ -57,7 +84,7 @@
             </table>
         </div>
         
-        <div id="panel4" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;height: 23%;" role="panel">
+        <div id="panel4" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;height: 23%;margin-top: 10px;" role="panel">
             <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
                 <div class="ui-panel-title">
                     <span class="ui-panel-title-text">Listener</span>
@@ -65,7 +92,7 @@
             </h3>
             <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
                 <div class="ui-panel-content-text" id="panel4_content">
-                    <table style="width: 100%;" id="listenerTable" cellpadding="3">
+                    <table style="width: 100%;font-size:14px;" id="listenerTable" cellpadding="3">
                         <tbody>
                              <tr>
                              	<td width="45%"><span class="ui-widget-content" id="lblAET" style="margin-left:30px; border: none;">AE Title</span></td>
@@ -85,7 +112,7 @@
             </div>
         </div>
                 
-       <div id="panel5" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;height: 15%;" role="panel">
+       <div id="panel5" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;height: 15%;margin-top: 10px;" role="panel">
             <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
                 <div class="ui-panel-title">
                     <span class="ui-panel-title-text">iOviyam 2.0 Context</span>
@@ -93,7 +120,7 @@
             </h3>
             <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
                 <div class="ui-panel-content-text" id="panel5_content">
-                    <table style="width: 100%;" id="ioviyamCxtTable" cellpadding="3">
+                    <table style="width: 100%;font-size:14px;" id="ioviyamCxtTable" cellpadding="3">
                         <tbody>
                              <tr>
                              	<td width="45%"><span class="ui-widget-content" id="lblIoviyamCxt" style="margin-left:30px; border: none;">iOviyam Context</span></td>

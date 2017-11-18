@@ -5,8 +5,10 @@
         <script type="text/javascript" src="js/LoadLanguage.js"></script>
         <script type="text/javascript" src="js/lib/jquery-gentleSelect.js"></script>
         <link rel="stylesheet" type="text/css" href="css/jquery.alerts.css" />
+        <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
         <script type="text/javascript" src="js/lib/jquery.alerts.js"></script>
-        
+        <!-- <script type="text/javascript" src="js/lib/jquery.multiselect.js"></script>
+        <link href="css/jquery.multiselect.css" rel="stylesheet" type="text/css"> -->
         <script type="text/javascript">
             $(document).ready(function() {
                 $('button').button();
@@ -20,7 +22,14 @@
 				     maxDisplay: 3,				    
 				     prompt: "ALL", 
 		   		 });	
-
+                //     $('#<%=request.getParameter("tabName")%>_modalities').multiselect({
+    	        // 	columns: 2,
+    	        // 	minWidth: 157,
+    	        // 	selectedList: 4,
+    	        // 	header: true,
+    	        // 	includeSelectAllOption: true,
+    	        //     noneSelectedText: "ALL"
+    	        // });
 //                var lang = getCookie('language');
 //                if (lang == 'none') {
 //                $.getScript('js/i18n/Bundle.js', function() {
@@ -72,7 +81,7 @@
     			border: 2px solid #2A2A2A !important;
     			background-image: url('css/images/expand.png');
     			display: block;    
-				width: 11em;
+				width: 13em;
 				height: 20px;
 				text-align: center;
 				line-height: 2em;
@@ -92,6 +101,9 @@
             	 background-color: #0972a5;
 			    color: #fff;
             }
+            #findTable label{
+                font-size: 14px;
+            }
            
         </style>
 
@@ -99,16 +111,16 @@
     <body>
         <div id="newQueryParamDiv" class="ui-widget-content">
 <!--             <table id="findTable" class="ui-widget-content" width="930px" height="90%" cell-spacing="4" style="margin-left: 10px; font-size: 100%;border: none;"> -->
-<table id="findTable" class="ui-widget-content" width="95%" height="90%"  cellspacing="4" style="margin-left: 10px; font-size: 100%;border: none;">
+<table id="findTable" class="ui-widget-content" width="100%" height="90%"  cellspacing="4" style="margin-left: 10px; font-size: 100%;border: none;">
                 <tr>
 <!--                     <td style="width:50px;"> -->
 						<td>
                         <label for="patId">Patient ID</label>
-                        <input type="search" id="patId" />
+                        <input type="search" id="patId" placeholder="Patient ID" />
                     </td>
                     <td>
                         <label for="patName">Patient Name</label>
-                        <input type="search" id="patName"/>
+                        <input type="search" id="patName" placeholder="Patient Name" />
                     </td>
                    <!-- <td>
                         <label for="accessionNo">Accession Number</label>
@@ -121,27 +133,28 @@
                     
                     <td>
                         <label>Study Date (From)</label>
-                        <input type="search" class="fsdate"/>
+                        <input type="search" class="fsdate" placeholder="MM/DD/YYYY" />
                     </td>
                     <td>
                         <label>Study Date (To)</label>
-                        <input type="search" class="tsdate"/>
+                        <input type="search" class="tsdate" placeholder="MM/DD/YYYY"/>
                     </td>
                 </tr>
                 <tr>   
                 	<td>
                         <label for="studyDesc">Study Description</label>
-                        <input type="search" id="studyDesc" />
+                        <input type="search" id="studyDesc" placeholder="Study/ Procedure name" />
                     </td>
                                      
                     <td>
                         <label for="referPhysician">Referring Physician</label>
-                        <input type="search" id="referPhysician"/>
+                        <input type="search" id="referPhysician" placeholder="Referring Physician" />
                     </td>
                     <td>
-                    	<div style="float: left; width: 10em; font-size: 13px; margin-top: 6px;"> Modality </div>
-
-                        <select id="<%=request.getParameter("tabName")%>_modalities" multiple="multiple" class="modalitiesList" style="display: none;">
+                    	<div style="float: left; width: 10em; font-size: 14px; margin-top: 6px;"> Modality </div>
+                       
+                        <select id="<%=request.getParameter("tabName")%>_modalities" multiple="multiple" class="modalitiesList <%=request.getParameter("tabName")%>_modalities" style="display: none;">
+                            
                             <option value="CT">CT</option>
                             <option value="CR">CR</option>
                             <option value="XA">XA</option>
@@ -153,13 +166,14 @@
                             <option value="NM">NM</option>
                             <option value="RF">RF</option>
                             <option value="OT">OT</option>
-                            <option value="ECG">ECG</option>                                                        
+                            <option value="ECG">ECG</option>  
+                                                                             
                         </select>    
 
                     </td>                     
                     <td colspan="2">   
                     	<button id="okBtn" onclick="searchClick(this)" style="float: left;width:7em;height:27px; font-size: 14px; margin-right: 10px;" class="searchBtn">Search</button>                                            	
-    	                	<button id="resetBtn" onclick="resetClick(this, <%=request.getParameter("tabName")%>_modalities);" style="float: left;width:7em; height:27px; font-size: 14px;" class="clearBtn">Reset</button>           	                    	
+    	                	<button id="resetBtn" onclick="resetClick(this, <%=request.getParameter("tabName")%>_modalities);" style="float: left;width:7em; height:27px; font-size: 14px;" class="clearBtn"> Reset</button>           	                    	
 	                	</td>
                 </tr>
             </table>
