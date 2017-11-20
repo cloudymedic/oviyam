@@ -508,6 +508,7 @@ function resizeCanvas() { //To resize the canvas on any screen size change
     
     var imgSrc = seriesUid + "_" + imgInc;
     showImage(imgSrc);
+	drawAllShapes();
 }
 
 function loadPDF(src) {
