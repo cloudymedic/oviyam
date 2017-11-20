@@ -122,3 +122,9 @@ input.textInput, input.textInputTiny, input.deleteTextInput{
     border: 1px solid #ccc;
     margin-bottom: 20px;
 }
+
+/*For placeholder */
+input::placeholder {
+  
+  font-size: 10px;
+}

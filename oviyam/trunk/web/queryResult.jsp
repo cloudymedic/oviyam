@@ -218,6 +218,7 @@ tr.even td.sorting_1 {
 									$(nTd).css('padding', '0px');
 									$(nTd).css('text-align', 'center');
 							}
+							
 					  }
 			}],
 			"aoColumns": [null, null, null, null, null, null, null, null, { "bVisible": false }, { "bVisible": false }, { "bVisible": false }]

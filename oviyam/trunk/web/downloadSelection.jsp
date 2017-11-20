@@ -172,7 +172,7 @@ String studyDesc = new String(request.getParameter("studyDesc")
                                             font-size: 12px;
                                             margin-left: 10px;
                                             margin-right: 10px;
-                                            margin: 15px 13px;
+                                            margin: 15px 0px;
                                             cursor: pointer;
                                             -webkit-transition-duration: 0.4s;
                                             /* Safari */
@@ -425,22 +425,22 @@ String studyDesc = new String(request.getParameter("studyDesc")
 
                                         </div>
 
-                                        <div>
-                                            <div style="margin-top: 14px; float: left; padding-left: 3%; color: #FF8A00; font-size: 14px">
+                                        
+                                            <div style="padding: 5px; float: left; padding-left: 3%; color: #FF8A00; font-size: 14px">
                                                 <form>
                                                     <input type="radio" name="format" checked="checked" id="jpeg"> JPEG
                                                     <input type="radio" name="format" id="dicom"> DICOM
                                                     <input type="radio" name="format" id="both"> BOTH
                                                 </form>
                                             </div>
-                                            <div style="margin-top: 14px;width: 180px; float: left; padding-left: 3%; text-align: right; color: #FF8A00; font-size: 14px">
+                                            <div style="padding: 8px; float: left; padding-left: 3%; text-align: center; color: #FF8A00; font-size: 14px;white-space: nowrap;">
                                                 <b id="No_Images" style=" font-size: 16px; padding-right: 2%"></b>
                                             </div>
-                                            <div style="margin-top: 10px; float: right; padding-right: 2%">
+                                            <div style="padding: 5px; float: right; padding-right: 2%">
                                                 <button class="button" onclick="downloadBtnClick()" id="downloadBtn">Download</button>
                                                 <button class="button" data-dismiss="modal" onclick="closeDownloadModal()">Cancel</button>
                                             </div>
-                                        </div>
+                                        
                                     </div>
                                     <div id="modalConfirm" class="modal-confirm">
 
@@ -450,13 +450,13 @@ String studyDesc = new String(request.getParameter("studyDesc")
                                                 <div class="title" id="confirm-Download">CONFIRM DOWNLOAD</div>
                                             </div>
                                             <div id="confirm" style="height: 90%; width: 100%;">
-                                                <div style="margin-top: 14px; padding-left: 3%; color: #FF8A00; font-size: 14px">
+                                                <div style="margin: 6px; padding-left: 3%; color: #FF8A00; font-size: 14px">
                                                     <b id="fileInfo" style=" font-size: 16px; padding-right: 2%"></b>
                                                 </div>
-                                                <div style="margin-top: 14px; float: left; padding-left: 3%; color: #FF8A00; font-size: 14px; width: 75%">
+                                                <div style="margin: 0px; float: left; padding-left: 4%; color: #FF8A00; font-size: 14px; width: 75%">
                                                     <b id="fileSize" style=" font-size: 16px; padding-right: 2%"></b>
                                                 </div>
-                                                <div style="margin-top: 10px; float: right; padding-right: 2%">
+                                                <div style="margin: 0px; float: right; padding-right: 2%">
                                                     <button id="confirmDownloadBtn" class="button1" onclick="closeDownloadModal()">Download</button>
                                                     <button id="cancelBtn" class="button1" onclick="cancelDownload()">Cancel</button>
                                                 </div>

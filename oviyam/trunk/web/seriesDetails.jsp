@@ -73,17 +73,17 @@
             <th>Series Date</th>
             <th>Series Desc</th>
             <th>Modality</th>
-            <th>Total Instances</th>
+            <th>Image Count</th>
         </tr>
     </thead>
     <tbody>
         <ser:Series patientId="${param.patient}" study="${param.study}" dcmURL="${param.dcmURL}">
         <tr>
-            <td>${seriesNumber}</td>
-            <td data-order="${dateOrder}">${seriesDate} ${seriesTime}</td>
-            <td>${seriesDesc}</td>
-            <td>${modality}</td>
-            <td>${numberOfImages}</td>
+            <td align="center">${seriesNumber}</td>
+            <td align="center" data-order="${dateOrder}">${seriesDate} ${seriesTime}</td>
+            <td align="center">${seriesDesc}</td>
+            <td align="center">${modality}</td>
+            <td align="center">${numberOfImages}</td>
         </tr>
         </ser:Series>
     </tbody>
