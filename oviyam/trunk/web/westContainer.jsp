@@ -155,6 +155,9 @@
 					$('#previews').hide();
 					$('.heading').hide();
 					$('#studyTable').hide();
+					createEvent("ToolSelection", {
+               		 tool: 'close'
+           			 });
 				} else {
 					div.attr('title', 'Close');
 					div.parent().css('width', '20%');
@@ -163,6 +166,9 @@
 					$('#previews').show();
 					$('.heading').show();
 					$('#studyTable').show();
+					createEvent("ToolSelection", {
+               		 tool: 'close'
+           			 });
 				}
 			}
 

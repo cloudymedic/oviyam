@@ -103,6 +103,9 @@ function onToolSelection(e) {
 			case 'delete':
 				deleteSelectedMeasurement();
 				break;
+			case 'close':
+				setImageOnToggle();
+				break;	
 		}
 	}
 }
@@ -1012,5 +1015,13 @@ function oneTimeTool() {
 	} else {
 		showImg(null,getCurrentImage(),true);
 	}
+	drawAllShapes();
+}
+
+function setImageOnToggle() { 
+	var inst_text = jQuery("#totalImages").text().split("/");
+	var isMultiframe = (inst_text[0].indexOf("Frame")>=0);
+	var iNo = inst_text[0].split(":")[1];
+	loadImg(isMultiframe,iNo);
 	drawAllShapes();
 }
