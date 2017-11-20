@@ -152,19 +152,13 @@ public class UserConfiguration extends HttpServlet {
                         str = jsonArray.toString();
                     } else if(settings.equals("viewer")) {
                     	String prefetch = user.getPrefetch();
-                    	String downloadStudy = user.getDownloadStudy();
-                    	if(downloadStudy == null) {
-                    		downloadStudy = "No";
-                    	}
                     	if(prefetch==null) {
                     		prefetch = "No";
                     	}
-                    	str = "slider:" + user.getViewerSlider() + ",prefetch:" + prefetch + ",downloadstudy:" + downloadStudy;                    	
+                    	str = "slider:" + user.getViewerSlider() + ",prefetch:" + prefetch;                    	
                     } else if(settings.equals("prefetch")) {
                     	str = user.getPrefetch();                    	
-                    } else if(settings.equals("downloadstudy")) {
-                    	str = user.getDownloadStudy();
-                    }
+                    } 
                     out.print(str);
                 } else if (actionToDo.equalsIgnoreCase("UPDATE")) {
                     if (settings.equals("theme")) {
@@ -177,10 +171,8 @@ public class UserConfiguration extends HttpServlet {
                     	String[] value = settingsValue.split(",");
                     	String slider = value[0].split(":")[1];
                     	String prefetch = value[1].split(":")[1];
-                    	String downloadStudy = value[2].split(":")[1];
                     	user.setViewerSlider(slider.trim());
                     	user.setPrefetch(prefetch.trim());
-                    	user.setDownloadStudy(downloadStudy.trim());
 //                    	user.setViewerSlider(settingsValue.substring(settingsValue.indexOf("slider"), settingsValue.indexOf(",")).split(":")[1]);
 //                    	user.setPrefetch(settingsValue.substring(settingsValue.indexOf("prefetch")).split(":")[1]);
                     }

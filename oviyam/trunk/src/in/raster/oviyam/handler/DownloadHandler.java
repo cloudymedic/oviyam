@@ -93,7 +93,7 @@ public class DownloadHandler {
 	
 	List<String> filesListInDir = new ArrayList<String>();
     String dest = LanguageHandler.source.getAbsolutePath(); 
-    String fname = dest.substring(0, dest.indexOf("oviyam2-1-config.xml")-1) + File.separator + "oviyam2";
+    String fname = dest.substring(0, dest.indexOf("oviyam2-6-config.xml")-1) + File.separator + "oviyam2";
     
     public DownloadHandler(DownloadModel downloadModel){
     	this.downloadModel = downloadModel;

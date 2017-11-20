@@ -51,7 +51,7 @@ import org.simpleframework.xml.Element;
  *
  * @author asgar
  */
-@Root(name="configuration")
+@Root(name="configuration", strict=false)
 public class Configuration {
 
     @ElementList(name="users")
@@ -68,6 +68,9 @@ public class Configuration {
     
     @Element(name="ioviyam-context")
     private String iOviyamContext;
+    
+    @Element(name="download-study",required=false)
+    private String downloadStudy;
 
     public List<Language> getLanguagesList() {
         return languagesList;
@@ -108,5 +111,16 @@ public class Configuration {
     public void setIOviyamContext(String iOviyamContext) {
     	this.iOviyamContext = iOviyamContext;
     }
+    
+    public String getDownloadStudy() {
+    	if(downloadStudy==null || downloadStudy.isEmpty()) {
+    		downloadStudy="No";
+    	}
+    	return downloadStudy;
+    }
+    
+    public void setDownloadStudy(String downloadStudy) {
+		this.downloadStudy = downloadStudy;
+	}
 
 }

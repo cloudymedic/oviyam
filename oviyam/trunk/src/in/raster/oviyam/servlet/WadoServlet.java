@@ -142,7 +142,7 @@ public class WadoServlet extends HttpServlet {
 		// String dest = ServerConfigLocator.locate().getServerHomeDir() +
 		// File.separator + "data";
 		String dest = LanguageHandler.source.getAbsolutePath();
-		dest = dest.substring(0, dest.indexOf("oviyam2-1-config.xml") - 1);
+		dest = dest.substring(0, dest.indexOf("oviyam2-6-config.xml") - 1);
 		String inputDcmFilePath = dest + File.separator + "oviyam2" + File.separator + study + File.separator + object;
 		File inputDicomFile = new File(inputDcmFilePath);	
 		
