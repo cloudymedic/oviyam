@@ -25,6 +25,9 @@
 * Meer Asgar Hussain B
 * Prakash J
 * Suresh V
+* Yogapraveen K
+* Guruprasath R
+* Balamurugan R
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,62 +42,48 @@
 * the terms of any one of the MPL, the GPL or the LGPL.
 *
 * ***** END LICENSE BLOCK ***** */
+package in.raster.oviyam.xml.handler;
 
-package in.raster.oviyam.delegate;
+import java.io.File;
 
-import in.raster.oviyam.util.core.DcmRcv;
-import in.raster.oviyam.util.core.MoveScu;
-import in.raster.oviyam.xml.handler.LanguageHandler;
-import in.raster.oviyam.xml.handler.ListenerHandler;
-import in.raster.oviyam.xml.model.Listener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
+import in.raster.oviyam.xml.model.Configuration;
 
 /**
- *
- * @author  BabuHussain
- * @version 0.5
+ * 
+ * @author yogapraveen
  *
  */
-public class ReceiveDelegate {
 
-    private DcmRcv dcmrcv = null;
+public class DownloadConfigHandler {
+	private static Logger log = Logger.getLogger(DownloadConfigHandler.class);
+	private Serializer serializer = null;
+	public static File source = null;
+	private Configuration config = null;
 
-    public ReceiveDelegate() {
-        try {
-            //InetAddress thisIp = InetAddress.getLocalHost();
-            ListenerHandler lh = new ListenerHandler();
-            Listener listener = lh.getListener();
-            if(listener!=null) {            	
-	            dcmrcv = new DcmRcv();
-	            dcmrcv.setAEtitle(listener.getAetitle());
-	            dcmrcv.setHostname("0.0.0.0");
-	            dcmrcv.setPort(Integer.parseInt(listener.getPort()));
-	            //dcmrcv.setDestination(ServerConfigLocator.locate().getServerHomeDir() + File.separator + "data");
-	            String dest = LanguageHandler.source.getAbsolutePath();
-	            dcmrcv.setDestination(dest.substring(0, dest.indexOf("oviyam2-6-config.xml")-1));
-	            dcmrcv.setPackPDV(false);
-	            dcmrcv.setTcpNoDelay(false);
-	            dcmrcv.initTransferCapability();
-	            dcmrcv.setTlsNeedClientAuth(false);
-	            MoveScu.maskNull(listener.getAetitle());
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(ReceiveDelegate.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void start() throws Exception {
-    	if(dcmrcv!=null) {
-    		dcmrcv.start();
-    	}
-    }
-
-    public void stop() {
-        if (dcmrcv != null) {
-            dcmrcv.stop();
-            dcmrcv = null;
-        }
-    }
-
+	public DownloadConfigHandler() {
+		try {
+			serializer = new Persister();
+			config = serializer.read(Configuration.class, LanguageHandler.source);
+		} catch (Exception ex) {
+			log.error("Unable to read XML document", ex);
+			return;
+		}
+	}
+	
+	public void setDownloadStudy(String downloadStudy) {
+		try {
+			config.setDownloadStudy(downloadStudy);
+			serializer.write(config, LanguageHandler.source);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	public String getDownloadStudy() {
+		return config.getDownloadStudy();
+	}
 }

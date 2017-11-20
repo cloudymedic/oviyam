@@ -17,7 +17,6 @@
        <theme>Dark Hive</theme>
        <viewer-slider>hide</viewer-slider>
        <session-timeout>1800</session-timeout>
-       <downloadstudy>yes</downloadstudy>
      </user>
    </users>
 
@@ -57,5 +56,6 @@
    </languages>
    
    <ioviyam-context>/ioviyam2</ioviyam-context>
+   <download-study>yes</download-study>
 
 </configuration>

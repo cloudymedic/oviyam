@@ -64,13 +64,21 @@ public class XMLFileHandler {
 		String retValue = null;
 
 		try {
-			File srcFile = new File(this.getClass().getResource("/conf/oviyam2-1-config.xml").toURI());
-			retValue = tmpDir + File.separator + "oviyam2-1-config.xml";
+			File srcFile = new File(this.getClass().getResource("/conf/oviyam2-6-config.xml").toURI());
+			retValue = tmpDir + File.separator + "oviyam2-6-config.xml";
+			
 			File destFile = new File(retValue);
+			String oldConfig = tmpDir + File.separator + "oviyam2-1-config.xml";
+			File oldConfigFile = new File(oldConfig);
 			// check the exists of XML file. If not exists, copy the file to
 			// default folder.
 			if (!destFile.exists()) {
-				copyFile(srcFile, destFile);
+				if(oldConfigFile.exists()) {
+					copyFile(oldConfigFile,destFile);
+				}else {
+					copyFile(srcFile, destFile);	
+				}
+				
 			} 
 		} catch (URISyntaxException ex) {
 			log.error("Error while getting XML file path", ex);

@@ -3,13 +3,15 @@ var directLaunch = false;
 
 
 function enableDownload(downloadStudy) {
-    $.get("UserConfig.do", { 'settings': 'downloadstudy', 'todo': 'READ' }, function(data) {
+    $.post("DwnStudyConfig.do", {
+        'action': 'READ'
+    }, function(data) {
         if (data.trim() == "Yes") {
             downloadStudy.style.display = "block";
         } else {
             downloadStudy.style.display = "none";
         }
-    });
+    }, 'text');
 }
 
 function loadViewerPage() {

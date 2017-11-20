@@ -8,12 +8,15 @@
     <script type="text/javascript" src="js/lib/jquery-latest.js"></script>
     <script type="text/javascript" src="js/lib/jquery.cookies.min.js"></script>
 
-    <script type="text/javascript">      	
-
-        $.get("Language.do", { 'option': 'get' }, function (data) {
+    <script type="text/javascript">
+        $.get("Language.do", {
+            'option': 'get'
+        }, function(data) {
             var cookiesExp = new Date();
             cookiesExp.setTime(cookiesExp.getTime() + (365 * 24 * 60 * 60 * 1000));
-            $.cookies.set('language', data, { expiresAt: cookiesExp });
+            $.cookies.set('language', data, {
+                expiresAt: cookiesExp
+            });
         }, 'text');
     </script>
 
@@ -30,7 +33,7 @@
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
     <style type="text/css">
         /* Using an 'optional-container' instead of 'body', so need body to have a 'height' */
-
+        
         html,
         body {
             width: 100%;
@@ -40,7 +43,7 @@
             overflow: hidden !important;
             font-size: 80%;
         }
-
+        
         #optional-container {
             width: 99.5%;
             height: 99%;
@@ -50,16 +53,16 @@
             overflow: hidden;
             position: relative;
         }
-
+        
         .ui-layout-center {
             overflow: hidden;
         }
-
+        
         .westImgs {
             padding-right: 3px;
             padding-bottom: 3px;
         }
-
+        
         #productName {
             top: 8px;
             left: 2px;
@@ -70,7 +73,7 @@
             padding: 5px;
             white-space: nowrap;
         }
-
+        
         #buttonContainer {
             text-align: center;
             position: relative !important;
@@ -87,11 +90,11 @@
             overflow: hidden;
             border: none;
         }
-
+        
         #buttonContainer label {
             margin: 2px;
         }
-
+        
         #tabs_div {
             position: relative !important;
             margin: 0px;
@@ -105,13 +108,12 @@
             width: 100% !important;
             height: 712px;
             border: none;
-
         }
-
+        
         #tabUL {
             font-size: 13px;
         }
-
+        
         .fa-3x {
             font-size: 24px !important;
         }
@@ -163,7 +165,7 @@
             <div id="imgToggle" class="menu_class">
                 <i class="fa fa-user-circle-o fa-3x" aria-hidden="true"></i>
             </div>
-            <ul class="the_menu" style="width:90px;background-color: #3a3737;">
+            <ul class="the_menu" style="width:90px;background-color:initial;">
                 <li id="liConfig">
                     <a href=""><span> <i class="fa fa-wrench" style="font-size:16px;" aria-hidden="true"></i> </span> Settings</a>
                 </li>

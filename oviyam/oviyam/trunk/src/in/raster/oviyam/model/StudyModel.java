@@ -81,7 +81,7 @@ public class StudyModel implements Serializable {
     public StudyModel(Dataset ds) {
         patientID = ds.getString(Tags.PatientID);
         patientName = ds.getString(Tags.PatientName).replace("^", " ");
-        patientGender = ds.getString(Tags.PatientSex)!=null ? ds.getString(Tags.PatientSex) : "unknown";
+        patientGender = ds.getString(Tags.PatientSex)!=null ? ds.getString(Tags.PatientSex) : "-";
         patientBirthDate = ds.getString(Tags.PatientBirthDate) != null ? ds.getString(Tags.PatientBirthDate) : "";
         physicianName = ds.getString(Tags.ReferringPhysicianName) != null ? ds.getString(Tags.ReferringPhysicianName) : "";
         studyDate = ds.getString(Tags.StudyDate)!=null ? ds.getString(Tags.StudyDate) : "[No study date]";

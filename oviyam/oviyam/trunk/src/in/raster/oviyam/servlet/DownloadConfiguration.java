@@ -25,6 +25,9 @@
 * Meer Asgar Hussain B
 * Prakash J
 * Suresh V
+* Yogapraveen K
+* Guruprasath R
+* Balamurugan R
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,62 +42,56 @@
 * the terms of any one of the MPL, the GPL or the LGPL.
 *
 * ***** END LICENSE BLOCK ***** */
+package in.raster.oviyam.servlet;
 
-package in.raster.oviyam.delegate;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import in.raster.oviyam.util.core.DcmRcv;
-import in.raster.oviyam.util.core.MoveScu;
-import in.raster.oviyam.xml.handler.LanguageHandler;
-import in.raster.oviyam.xml.handler.ListenerHandler;
-import in.raster.oviyam.xml.model.Listener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import in.raster.oviyam.xml.handler.DownloadConfigHandler;
 
 /**
- *
- * @author  BabuHussain
- * @version 0.5
- *
+ * 
+ * @author yogapraveen
+ * 
+ * Servlet implementation class DownloadConfiguration
  */
-public class ReceiveDelegate {
+public class DownloadConfiguration extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-    private DcmRcv dcmrcv = null;
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String downloadStudy = request.getParameter("downloadStudy");
+		String action = request.getParameter("action");
 
-    public ReceiveDelegate() {
-        try {
-            //InetAddress thisIp = InetAddress.getLocalHost();
-            ListenerHandler lh = new ListenerHandler();
-            Listener listener = lh.getListener();
-            if(listener!=null) {            	
-	            dcmrcv = new DcmRcv();
-	            dcmrcv.setAEtitle(listener.getAetitle());
-	            dcmrcv.setHostname("0.0.0.0");
-	            dcmrcv.setPort(Integer.parseInt(listener.getPort()));
-	            //dcmrcv.setDestination(ServerConfigLocator.locate().getServerHomeDir() + File.separator + "data");
-	            String dest = LanguageHandler.source.getAbsolutePath();
-	            dcmrcv.setDestination(dest.substring(0, dest.indexOf("oviyam2-6-config.xml")-1));
-	            dcmrcv.setPackPDV(false);
-	            dcmrcv.setTcpNoDelay(false);
-	            dcmrcv.initTransferCapability();
-	            dcmrcv.setTlsNeedClientAuth(false);
-	            MoveScu.maskNull(listener.getAetitle());
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(ReceiveDelegate.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = response.getWriter();
 
-    public void start() throws Exception {
-    	if(dcmrcv!=null) {
-    		dcmrcv.start();
-    	}
-    }
+		try {
+			DownloadConfigHandler doHandler = new DownloadConfigHandler();
 
-    public void stop() {
-        if (dcmrcv != null) {
-            dcmrcv.stop();
-            dcmrcv = null;
-        }
-    }
+			if (action.equalsIgnoreCase("read")) {
+				downloadStudy = doHandler.getDownloadStudy();
+				out.write(downloadStudy);
+			} else {
+				doHandler.setDownloadStudy(downloadStudy);
+				out.write("success");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
 
 }

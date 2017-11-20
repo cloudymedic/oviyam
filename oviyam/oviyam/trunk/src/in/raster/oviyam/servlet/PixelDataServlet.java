@@ -98,7 +98,7 @@ public class PixelDataServlet extends HttpServlet {
 				dis = new DicomInputStream(resultInStream);				
 			} else {
 				String dest = LanguageHandler.source.getAbsolutePath();
-				dest = dest.substring(0, dest.indexOf("oviyam2-1-config.xml") - 1);
+				dest = dest.substring(0, dest.indexOf("oviyam2-6-config.xml") - 1);
 				dis = new DicomInputStream(new File(dest + File.separator + "oviyam2" + File.separator + study + File.separator + object));
 			}
 			

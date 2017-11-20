@@ -331,7 +331,7 @@ public class PatientInfoHandler extends SimpleTagSupport {
                             displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                         }else {
                             parseFmt = new SimpleDateFormat("yyyyMMdd HHmmss");
-                            displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                            displayFmt = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                         }
                     } else {
                         parseFmt = new SimpleDateFormat("yyyyMMdd");

@@ -64,6 +64,10 @@
         <servlet-name>Listener</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.ListenerServlet</servlet-class>
     </servlet>
+      <servlet>
+        <servlet-name>DownloadConfiguration</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.DownloadConfiguration</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>LanguageServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.LanguageServlet</servlet-class>
@@ -158,6 +162,10 @@
     <servlet-mapping>
         <servlet-name>LanguageServlet</servlet-name>
         <url-pattern>/Language.do</url-pattern>
+    </servlet-mapping>   
+    <servlet-mapping>
+        <servlet-name>DownloadConfiguration</servlet-name>
+        <url-pattern>/DwnStudyConfig.do</url-pattern>
     </servlet-mapping>    
     <servlet-mapping>
         <servlet-name>CopyDicomFilesServlet</servlet-name>
