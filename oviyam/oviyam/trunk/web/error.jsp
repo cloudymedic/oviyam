@@ -51,7 +51,7 @@
         <form name="login" id="login" action="j_security_check" method="POST">
             <fieldset>
                 <legend><font>Login</font></legend>
-                <h1>Oviyam</h1> <h4>DICOM Web Workstation - Version 2.6</h4>
+                <h1>Oviyam 2</h1> <h4>DICOM Web Workstation - Version 2.6</h4>
                 <label><font>Username </font><span class="mandatory"><font>*</font></span><font></font></label>
                 <input type="text" name="j_username" class="textInput" placeholder="Username" required>
 
