@@ -442,11 +442,14 @@
 <body>
 
     <div id='contentDiv' style="z-index:1000;top:30px;position:fixed;"></div>
-
+	<div id='tileDiv' style="z-index:1000;top:30px;left: 55px; position:fixed;"></div>
 
     <div id="containerBox">
         <div class="toolbarButton" align="center" id="layout" onclick="changeLayout('layout.html')">
             <img src="images/layout.png" id="lblLayout" class="imgOff" alt="Layout" title="Layout">
+        </div>
+        <div class="toolbarButton" align="center" id="imageTile" onclick="changeImageTile('imageTile.html')">
+            <img src="images/layout.png" id="lblImageTile" class="imgOff" alt="Image Tile" title="Tiling">
         </div>
         <div class="toggleButton" align="center" id="windowing">
             <img src="images/windowing.png" id="lblWindowing" class="imgOff" alt="Windowing" title="Windowing">

@@ -1,3 +1,5 @@
+var firstTry = true;
+
 function enableTool(tool) {
 	jQuery('#tool').text(tool);
 	jQuery('.toggleOff', window.parent.document).not('#scoutLine').removeClass('toggleOff');
@@ -35,34 +37,34 @@ function onToolSelection(e) {
 	if(document!=undefined && document.body.style.border==='1px solid rgb(255, 138, 0)') { // Determines whether this is a Selected Tile
 		switch(e.detail.tool) {
 			case 'windowing':
-				activateWindowing(e.detail.tool);
+				activateTools(e.detail.tool, activateWindowing);
 				break;
 			case 'zoom':
-				activateZoom(e.detail.tool);
+				activateTools(e.detail.tool, activateZoom);
 				break;
 			case 'move':
-				activateMove(e.detail.tool);
+				activateTools(e.detail.tool, activateMove);
 				break;
 			case 'stackImage':
 				activatestack(e.detail.tool);
 				break;
 			case 'vflip':
-				activateVFlip(e.detail.tool);
+				activateTools(e.detail.tool, activateVFlip);
 				break;
 			case 'hflip':
-				activateHFlip(e.detail.tool);
+				activateTools(e.detail.tool, activateHFlip);
 				break;
 			case 'rotateLeft':
-				activateLeftRotation(e.detail.tool);
+				activateTools(e.detail.tool, activateLeftRotation);
 				break;
 			case 'rotateRight':
-				activateRightRotation(e.detail.tool);
+				activateTools(e.detail.tool, activateRightRotation);
 				break;
 			case 'metaData':
 				window.parent.showMetaData(jQuery('#frameSrc').html());
 				break;
 			case 'reset':
-				doReset(tool);
+				activateTools(tool, doReset);
 				break;
 			case 'invert':
 				doInvert(tool);
@@ -110,30 +112,80 @@ function onToolSelection(e) {
 	}
 }
 
-function activateZoom(toolid) {
-	if(jQuery('#tool').html()!=toolid) {
-		disableOtherTools(toolid);
-		enableTool(toolid);
-		doLoop(false);
-		window.parent.document.getElementById('loopChkBox').checked = false;
-		doZoom();
-	} else {
-		disableTool(toolid);
-		stopZoom();
-	}
+/**
+ * Activate particular tool to do the function
+ * @param {string} toolid Tool to be activated
+ * @param {Function} callingFunction function which has to be called
+ */
+function activateTools(toolid, callingFunction) {
+    var iframe = window.parent.document.getElementsByTagName('iframe');
+    if (iframe.length > 1 && iframe[0].src.includes('TileContent.html') ||
+        toolid == 'zoom' || toolid == 'pan' || toolid == 'windowing') {
+        for (var i = 0; i < iframe.length; i++) {
+        	firstTry = true;
+            var tmpWindow = iframe[i].contentWindow;
+            var frameSrc = jQuery('#frameSrc', tmpWindow.document).text();
+            var total = 0;
+            var iNo = 0;
+            total = getParameter(frameSrc, 'numberOfFrames');
+            iNo = total ? getParameter(frameSrc, 'frameNumber') : getParameter(frameSrc, 'instanceNumber');
+            total = total ? total : getParameter(frameSrc, 'images');
+            iNo = parseInt(iNo);
+            total = parseInt(total);
+            if (total > iNo || toolid == 'vflip' || toolid == 'hflip' || toolid == 'rotateLeft' || toolid == 'rotateRight' || toolid == 'reset') {
+                callingFunction(toolid, tmpWindow);
+            } else if(tmpWindow.location.href.includes('frameContent')&&(toolid == 'zoom'|| toolid == 'pan' || toolid == 'windowing')){
+				callingFunction(toolid, tmpWindow);
+			}
+        }
+    } else {
+    	firstTry = true;
+        callingFunction(toolid, window);
+    }
 }
 
-function activateMove(toolid) {
-	if(jQuery('#tool').html()!=toolid) {
-		disableOtherTools(toolid);
-		enableTool(toolid);
+/**
+ * Activates/Deactivates zoom tool
+ * @param toolid 
+ * @param {Window} tmpWindow
+ */
+function activateZoom(toolid, tmpWindow) {
+	try{
+		if(jQuery('#tool', tmpWindow.document).html()!=toolid) {
+			tmpWindow.disableOtherTools(toolid);
+			tmpWindow.enableTool(toolid);
+			doLoop(false);
+			window.parent.document.getElementById('loopChkBox').checked = false;
+			tmpWindow.doZoom();
+		} else {
+			tmpWindow.disableTool(toolid);
+		}
+	}catch (e) {
+        console.error(e);
+        console.log('Dicom Image NOT AVAILABLE');
+    }
+}
+
+/**
+ * Activates/Deactivates move tool
+ * @param toolid 
+ * @param {Window} tmpWindow 
+ */
+function activateMove(toolid, tmpWindow) {
+	try{
+	if(jQuery('#tool',tmpWindow.document).html()!=toolid) {
+		tmpWindow.disableOtherTools(toolid);
+		tmpWindow.enableTool(toolid);
 		doLoop(false);
 		window.parent.document.getElementById('loopChkBox').checked = false;
-		doMove();
+		tmpWindow.doMove();
 	} else {
-		disableTool(toolid);
-		stopMove();
+		tmpWindow.disableTool(toolid);
+		tmpWindow.stopMove();
 	}
+	}catch (e) {
+        console.log('Dicom Image NOT AVAILABLE');
+    }
 }
 
 function activatestack(tool) {
@@ -149,10 +201,16 @@ function activatestack(tool) {
 	}
 }
 
-function activateVFlip(tool) {
-	state.vflip = state.vflip? false : true;
-	oneTimeTool();
-	flipOrientationToVertical();
+/**
+ * Performs vertical flip
+ * @param tool
+ * @param {Window} tmpWindow 
+ */
+function activateVFlip(tool, tmpWindow) {
+	var stateVal = tmpWindow.state;
+	stateVal.vflip = stateVal.vflip? false : true;
+	tmpWindow.oneTimeTool();
+	tmpWindow.flipOrientationToVertical();
 	window.focus();	 
 }
 
@@ -163,10 +221,16 @@ function flipOrientationToVertical() {
 	jQuery('#imgOriBottom').text(tmpTop);
 }
 
-function activateHFlip(tool) {
-	state.hflip = state.hflip? false : true;
-	oneTimeTool();
-	flipOrientationToHorizontal();
+/**
+ * Performs horizontal flip
+ * @param tool
+ * @param {Window} tmpWindow
+ */
+function activateHFlip(tool, tmpWindow) {
+	var stateVal = tmpWindow.state;
+	stateVal.hflip = stateVal.hflip? false : true;
+	tmpWindow.oneTimeTool();
+	tmpWindow.flipOrientationToHorizontal();
 	window.focus();
 }
 
@@ -177,20 +241,26 @@ function flipOrientationToHorizontal() {
 	jQuery('#imgOriRight').text(tmpLeft);
 }
 
-function activateLeftRotation(tool) {
-	state.rotate-=90;
-	switch(state.rotate) {
+/**
+ * Performs left rotation
+ * @param tool
+ * @param tmpWindow
+ */
+function activateLeftRotation(tool, tmpWindow) {
+	var stateVal = tmpWindow.state;
+	stateVal.rotate-=90;
+	switch(stateVal.rotate) {
 		case -90:
-			state.rotate = 270;
+			stateVal.rotate = 270;
 			break;
 		case -180:
-			state.rotate = 180;
+			stateVal.rotate = 180;
 		case -270:
-			state.rotate = 90;
+			stateVal.rotate = 90;
 			break;
 	}
-	oneTimeTool();
-	rotateLeftTextOverlay();
+	tmpWindow.oneTimeTool();
+	tmpWindow.rotateLeftTextOverlay();
 	window.focus();
 }
 
@@ -204,13 +274,19 @@ function rotateLeftTextOverlay() {
 	jQuery('#imgOriLeft').text(tmpTop);
 }
 
-function activateRightRotation(tool) {
-	state.rotate+=90;
-	if(state.rotate>=360) {
-		state.rotate=0;
+/**
+ * Performs right rotation
+ * @param tool
+ * @param tmpWindow
+ */
+function activateRightRotation(tool, tmpWindow) {
+	var stateVal = tmpWindow.state;
+	stateVal.rotate+=90;
+	if(stateVal.rotate>=360) {
+		stateVal.rotate=0;
 	}
-	oneTimeTool();
-	rotateRightTextOverlay();
+	tmpWindow.oneTimeTool();
+	tmpWindow.rotateRightTextOverlay();
 	window.focus();
 }
 
@@ -224,33 +300,87 @@ function rotateRightTextOverlay() {
 	jQuery('#imgOriLeft').text(tmpBottom);
 }
 
-function doReset(toolid) {
-	if(jQuery('#tool').html()!='') {
-		jQuery('#' + jQuery('#tool').html(), window.parent.document).removeClass('toggleOff');
-		jQuery('#tool').html('');
+/**
+ * Resets all the changes
+ * @param toolid
+ * @param {Window} tmpWindow
+ */
+function doReset(toolid, tmpWindow) {
+	try{
+		if(jQuery('#tool', tmpWindow.document).html()!='') {
+			jQuery('#' + jQuery('#tool', tmpWindow.document).html(), window.parent.document).removeClass('toggleOff');
+			jQuery('#tool', tmpWindow.document).html('');
+		}
+
+        var inst_text = jQuery("#totalImages").text().split("/");
+        var iNo = parseInt(inst_text[0].split(":")[1]);
+        var isMultiframe = inst_text[0].indexOf("Frame") >= 0;
+        var object;
+        if (isMultiframe) {
+            tmpWindow.frameInc = parseInt(iNo);
+            var src = jQuery('#frameSrc', tmpWindow.document).text();
+            object = getParameter(src, 'object');
+        } else {
+            tmpWindow.imgInc = parseInt(iNo);
+        }
+
+		tmpWindow.modifiedWC = windowCenter;
+		tmpWindow.modifiedWW = windowWidth;
+		tmpWindow.doMouseWheel = true;
+		tmpWindow.disableOtherTools(toolid);
+		resetAnnotation();
+		tmpWindow.state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
+		tmpWindow.loadInstanceText(false,false);
+		tmpWindow.drawoutline();
+		doLoop(false);
+		window.parent.document.getElementById('loopChkBox').checked = false;
+		if (isMultiframe) {
+	        tmpWindow.showImage(object + "_" + frameInc);
+	    } else {
+	        tmpWindow.showImage(seriesUid + "_" + imgInc);
+	    }
+		
+		if (tmpWindow.loadInit) {
+	        tmpWindow.loadInit();
+	    }
+		
+		if (firstTry) {
+			firstTry = false;
+			doReset(toolid, tmpWindow);
+		}
+	} catch (error) {
+		console.error(error);
+		console.log('Dicom Image NOT AVAILABLE');
 	}
-	modifiedWC = windowCenter;
-	modifiedWW = windowWidth;
-	doMouseWheel = true;
-	disableOtherTools(toolid);
-	resetAnnotation();
-	state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
-	loadInstanceText(false,false);
-	drawoutline();
-	doLoop(false);
-	window.parent.document.getElementById('loopChkBox').checked = false;
-	showImage(seriesUid+"_"+imgInc);
 }
 
 function doInvert(toolid) {
-	state.invert = state.invert ? false : true;
-	//window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
-	if(modifiedWC!=undefined && modifiedWW!=undefined && (modifiedWC!=windowCenter || modifiedWW!=windowWidth) || (modifiedWC==windowCenter || modifiedWW==windowWidth)){
-		iterateOverPixels();
-		renderImg();
-	}else {
-		window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
-	}
+	 var iframe = window.parent.document.getElementsByTagName('iframe');
+	 if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+	     for (var i = 0; i < iframe.length; i++) {
+	         activateInvert(iframe[i].contentWindow);
+	     }
+	 } else {
+	     activateInvert(window);
+	 }
+}
+
+/**
+ * do invert for all the images in the tiling
+ * @param {Window} tmpWindow 
+ */
+function activateInvert(tmpWindow) {
+    var stateVal = tmpWindow.state;
+    stateVal.invert = stateVal.invert ? false : true;
+    //window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
+    if (tmpWindow.modifiedWC != undefined && tmpWindow.modifiedWW != undefined &&
+        (tmpWindow.modifiedWC != tmpWindow.windowCenter || tmpWindow.modifiedWW != tmpWindow.windowWidth) ||
+        (tmpWindow.modifiedWC == tmpWindow.windowCenter || tmpWindow.modifiedWW == tmpWindow.windowWidth)) {
+        tmpWindow.iterateOverPixels();
+        tmpWindow.renderImg();
+    } else {
+        window.parent.doInvert(jQuery('#imageCanvas', tmpWindow.document).get(0), jQuery('#tool', tmpWindow.document).html() === 'windowing');
+    }
 }
 
 function doMove() {
@@ -279,6 +409,20 @@ function doMove() {
 	 canvasLayer2.onmouseup = function(e) {
         state.drag = false;
         e.target.style.cursor = "default";
+        var iframe = window.parent.document.getElementsByTagName('iframe');
+        if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+            for (var i = 0; i < iframe.length; i++) {
+                var tmpWindow = iframe[i].contentWindow;
+                var iFState = tmpWindow.state;
+                iFState.scale = state.scale;
+                iFState.translationX = state.translationX;
+                iFState.translationY = state.translationY;
+                var image = tmpWindow.getCurrentImage();
+
+                tmpWindow.showImg(null, image);
+                tmpWindow.drawoutline();
+            }
+        }
     };
 
     canvasLayer2.onmousemove = function(e) {
@@ -486,8 +630,10 @@ function getPixelData(firstTime) {
 	setTimeout(function() {
 		var imageData = null;
 		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-		var iNo = isMultiframe ? this.frameInc : this.imgInc;
-
+		var inst_text = jQuery("#totalImages").text().split("/");
+//		var iNo = isMultiframe ? this.frameInc : this.imgInc;
+		var iNo = inst_text[0].split(":")[1];
+		
 		try {
 			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
 
@@ -560,6 +706,9 @@ function getPixelData(firstTime) {
 			 }
 		} catch(exception) {
 			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
+			if (!imgSrc) {
+	            imgSrc = jQuery('#frameSrc').text();
+	        }
 			imageData = parseDicom(null,getParameter(imgSrc,'object'));
 			state.winPtr = iNo;
 			doWindowing(imageData,jQuery('#huDisplayPanel'),jQuery('#windowLevel'),firstTime);
@@ -567,37 +716,71 @@ function getPixelData(firstTime) {
 	},1);
 }
 
-function activateWindowing(toolId) {
-	if(jQuery('#tool').html()!=toolId) {
-		disableOtherTools(toolId);
-		enableTool(toolId);
-		doMouseWheel = (window.parent.pat.serverURL.indexOf("wado")>0);
+function activateWindowing(toolId, tmpWindow) {
+	try{
+		if(jQuery('#tool', tmpWindow.document).html()!=toolId) {
+			tmpWindow.disableOtherTools(toolId);
+			tmpWindow.enableTool(toolId);
+			tmpWindow.doMouseWheel = (window.parent.pat.serverURL.indexOf("wado")>0);
 
-		jQuery('#thickLocationPanel').hide();
-		doLoop(false);
-		window.parent.document.getElementById('loopChkBox').checked = false;
-		getPixelData(true);
-	} else {
-		unbindWindowing(toolId);
+			jQuery('#thickLocationPanel', tmpWindow.document).hide();
+			doLoop(false);
+			window.parent.document.getElementById('loopChkBox').checked = false;
+			tmpWindow.getPixelData(true);
+		} else {
+			tmpWindow.unbindWindowing(toolId);
+		}
+	} catch (e) {
+		console.log('Dicom Image NOT AVAILABLE');
 	}
 }
 
 function unbindWindowing(toolId) {
-	disableTool(toolId);
-	jQuery('#huDisplayPanel').hide();
-	if(jQuery("#patID").css("display").indexOf('none')<0) {
-		jQuery('#thickLocationPanel').show();
+	var iframe = window.parent.document.getElementsByTagName('iframe');
+	var inst_text = '';
+	var isMultiframe;
+	var iNo;
+	var totalImages;
+	if ($(iframe[0]).attr('src').includes('TileContent.html')) {
+		for (var i = 0; i < iframe.length; i++) {
+			var tmpWindow = iframe[i].contentWindow;
+			var src = jQuery('#frameSrc', tmpWindow.document).text();
+			inst_text = jQuery("#totalImages").text().split("/");
+			isMultiframe = inst_text[0].indexOf("Frame") >= 0;
+			totalImages = inst_text[1];
+			if (isMultiframe) {
+				iNo = parseInt(getParameter(src, 'frameNumber'));
+			} else {
+				iNo = parseInt(getParameter(src, 'instanceNumber'));
+			}
+			iNo++;
+			doUnbindWindowing(toolId, isMultiframe, iNo, totalImages, tmpWindow);
+	    }
+	} else {
+	    inst_text = jQuery("#totalImages").text().split("/");
+	    isMultiframe = inst_text[0].indexOf("Frame") >= 0;
+	    iNo = inst_text[0].split(":")[1];
+	    totalImages = inst_text[1];
+	    doUnbindWindowing(toolId, isMultiframe, iNo, totalImages, window);
 	}
-	jQuery('#canvasLayer2').unbind('mousemove').unbind('mousedown').unbind('mouseup');
-	window.parent.disableWindowingContext();
-	doMouseWheel = true;
-	state.winPtr = -1;
-	winProgress = 100;
-	if(modifiedWC!=windowCenter && modifiedWW != windowWidth) {
-		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-		var iNo = isMultiframe ? frameInc : imgInc;
-		loadImg(isMultiframe,iNo);
-	}
+}
+
+function doUnbindWindowing(toolId, isMultiframe, iNo, totalImages, tmpWindow) {
+    tmpWindow.disableTool(toolId);
+    jQuery('#huDisplayPanel', tmpWindow.document).hide();
+    if (jQuery("#patID", tmpWindow.document).css("display").indexOf('none') < 0) {
+        jQuery('#thickLocationPanel', tmpWindow.document).show();
+    }
+    jQuery('#canvasLayer2', tmpWindow.document).unbind('mousemove').unbind('mousedown').unbind('mouseup');
+    window.parent.disableWindowingContext();
+    tmpWindow.doMouseWheel = true;
+    tmpWindow.state.winPtr = -1;
+    tmpWindow.winProgress = 100;
+    if (tmpWindow.modifiedWC != tmpWindow.windowCenter && tmpWindow.modifiedWW != tmpWindow.windowWidth) {
+        if (totalImages > iNo) {
+            tmpWindow.loadImg(isMultiframe, iNo);
+        }
+    }
 }
 
 function activateMeasure(toolId) {
@@ -823,13 +1006,23 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 				evt.target.style.cursor = "default";
 				jQuery('.contextMenu').hide();
 //				jQuery('.selected').removeClass('selected');
+				var iframe = window.parent.document.getElementsByTagName('iframe');
+	            if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+	                for (var i = 0; i < iframe.length; i++) {
+	                    var tmpWindow = iframe[i].contentWindow;
+	                    tmpWindow.modifiedWC = modifiedWC;
+	                    tmpWindow.modifiedWW = modifiedWW;
+	                }
+	            }
 			}
 		}).mousedown(function(evt) {
 			if(evt.which==1) {
-				var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-				var iNo = isMultiframe ? frameInc : imgInc;
+//				var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+//				var iNo = isMultiframe ? frameInc : imgInc;
+				var inst_text = jQuery("#totalImages").text().split("/");
+                var iNo = inst_text[0].split(":")[1];
 
-				if(iNo!=state.winPtr) {
+                if(state.winPtr!=iNo || (isNaN(modifiedWC) && isNaN(modifiedWW))) {
 					getPixelData(false);
 				} else {
 					state.drag = true;
@@ -844,8 +1037,16 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 
 		}).mousemove(function(evt) {
 //			jQuery('.selected',window.parent.document).removeClass('selected');
-			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-			var iNo = isMultiframe ? frameInc : imgInc;
+//			var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
+//			var iNo = isMultiframe ? frameInc : imgInc;
+			var inst_text = jQuery("#totalImages").text().split("/");
+	        iNo = inst_text[0].split(":")[1].trim();
+	        var isMultiframe = (inst_text[0].indexOf("Frame") >= 0);
+	        if (isMultiframe) {
+	            frameInc = iNo;
+	        } else {
+	            imgInc = iNo;
+	        }
 			/*var x = parseInt(evt.pageX/state.scale);
 			var y = parseInt(evt.pageY/state.scale);*/
 			if(state.winPtr==iNo && state.rotate==0) {
@@ -887,23 +1088,29 @@ function applyPreset(wc,ww) {
 	jQuery('.selected',window.parent.document).removeClass('selected');
 	jQuery('.contextMenu',window.parent.document).hide();
 
-	if(wc!=undefined) {
-		modifiedWC = wc;
-		modifiedWW = ww;
-		lookupObj.setWindowingdata(modifiedWC,modifiedWW);
-		jQuery('#windowLevel').html("WL: "+modifiedWC+" / WW: "+modifiedWW);
-	} else {
-		modifedWC = windowCenter;
-		modifiedWW = windowWidth;
-		lookupObj.setWindowingdata(windowCenter,windowWidth);
-		jQuery('#windowLevel').html("WL: "+windowCenter+" / WW: "+windowWidth);
-	}
-	var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
-	var iNo = isMultiframe ? this.frameInc : this.imgInc;
-	loadImg(isMultiframe,iNo);
+	var presetValue = wc + ':' + ww;
+	activateTools(presetValue, doPreset);
 	/*iterateOverPixels();
 	renderImg();*/
 
+}
+
+function doPreset(presetValue, tmpWindow) {
+    presetValue = presetValue.split(':');
+    if (presetValue[0] != undefined) {
+        tmpWindow.modifiedWC = parseInt(presetValue[0]);
+        tmpWindow.modifiedWW = parseInt(presetValue[1]);
+        lookupObj.setWindowingdata(modifiedWC, modifiedWW);
+        jQuery('#windowLevel', tmpWindow.document).html("WL: " + modifiedWC + " / WW: " + modifiedWW);
+    } else {
+        tmpWindow.modifedWC = windowCenter;
+        tmpWindow.modifiedWW = windowWidth;
+        lookupObj.setWindowingdata(windowCenter, windowWidth);
+        jQuery('#windowLevel', tmpWindow.document).html("WL: " + windowCenter + " / WW: " + windowWidth);
+    }
+    var inst_text = jQuery("#totalImages", tmpWindow.document).text().split("/");
+    var isMultiframe = inst_text[0].indexOf("Frame") >= 0;
+    tmpWindow.loadImg(isMultiframe, parseInt(inst_text[0].split(":")[1]));
 }
 
 function loadLookUp(imageData) {
@@ -968,6 +1175,20 @@ function doZoom() {
 	}).mouseup(function(e3) {
 		state.drag = false;
 		e3.target.style.cursor = "default";
+		var iframe = window.parent.document.getElementsByTagName('iframe');
+        if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+            for (var i = 0; i < iframe.length; i++) {
+                var tmpWindow = iframe[i].contentWindow;
+                var iFState = tmpWindow.state;
+                iFState.scale = state.scale;
+                iFState.translationX = state.translationX;
+                iFState.translationY = state.translationY;
+                var image = tmpWindow.getCurrentImage();
+
+                tmpWindow.showImg(null, image);
+                tmpWindow.drawoutline();
+            }
+        }
 	});
 }
 

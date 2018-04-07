@@ -25,6 +25,10 @@ jQuery('#ImagePane').ready(function() {
 
     jQuery("#frameSrc").html(window.location.href);  
  	jQuery('#studyId').html(getParameter(window.location.href,'study'));
+ 	
+ 	jQuery('#scoutLine', window.parent.document).show();
+    jQuery('#syncSeries', window.parent.document).show();
+    jQuery('#measure', window.parent.document).show();
      
     parent.window.addEventListener('selection',onTileSelection,false);
     parent.window.addEventListener('ToolSelection',onToolSelection,false); 
@@ -101,7 +105,8 @@ jQuery('#ImagePane').ready(function() {
     });   
     
     jQuery("#canvasLayer2").dblclick(function(e) {    	
-    	toggleResolution();    	
+//    	toggleResolution();    	
+    	 toggleLayout();
     });
     
     window.addEventListener('resize', resizeCanvas, false);  
@@ -123,6 +128,99 @@ jQuery('#ImagePane').ready(function() {
 jQuery(document).mouseup(function(e) {
 	window.parent.createEvent("ToolSelection",{tool:"mouseup"});
 });
+
+function toggleLayout() {
+	 data = sessionStorage[seriesUid];
+	 if (data) {
+		 jQuery('#loadingView', window.parent.document).hide();
+		 var divElement = window.parent.document.getElementById('tabs_div');
+		 var inst_text = jQuery("#totalImages").text().split("/");
+		 var iNo = parseInt(inst_text[0].split(":")[1]);
+		 var src = $('#frameSrc').text();
+		 var total = 0;
+		    
+		 var pat = window.parent.pat;
+		 var rowIndex;
+		 var colIndex;
+		    
+		 var currSer = getParameter(src, "series");
+		 selectedSeriesData = getSelectedSeries(currSer);
+		 var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
+		    
+		 var ser_Info = JSON.parse(sessionStorage[currSer]);
+		 ser_Info = ser_Info[0];
+		 var multiframe = false;
+		 if (ser_Info['numberOfFrames'] != '') {
+		     multiframe = true;
+		     total = ser_Info['numberOfFrames'];
+		 } else {
+		     total = selectedSeriesData['totalInstances'];
+		 }
+		    
+		 rowIndex = total <= 2 ? 0 : 1;
+		 colIndex = total < 2 ? 0 : 1;
+		 totFrame = (rowIndex + 1) * (colIndex + 1);
+
+		 var cnt = iNo - 1,
+		     divContent = '<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
+		 
+		 if (((cnt + 1) == total || cnt > (total - totFrame)) && total > totFrame) {
+	            cnt = total - totFrame;
+	     }
+		 
+		 if (total > 1) {
+			 cnt = total < totFrame ? 0 : cnt;
+		     for (x = 0; x <= rowIndex; x++) {
+		    	 divContent += '<tr>';
+		         for (y = 0; y <= colIndex; y++) {
+		             cnt = total < totFrame ? cnt : cnt % total;
+		             divContent += '<td><iframe id="frame' + cnt;
+		             divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+		             if (total > cnt) {
+		            	  divContent += 'src="TileContent.html?serverURL=' + pat.serverURL + 'study=' + pat.studyUID + '&series=' + currSer +
+		                 '&object=' + ser_Info['SopUID'] + '&sopClassUID=' + ser_Info['SopClassUID'] + '&seriesDesc=' + selectedSeriesData['seriesDesc'] +
+		                 '&images=' + selectedSeriesData['totalInstances'] + '&modality=' + selectedSeriesData['modality'];
+
+		                 if (modifiedWC != undefined && modifiedWW != undefined && !multiframe) {
+		                	 divContent += '&windowCenter=' + modifiedWC + '&windowWidth=' + modifiedWW;
+		                 }
+		                 divContent += '&contentType=' + pat.imgType + '&instanceNumber=';
+		                 if (multiframe) {
+		                	 divContent += '0&numberOfFrames=' + ser_Info['numberOfFrames'] + '&frameNumber=' + cnt;
+		                 } else {
+		                	 divContent += cnt;
+		                 }
+		                 divContent += '" style="background:#000; visibility: hidden;"></iframe></td>';
+		             } else {
+		                    divContent += ' ' + 'style="background:#000"src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
+		             }
+		             cnt++;
+		         }
+		         divContent += '</tr>';
+		     }
+		     divContent += '</table>';
+		     jQuery('#totRow', window.parent.document).text(rowIndex);
+		     jQuery('#totColumn', window.parent.document).text(colIndex);
+		     jQuery('#selectedFrame', window.parent.document).text(iNo - 1)
+		     divElement.innerHTML = divContent;
+		 }
+	 }else{
+		 jQuery('#loadingView', window.parent.document).show();
+		 setTimeout("toggleLayout();", 200);
+	 }
+}
+
+function getSelectedSeries(currSer) {
+    var pat = window.parent.pat;
+    var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
+    var selectedSeriesData;
+    for (var i = 0; i < seriesData.length; i++) {
+        selectedSeriesData = seriesData[i];
+        if (currSer == selectedSeriesData['seriesUID']) {
+            return selectedSeriesData;
+        }
+    }
+}
 
 function loadImage() {
 	var src = jQuery('#frameSrc').html();
@@ -258,7 +356,7 @@ function loadTextOverlay() {
 	jQuery('#seriesDesc').html(getParameter(src,'seriesDesc'));
 	jQuery('#modalityDiv').html(getParameter(src,'modality'));
 	total = parseInt(getParameter(src,'images'));
-	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
+	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/' + total :'Image:' + (imgInc) + '/' + total);
 	loadSlider();
 	
 	var studyData = JSON.parse(sessionStorage[window.parent.pat.pat_ID]);
@@ -311,7 +409,7 @@ function loadInstanceText(checkForUpdate,autoplay) {
 					} 			
 					
 					if(data['numberOfFrames'] != undefined && data['numberOfFrames'] != '') {
-						jQuery("#totalImages").html('Frames: ' + frameInc + ' / ' + data['numberOfFrames']);
+						jQuery("#totalImages").html('Frames:' + frameInc + '/' + data['numberOfFrames']);
 						total = data['numberOfFrames'];
 						jQuery('#multiframe').css('visibility','visible');
 						
@@ -334,7 +432,7 @@ function loadInstanceText(checkForUpdate,autoplay) {
 							}
 						}
 					} else {
-						jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
+						jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/' + total :'Image:' + (imgInc) + '/' + total);
 						jQuery('#multiframe').css('visibility','hidden');				
 					}
 					
@@ -368,12 +466,12 @@ function loadInstanceText(checkForUpdate,autoplay) {
 				    jQuery('#pixelSpacing').html(data['pixelSpacing']);
 				    jQuery('#imgPixelSpacing').html(data['imagerPixelSpacing']);
 				} else {
-					jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
+					jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/' + total :'Image:' + (imgInc) + '/' + total);
 				}
 		    }  else if(checkForUpdate===true){
 		    	setTimeout("loadInstanceText("+checkForUpdate + "," + autoplay +")",200);
 		    } else {
-		    	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
+		    	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/' + total :'Image:' + (imgInc) + '/' + total);
 		    }
 //		} catch(e) {
 //			console.log("DICOM attributes not available " + e);
@@ -384,7 +482,7 @@ function loadInstanceText(checkForUpdate,autoplay) {
 			setTimeout("loadInstanceText("+checkForUpdate + "," + autoplay +")",200);
 		} 
 	} else {
-		jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/ ' + total :'Image:' + (imgInc) + '/ ' + total);
+		jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/' + total :'Image:' + (imgInc) + '/' + total);
 	}
 	setSliderValue();
 	jQuery('#serId').html(seriesUid+'_'+imgInc);
@@ -398,6 +496,7 @@ function loadInstanceText(checkForUpdate,autoplay) {
 function nextImage() {
 	var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;	 
 	var iNo = !isMultiframe ? imgInc : frameInc;
+	iNo = parseInt(iNo);
 	iNo = (iNo+1) <= total ? (iNo+1) : 1;
 	loadImg(isMultiframe,iNo);
 	imgLoaded();
@@ -865,6 +964,7 @@ function getCurrentImage() {
 	} else {
 		var isMultiframe = jQuery('#totalImages').html().indexOf('Frame')>=0;
 		var iNo = jQuery('#totalImages').text().split("/")[0].split(":")[1];
+		iNo = iNo.trim();
 		if(!isMultiframe) {
 			return jQuery('#' + (seriesUid + "_" + iNo).replace(/\./g,'_'), window.parent.document).get(0);
 		} else {
