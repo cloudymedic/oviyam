@@ -181,17 +181,100 @@
                                         }
 
                                         parent.selectedFrame = null; //For IE
+                                        var iFrame = window.parent.document.getElementsByTagName('iframe');
 
-                                        var url = 'frameContent.html?';
-                                        url += imgSrc.substring(imgSrc.indexOf('?') + 1);
-                                        url += '&instanceNumber=' + parseInt(image.name - 1);
+                                        if (iFrame.length > 1 && $(iFrame[0]).attr('src').includes('TileContent.html')) {
+                                            var total = getTotalInstance(image);
+                                            var currSer = getCurrentSeries(image);
+                                            var selectedSeriesData = getSelectedSeries(currSer);
 
-                                        var actFrame = getActiveFrame();
-                                        $(actFrame).css("visibility", "hidden");
-                                        jQuery('#loadingView', window.parent.document).show();
-                                        actFrame.src = url;
-                                        $('.toggleOff').removeClass('toggleOff');
-                                        $('.imgOn').addClass('imgOff').removeClass('imgOn');
+                                            var divElement = window.parent.document.getElementById('tabs_div');
+
+                                            var rowIndex = 0;
+                                            var colIndex = 0;
+
+                                            if (!(image.src.indexOf('images/pdf.png') > 0 || image.src.indexOf('images/SR_Latest.png') > 0)) {
+                                                rowIndex = jQuery('#totRow', window.parent.document).text();
+                                                colIndex = jQuery('#totColumn', window.parent.document).text();
+                                            }
+                                            if (total == 1)(rowIndex = 0, colIndex = 0);
+
+                                            var cnt = image.name - 1;
+                                            var totFrame = ((parseInt(rowIndex) + 1) * (parseInt(colIndex) + 1));
+                                            jQuery('#selectedFrame', window.parent.document).text(cnt);
+                                            if ((cnt + 1) == total || cnt > (total - totFrame)) {
+                                                cnt = total - totFrame;
+                                            }
+                                            if (cnt < 0) cnt = 0;
+
+                                            var ser_Info = JSON.parse(sessionStorage[currSer]);
+                                            ser_Info = ser_Info[0];
+                                            var multiframe = false;
+                                            if (ser_Info['numberOfFrames'] != '') {
+                                                multiframe = true;
+                                            }
+
+                                            divContent = '<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
+                                            var count = 0;
+                                            for (x = 0; x <= rowIndex; x++) {
+                                                divContent += '<tr>';
+                                                for (y = 0; y <= colIndex; y++) {
+                                                    cnt = cnt % total;
+                                                    count++;
+                                                    divContent += '<td><iframe id="frame' + cnt;
+                                                    divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+                                                    if (total >= count) {
+                                                        divContent += 'src="TileContent.html?serverURL=' + window.parent.pat.serverURL + 'study=' + studyId + '&series=' + currSer +
+                                                            '&object=' + ser_Info['SopUID'] + '&sopClassUID=' + ser_Info['SopClassUID'] + '&seriesDesc=' + selectedSeriesData['seriesDesc'] +
+                                                            '&images=' + selectedSeriesData['totalInstances'] + '&modality=' + selectedSeriesData['modality'];
+                                                        divContent += '&contentType=image/jpeg' + '&instanceNumber=';
+                                                        if (multiframe) {
+                                                            divContent += '0&numberOfFrames=' + ser_Info['numberOfFrames'] + '&frameNumber=' + cnt;
+                                                        } else {
+                                                            divContent += cnt;
+                                                        }
+                                                        divContent += '" style="background:#000; visibility: hidden;"></iframe></td>';
+                                                    } else {
+                                                        divContent += ' ' + 'style="background:#000" src ="TileContent.html?study=' + studyId + '"></iframe></td>';
+                                                    }
+                                                    cnt++;
+                                                }
+                                                divContent += '</tr>';
+                                            }
+                                            divContent += '</table>';
+                                            divElement.innerHTML = divContent;
+                                        } else {
+                                        	var url = 'frameContent.html?';
+                                        	url += imgSrc.substring(imgSrc.indexOf('?') + 1);
+                                        	url += '&instanceNumber=' + parseInt(image.name - 1);
+	
+                                        	var actFrame = getActiveFrame();
+                                        	$(actFrame).css("visibility", "hidden");
+	                                        jQuery('#loadingView', window.parent.document).show();
+                                        	actFrame.src = url;
+                                        	$('.toggleOff').removeClass('toggleOff');
+                                        	$('.imgOn').addClass('imgOff').removeClass('imgOn');
+                                    	}
+                                    }
+                                    
+                                    function getTotalInstance(image) {
+                                        var imgID = '';
+                                        imgID = image.id;
+                                        imgID = imgID.substring(0, imgID.lastIndexOf('_'));
+                                        var table = imgID + "_table";
+
+                                        var totalImg = $('#' + table).find('#totalImgs').text();
+                                        totalImg = totalImg.substring(0, totalImg.lastIndexOf(' '));
+                                        var total = parseInt(totalImg);
+                                        return total;
+                                    }
+
+                                    function getCurrentSeries(image) {
+                                        var imgID = '';
+                                        imgID = image.id;
+                                        imgID = imgID.substring(0, imgID.lastIndexOf('_'));
+                                        var seriesID = imgID.replace(/_/g, '\.')
+                                        return (seriesID);
                                     }
 
                                     var selectedFrame;
@@ -258,7 +341,7 @@
 
                                         <table class="seriesTable" id="${fn:replace(seriesId, '.','_')}_table">
                                             <tbody>
-                                                <img:Image patientId="${param.patient}" study="${studyId}" series="${seriesId}" dcmURL="${param.dcmURL}">
+                                                <img:Image patientId="${param.patient}" study="${param.study}" series="${seriesId}" dcmURL="${param.dcmURL}">
                                                     <c:choose>
                                                         <c:when test="${multiframe=='yes'}">
                                                             <tr style="cursor: default; color: #FF8A00; font-size: 12px;">

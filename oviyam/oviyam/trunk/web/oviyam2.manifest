@@ -4,7 +4,9 @@ CACHE:
 viewer.html
 viewer_tools.html
 frameContent.html
+TileContent.html
 layout.html
+imageTile.html
 load3D.html
 oviyam2.manifest
 
@@ -73,6 +75,7 @@ js/angle.js
 js/lib/raphael-min.js
 js/lib/raphaelle.js
 js/framecontent.js
+js/TileContent.js
 js/lib/smartslider.js
 js/i18n/Bundle.js
 js/lib/jqcontextmenu.js

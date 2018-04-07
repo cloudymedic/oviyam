@@ -32,6 +32,17 @@ function createEvent(eventName, obj) {
 	window.dispatchEvent(event);
 }
 
+function getSelectedSeries(currSer) {
+    var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
+    var selectedSeriesData;
+    for (var i = 0; i < seriesData.length; i++) {
+        selectedSeriesData = seriesData[i];
+        if (currSer == selectedSeriesData['seriesUID']) {
+            return selectedSeriesData;
+        }
+    }
+}
+
 jQuery(document).mouseup(function(e) {
 	createEvent("ToolSelection",{tool:"mouseup"});
 });
@@ -43,39 +54,125 @@ function hideToolbar() {
 }
 
 function doLayout() {
-	jQuery('.toggleOff').removeClass('toggleOff');
-	var divElement = document.getElementById('tabs_div');
-	jQuery(divElement).children().remove();
+	try {
+        jQuery('#loadingView', window.parent.document).hide();
+        jQuery('.toggleOff').removeClass('toggleOff');
+        var divElement = document.getElementById('tabs_div');
+        jQuery(divElement).children().remove();
+        
+        var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
+		var cnt = 0,divContent='<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
 
-	var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
-	var cnt = 0,divContent='<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
+		for(var x=0; x<rowIndex+1;x++) {
+			divContent+='<tr>';
+			for(var y=0;y<colIndex+1;y++) {
+				divContent += '<td><iframe id="frame' + cnt;
+				divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+				
+				if(cnt < seriesData.length) {
+					var data = seriesData[cnt];
+					while(cnt<seriesData.length && hasOnlyRawData(data['seriesUID'])) {
+						cnt+=1;
+						data = seriesData[cnt];
+					}
+           	   		var ser_Info = JSON.parse(sessionStorage[data['seriesUID']]);
+           	   		ser_Info = ser_Info[0];
+           	   		
+           	   		if(cnt<seriesData.length) {
+           	   			divContent += 'src="frameContent.html?serverURL=' + pat.serverURL + '&study=' + pat.studyUID + '&series=' + data['seriesUID'] +
+           	   			'&object=' + ser_Info['SopUID'] + '&sopClassUID=' + ser_Info['SopClassUID'] + '&seriesDesc=' + data['seriesDesc'] +
+           	   			'&images=' + data['totalInstances'] + '&modality=' + data['modality'] +
+           	   			'&contentType=' + pat.imgType + '&instanceNumber=0" style="background:#000; visibility: hidden;"></iframe></td>';
+           	   		} else {
+           	   			divContent += ' ' + 'style="background:#000; visibility: hidden;"></iframe></td>';
+           	   		}
+           	   		cnt+=1;
+				} else {
+					divContent += ' ' + 'style="background:#000; visibility: hidden;" src="frameContent.html' + '"></iframe></td>';
+					cnt+=1;
+				}
+			} // End of column iteration
+		} // End of row iteration
+		divContent += '</table>';
+		divElement.innerHTML = divContent;
+	 } catch (error) {
+		 jQuery('#loadingView', window.parent.document).show();
+	     setTimeout("doLayout()", 200);
+	 }
+}
 
-	for(var x=0; x<rowIndex+1;x++) {
-		divContent+='<tr>';
-		for(var y=0;y<colIndex+1;y++) {
-			divContent += '<td><iframe id="frame' + cnt;
-            divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+function doImageTile(currSer) {
+    var actFrame = getActiveFrame();
+    actFrame = actFrame.contentDocumnet || actFrame.contentWindow.document;
+    var src = jQuery('#frameSrc', actFrame).text();
+    var seriesUID = getParameter(src, 'series');
+    data = sessionStorage[seriesUID];
+    if (data) {
+        jQuery('#loadingView', window.parent.document).hide();
+        jQuery('.toggleOff').removeClass('toggleOff');
+        var divElement = document.getElementById('tabs_div');
+        jQuery(divElement).children().remove();
 
-            if(cnt < seriesData.length) {
-            	var data = seriesData[cnt];
-            	while(cnt<seriesData.length && hasOnlyRawData(data['seriesUID'])) {
-            		cnt+=1;
-            		data = seriesData[cnt];
-            	}
-            	if(cnt<seriesData.length) {
-            		divContent+='src="frameContent.html?study=' + pat.studyUID + '&series=' + data['seriesUID'] + '&seriesDesc=' +  data['seriesDesc'] + '&images=' +  data['totalInstances'] + '&modality=' + data['modality'] +'" style="background:#000; visibility: hidden;"></iframe></td>';
-            	} else {
-            		divContent += ' ' + 'style="background:#000; visibility: hidden;"></iframe></td>';
-            	}
-            	cnt+=1;
-			} else {
-				divContent += ' ' + 'style="background:#000; visibility: hidden;" src="frameContent.html' + '"></iframe></td>';
-				cnt+=1;
-			}
-		} // End of column iteration
-	} // End of row iteration
-	divContent += '</table>';
-	divElement.innerHTML = divContent;
+        var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
+        selectedSeriesData = getSelectedSeries(currSer);
+        var instCount = selectedSeriesData['totalInstances'];
+
+        var cnt = 0,
+            divContent = '<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
+
+        var ser_Info = JSON.parse(sessionStorage[currSer]);
+        ser_Info = ser_Info[0];
+        var multiframe = false;
+        if (ser_Info['numberOfFrames'] != '') {
+            multiframe = true;
+            instCount = ser_Info['numberOfFrames'];
+        } else {
+            instCount = selectedSeriesData['totalInstances'];
+        }
+
+        for (var x = 0; x < rowIndex + 1; x++) {
+            divContent += '<tr>';
+            for (var y = 0; y < colIndex + 1; y++) {
+                divContent += '<td><iframe id="frame' + cnt;
+                divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+
+                if (cnt < instCount) {
+                    var data = seriesData[cnt];
+                    while (cnt < instCount && hasOnlyRawData(selectedSeriesData['seriesUID'])) {
+                        cnt += 1;
+                        data = seriesData[cnt];
+                    }
+
+                    if (cnt < instCount) {
+                        divContent += 'src="TileContent.html?serverURL=' + pat.serverURL + '&study=' + pat.studyUID + '&series=' + currSer +
+                            '&object=' + ser_Info['SopUID'] + '&sopClassUID=' + ser_Info['SopClassUID'] + '&seriesDesc=' + selectedSeriesData['seriesDesc'] +
+                            '&images=' + selectedSeriesData['totalInstances'] + '&modality=' + selectedSeriesData['modality'] +
+                            '&contentType=' + pat.imgType + '&instanceNumber=';
+                        if (multiframe) {
+                            divContent += '0&numberOfFrames=' + ser_Info['numberOfFrames'] + '&frameNumber=' + cnt;
+                        } else {
+                            divContent += cnt;
+                        }
+
+                        divContent += '" style="background:#000; visibility: hidden;"></iframe></td>';
+                    } else {
+                        divContent += ' ' + 'style="background:#000" src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
+                    }
+                    cnt += 1;
+                } else {
+                    divContent += ' ' + 'style="background:#000"src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
+                    cnt += 1;
+                }
+            } // End of column iteration		
+        } // End of row iteration
+        divContent += '</table>';
+        divElement.innerHTML = divContent;
+        jQuery('#totRow', window.parent.document).text(rowIndex);
+        jQuery('#totColumn', window.parent.document).text(colIndex);
+    } else {
+        jQuery('#loadingView', window.parent.document).show();
+        setTimeout("doImageTile('" + currSer + "')", 200);
+    }
 }
 
 function hasOnlyRawData(ser_Uid) {
@@ -235,10 +332,22 @@ function getActiveFrameForStudy(studyUid) {
 
 function changeLayout(layoutUrl) {
     jQuery('#contentDiv').html('');
+    jQuery('#tileDiv').hide();
     jQuery('#contentDiv').load(layoutUrl);
     jQuery('#contentDiv').show();
 
     jQuery("#contentDiv").mouseleave(function() {
+        jQuery(this).hide();
+    });
+}
+
+function changeImageTile(layoutUrl) {
+    jQuery('#tileDiv').html('');
+    jQuery('#contentDiv').hide();
+    jQuery('#tileDiv').load(layoutUrl);
+    jQuery('#tileDiv').show();
+
+    jQuery("#tileDiv").mouseleave(function() {
         jQuery(this).hide();
     });
 }
