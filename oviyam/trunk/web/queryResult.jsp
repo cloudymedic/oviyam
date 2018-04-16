@@ -165,9 +165,19 @@ table.display tr.odd.row_selected td {
 	background-color: #718ea0;
 }
 
+table.display tr:hover td {
+	background: rgba(24, 143, 255, 0.16) !important;
+    cursor: pointer;
+}
+
+table.display tr.even.row_selected:hover td,
+table.display tr.odd.row_selected:hover td {
+	background-color: #718ea0 !important;
+}
+
 /*
-									* Sorting classes for columns
-									*/
+* Sorting classes for columns
+*/
 
 /* For the standard odd/even */
 tr.odd td.sorting_1 {
