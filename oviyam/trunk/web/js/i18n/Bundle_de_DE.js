@@ -1,6 +1,6 @@
 var languages = {
     PageTitle: "Radiologie WebViewer",
-    Version:"2.6",
+    Version:"2.7",
     UserName: "Benutzername",
     Password: "Passwort",
     Login: "Login",

@@ -1,10 +1,10 @@
 var languages = {
     PageTitle: "Oviyam",
-    Version:"2.6",
+    Version:"2.7",
     UserName: "User Name",
     Password: "Password",
     Login: "Login",
-    Footer: "Oviyam2.6 requires latest version of Google Chrome / Safari.",
+    Footer: "Oviyam2.7 requires latest version of Google Chrome / Safari.",
     PatientName: "Patient Name",
     PatientId: "Patient ID",
     BirthDate: "Birth Date",
