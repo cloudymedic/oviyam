@@ -63,15 +63,27 @@
             padding-bottom: 3px;
         }
         
-        #productName {
+         .productNameDiv {
             top: 8px;
             left: 2px;
             border: none;
             position: fixed;
-            font-size: 30px;
+            font-size: 24px;
             font-weight: bold;
             padding: 5px;
-            white-space: nowrap;
+        }
+        
+        .versionSpan {
+            font-size: 10px;
+            margin-left: 28px;
+            position: relative;
+            top: 0px;
+            white-space: pre;
+        }
+        
+         #productName {
+            font-weight: bold;
+            border: none !important;
         }
         
         #buttonContainer {
@@ -153,10 +165,12 @@
             <label for="radio1">Today</label>
         </div>
 
-        <div id="productName" class="ui-state-default ui-widget-content">
-            <span id="version"></span>
-        </div>
-
+		<div class="productNameDiv">
+        	<div id="productName" class="ui-state-default ui-widget-content">
+            	<span id="version"></span>
+        	</div>
+		</div>
+		
         <div id="user" style="top: 20px;right: 50px;position: fixed;font-size: 15px;z-index:3;"></div>
 
 

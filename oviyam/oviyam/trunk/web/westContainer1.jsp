@@ -296,19 +296,46 @@
                 						    <c:otherwise>
                 						    	<c:choose>
 	                    					        <c:when test="${param.wadoUrl == 'C-GET'}">
-	                    					            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-	                    					                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}" ondblclick="openSeriesInViewer(this)" />
-	                    					            </c:if>
+	                    					            <c:choose>
+                                                        	<c:when test="${multiframe=='yes'}">
+																<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}&frameNumber=1"
+                                                                	ondblclick="openSeriesInViewer(this)" />
+                                                            </c:when>
+                                                        	<c:otherwise>
+                                                        		<c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
+                                                            		<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}"
+                                                                		ondblclick="openSeriesInViewer(this)" />
+                                                            	</c:if>
+                                                        	</c:otherwise>
+                                                    	</c:choose>
 	                    					        </c:when>
 	                          						<c:when test="${param.wadoUrl == 'C-MOVE'}">
-						                                <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-	                    					                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}" ondblclick="openSeriesInViewer(this)" />
-	                    					            </c:if>
+						                                <c:choose>
+															<c:when test="${multiframe=='yes'}">
+                                                            	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&frameNumber=1" ondblclick="openSeriesInViewer(this)"
+                                                                	/>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                            	<c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
+                                                                	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}" ondblclick="openSeriesInViewer(this)"
+                                                                    	/>
+                                                                </c:if>
+                                                            </c:otherwise>
+                                                        </c:choose>
 	                    					        </c:when>	                    					        
 	                    					        <c:otherwise>	                    					        
-		                    				            <c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-		                    				                <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}" ondblclick="openSeriesInViewer(this);" />
-		                    				            </c:if>
+		                    				           <c:choose>
+                                                        	<c:when test="${multiframe=='yes'}">
+                                                            	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}&frameNumber=1"
+                                                                	ondblclick="openSeriesInViewer(this);" />
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                            	<c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
+                                                                	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}" ondblclick="openSeriesInViewer(this);"
+                                                                    	/>
+                                                                </c:if>
+                                                            </c:otherwise>
+                                                        </c:choose>
 	                    				            </c:otherwise>
                     				            </c:choose>
                     						</c:otherwise>

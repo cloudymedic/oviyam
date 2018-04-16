@@ -368,7 +368,7 @@
                                                                             <td colspan="2">
                                                                                 <c:choose>
                                                                                     <c:when test="${param.wadoUrl == 'C-GET' || param.wadoUrl == 'C-MOVE'}">
-                                                                                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" class="image" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"
+                                                                                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" class="image" src="Wado.do?dicomURL=${param.dcmURL}&study=${param.study}&series=${seriesId}&object=${imageId}&retrieveType=${param.wadoUrl}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}&frameNumber=1"
                                                                                             onclick="changeSeries(this)" ondragstart="clearSelectedFrames()" ondragend="changeOnDrag(this);" />
 
                                                                                         <c:forEach var="i" begin="1" end="${numberOfFrames}">
@@ -377,7 +377,7 @@
                                                                                         </c:forEach>
                                                                                     </c:when>
                                                                                     <c:otherwise>
-                                                                                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}"
+                                                                                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&seriesDesc=${seriesDesc}&images=${numberOfImages}&modality=${modality}&frameNumber=1"
                                                                                             class="image" onclick="changeSeries(this)" ondragstart="clearSelectedFrames()" ondragend="changeOnDrag(this);" />
                                                                                         <c:forEach var="i" begin="1" end="${numberOfFrames}">
                                                                                             <img name="${i}" id="${fn:replace(imageId, '.','_')}_${i}" style="${thumbSize} display: none;" class="other_multiframe" link="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&frameNumber=${i}" />
@@ -437,19 +437,19 @@
                                                             <c:choose>
                                                                 <c:when test="${modality == 'SR'}">
                                                                     <!-- Structured Report -->
-                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="height: 75px;" src="images/SR_Latest.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}"
+                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="height: 75px;" src="images/SR_Latest.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}"
                                                                         onclick="changeSeries(this)" ondragstart="clearSelectedFrames()" ondragend="changeOnDrag(this);" />
                                                                 </c:when>
 
                                                                 <c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.104.1'}">
                                                                     <!-- Enacpsulated PDF -->
-                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}"
+                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}"
                                                                         onclick="changeSeries(this)" ondragstart="clearSelectedFrames()" ondragend="changeOnDrag(this);" />
                                                                 </c:when>
 
                                                                 <c:when test="${fn:contains(sopClassUID,'1.2.840.10008.5.1.4.1.1.9')}">
                                                                     <!-- Wave Forms -->
-                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${studyId}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&rid=true"
+                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&rid=true"
                                                                         onclick="changeSeries(this)" ondragstart="clearSelectedFrames()" ondragend="changeOnDrag(this);" />
                                                                 </c:when>
 
