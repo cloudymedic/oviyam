@@ -67,7 +67,10 @@ public class DicomRetrieve extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String wadoUrl=request.getParameter("wadourl");
 	String modifiedWadoUrl=wadoUrl.replaceAll("_", "&");
-	String imageURL=modifiedWadoUrl.concat("&transferSyntax=1.2.840.100008.1.2&contentType=application/dicom");
+	if(modifiedWadoUrl.indexOf("/wado/wado")>0){
+		modifiedWadoUrl = modifiedWadoUrl.replaceAll("/wado/wado","/wado");	
+	}
+	String imageURL=modifiedWadoUrl.concat("&transferSyntax=1.2.840.10008.1.2");
 	InputStream resultInStream = null;
 	OutputStream out = response.getOutputStream();
 	try {
