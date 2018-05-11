@@ -58,4 +58,12 @@
    <ioviyam-context>/ioviyam2</ioviyam-context>
    <download-study>yes</download-study>
 
+ 	<overlayText>
+      	<ImageLaterality>
+        	<display>Yes</display>
+        	<modality>ALL</modality>
+        	<modalityList></modalityList>
+    	</ImageLaterality>
+   	</overlayText>
+
 </configuration>

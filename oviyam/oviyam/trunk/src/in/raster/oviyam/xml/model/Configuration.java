@@ -71,8 +71,19 @@ public class Configuration {
     
     @Element(name="download-study",required=false)
     private String downloadStudy;
+    
+    @Element(name = "overlayText",required=false)
+    private OverlayText overlayText;
 
-    public List<Language> getLanguagesList() {
+    public OverlayText getOverlayText() {
+		return overlayText;
+	}
+
+	public void setOverlayText(OverlayText overlayText) {
+		this.overlayText = overlayText;
+	}
+
+	public List<Language> getLanguagesList() {
         return languagesList;
     }
 

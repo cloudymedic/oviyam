@@ -138,6 +138,7 @@ downloadStudy.do
 downloadSelection.jsp
 download.do
 downloadStudy.jsp
+overlayText.do
 UserConfig.do
 DcmStream.do
 Wado.do

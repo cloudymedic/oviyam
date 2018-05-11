@@ -143,7 +143,7 @@
                 <tr>   
                 	<td>
                         <label for="studyDesc">Study Description</label>
-                        <input type="search" id="studyDesc" placeholder="Study/ Procedure name" />
+                        <input type="search" id="studyDesc" placeholder="Study/Procedure name" />
                     </td>
                                      
                     <td>
