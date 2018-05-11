@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+ 	<context-param>
+		<param-name>imgLateralityDisplay</param-name>
+	    <param-value>Yes</param-value>	    
+	</context-param>
+	  
+	<context-param>
+	    <param-name>imgLateralityModality</param-name>
+	    <param-value>ALL</param-value>	    
+	</context-param>
+	  
+	<context-param>
+    	<param-name>imgLateralityModalityList</param-name>
+    	<param-value> </param-value>    	
+ 	</context-param>
+ 	
     <servlet>
         <servlet-name>EchoServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.EchoServlet</servlet-class>
@@ -36,6 +52,10 @@
         <servlet-name>DownloadServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.DownloadServlet</servlet-class>
     </servlet> 
+    <servlet>
+        <servlet-name>OverlayTextServlet</servlet-name>
+        <servlet-class>in.raster.oviyam.servlet.OverlayConfigServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>ServerConfigServlet</servlet-name>
         <servlet-class>in.raster.oviyam.servlet.ServerConfigServlet</servlet-class>
@@ -118,6 +138,10 @@
      <servlet-mapping>
         <servlet-name>DownloadServlet</servlet-name>
         <url-pattern>/download.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OverlayTextServlet</servlet-name>
+        <url-pattern>/overlayText.do</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DcmImage</servlet-name>

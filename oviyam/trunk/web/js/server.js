@@ -8,7 +8,7 @@ var callingAET = '';
 $(document).ready(function() {
 
     $('button').button();
-
+    $('#loadTabs').load('serverPreferences.html');
     loadTable();
     $.get("do/IOviyamContext", function(data) {
         $('#ioviyamCxt').val(data.trim());
@@ -81,103 +81,6 @@ $(document).ready(function() {
     });
 
     $('.dataTables_wrapper').css('min-height', '200px');
-
-    $("#updateListener").click(function() {
-        $.ajax({
-            url: 'Listener.do',
-            type: 'POST',
-            data: {
-                'aetitle': $('#listener_ae').val(),
-                'port': $('#listener_port').val(),
-                'action': 'Update'
-            },
-            dataType: 'text',
-            success: function(msg1) {
-                if (msg1.trim() == 'success') {
-                    $.ambiance({
-                        message: "Listener details updated and listener restarted!!!",
-                        type: 'success'
-                    });
-                } else {
-                    $.ambiance({
-                        message: "Error while updating listener details!!!",
-                        type: 'error'
-                    });
-                }
-            }
-        });
-    });
-
-    $('#updIoviyamCxt').click(function() {
-        var iOvmCxt = $('#ioviyamCxt').val().trim();
-        if (iOvmCxt.length == 0) {
-            alert("iOviyam context should not be empty!!!");
-            return;
-        }
-        if (iOvmCxt.indexOf("\/") != 0) {
-            alert("iOviyam context must starts with /");
-            return;
-        }
-
-        $.ajax({
-            url: 'do/IOviyamContext',
-            type: 'POST',
-            data: {
-                'iOviyamCxt': $('#ioviyamCxt').val(),
-                'action': 'Update'
-            },
-            dataType: 'text',
-            success: function(msg2) {
-                if (msg2.trim() == 'success') {
-                    $.ambiance({
-                        message: "iOviyam context updated successfully!!!",
-                        type: 'success'
-                    });
-                } else {
-                    $.ambiance({
-                        message: 'Error while updating iOviyam context!!!',
-                        type: 'error'
-                    });
-                }
-            }
-        });
-    });
-
-    $('#updDownloadStudy').click(function() {
-        var dwnStudy = $('#downloadStudy').val();
-        if (dwnStudy == 'none') {
-            dwnStudy = 'no';
-        }
-        $.ajax({
-            url: 'DwnStudyConfig.do',
-            type: 'POST',
-            data: {
-                'downloadStudy': dwnStudy,
-                'action': 'update'
-            },
-            dataType: 'text',
-            success: function(msg3) {
-                if (msg3.trim() == 'success') {
-                    $.ambiance({
-                        message: "Download Study updated successfully!!!",
-                        type: 'success'
-                    });
-                } else {
-                    $.ambiance({
-                        message: 'Error while updating Download Study!!!',
-                        type: 'error'
-                    });
-                }
-            }
-        })
-    });
-
-    $.get("DwnStudyConfig.do", {
-        'action': 'READ'
-    }, function(data) {
-        data = data.trim();
-        $('#downloadStudy').val(data);
-    }, 'text');
 
 }); // for document.ready
 

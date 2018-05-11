@@ -21,10 +21,13 @@
 *
 * Contributor(s):
 * Babu Hussain A
+* Balamurugan R
 * Devishree V
+* Guruprasath R
 * Meer Asgar Hussain B
 * Prakash J
 * Suresh V
+* Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -47,21 +50,26 @@ import in.raster.oviyam.model.InstanceModel;
 import in.raster.oviyam.delegate.ImageOrientation;
 import in.raster.oviyam.util.InstanceComparator;
 import in.raster.oviyam.xml.handler.LanguageHandler;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.InputStream;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.net.URL;
+
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -105,7 +113,7 @@ public class InstanceServlet extends HttpServlet {
         String fname = "";
         if( !(!wadoURL.equals("C-MOVE") && !wadoURL.equals("C-GET")) ) {
             String dest = LanguageHandler.source.getAbsolutePath();            
-            fname = dest.substring(0, dest.indexOf("oviyam2-6-config.xml")-1) + File.separator + "oviyam2";
+            fname = dest.substring(0, dest.indexOf("oviyam2-7-config.xml")-1) + File.separator + "oviyam2";
             fname += File.separator + studyUID;
         } else {
             wadoURL += "?requestType=WADO&contentType=application/dicom&studyUID=" + studyUID + "&seriesUID=" + seriesUID;
@@ -159,6 +167,9 @@ public class InstanceServlet extends HttpServlet {
 	                    DicomElement photometricInterpretation= dcmObj.get(Tag.PhotometricInterpretation);
 	                    DicomElement pixelRep = dcmObj.get(Tag.PixelRepresentation);
 	                    DicomElement frmTime = dcmObj.get(Tag.FrameTime);
+	                    DicomElement imgLaterality = dcmObj.get(Tag.ImageLaterality);
+	                    DicomElement viewPosition = dcmObj.get(Tag.ViewPosition);
+	                    DicomElement mod = dcmObj.get(Tag.Modality);
 	
 	                    //To get the Image Type (LOCALIZER / AXIAL / OTHER)
 	                    DicomElement imageType = dcmObj.get(Tag.ImageType);
@@ -217,7 +228,9 @@ public class InstanceServlet extends HttpServlet {
 	                    String pixelSpacing = pixelSpacingEle != null ? new String(pixelSpacingEle.getBytes()) : "";
 	                    String imgPixelSpacing = imgPixelSpacingEle != null ? new String(imgPixelSpacingEle.getBytes()) : "";
 	                    String totalFrames = totalFramesEle != null ? new String(totalFramesEle.getBytes()) : "";
-	
+	                    String imgLtr = imgLaterality !=null ? new String(imgLaterality.getBytes()):"";
+	                    String viewPos = viewPosition !=null? new String(viewPosition.getBytes()):"";
+	                    String modality = mod !=null? new String(mod.getBytes()):"";
 	
 	                    jsonObj.put("windowCenter", windowCenter.replaceAll("\\\\", "|"));
 	                    jsonObj.put("windowWidth", windowWidth.replaceAll("\\\\", "|"));
@@ -247,6 +260,9 @@ public class InstanceServlet extends HttpServlet {
 	                    jsonObj.put("monochrome1", monochrome);
 	                    jsonObj.put("PixelRepresentation", pixRep);
 	                    jsonObj.put("frameTime", frameTime);
+	                    jsonObj.put("imgLaterality", imgLtr);
+	                    jsonObj.put("viewPosition", viewPos);
+	                    jsonObj.put("modality", modality);
 	
 	                    dis.close();
 	                    is.close();

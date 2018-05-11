@@ -21,10 +21,13 @@
 *
 * Contributor(s):
 * Babu Hussain A
+* Balamurugan R
 * Devishree V
+* Guruprasath R
 * Meer Asgar Hussain B
 * Prakash J
 * Suresh V
+* Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,62 +42,26 @@
 * the terms of any one of the MPL, the GPL or the LGPL.
 *
 * ***** END LICENSE BLOCK ***** */
+package in.raster.oviyam.xml.model;
 
-package in.raster.oviyam.delegate;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Path;
 
-import in.raster.oviyam.util.core.DcmRcv;
-import in.raster.oviyam.util.core.MoveScu;
-import in.raster.oviyam.xml.handler.LanguageHandler;
-import in.raster.oviyam.xml.handler.ListenerHandler;
-import in.raster.oviyam.xml.model.Listener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+@Path("configuration")
+public class OverlayText {
 
-/**
- *
- * @author  BabuHussain
- * @version 0.5
- *
- */
-public class ReceiveDelegate {
+	@Element(name = "ImageLaterality", required= false)
+	ImageLaterality imageLaterality;
 
-    private DcmRcv dcmrcv = null;
+	public ImageLaterality getImageLaterality() {
+		if(imageLaterality == null){
+			imageLaterality = new ImageLaterality();
+		}
+		return imageLaterality;
+	}
 
-    public ReceiveDelegate() {
-        try {
-            //InetAddress thisIp = InetAddress.getLocalHost();
-            ListenerHandler lh = new ListenerHandler();
-            Listener listener = lh.getListener();
-            if(listener!=null) {            	
-	            dcmrcv = new DcmRcv();
-	            dcmrcv.setAEtitle(listener.getAetitle());
-	            dcmrcv.setHostname("0.0.0.0");
-	            dcmrcv.setPort(Integer.parseInt(listener.getPort()));
-	            //dcmrcv.setDestination(ServerConfigLocator.locate().getServerHomeDir() + File.separator + "data");
-	            String dest = LanguageHandler.source.getAbsolutePath();
-	            dcmrcv.setDestination(dest.substring(0, dest.indexOf("oviyam2-7-config.xml")-1));
-	            dcmrcv.setPackPDV(false);
-	            dcmrcv.setTcpNoDelay(false);
-	            dcmrcv.initTransferCapability();
-	            dcmrcv.setTlsNeedClientAuth(false);
-	            MoveScu.maskNull(listener.getAetitle());
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(ReceiveDelegate.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void start() throws Exception {
-    	if(dcmrcv!=null) {
-    		dcmrcv.start();
-    	}
-    }
-
-    public void stop() {
-        if (dcmrcv != null) {
-            dcmrcv.stop();
-            dcmrcv = null;
-        }
-    }
-
+	public void setImageLaterality(ImageLaterality imageLaterality) {
+		this.imageLaterality = imageLaterality;
+	}
+		
 }

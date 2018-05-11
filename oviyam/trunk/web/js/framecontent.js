@@ -391,6 +391,60 @@ function loadInstanceText(checkForUpdate,autoplay) {
 				        jQuery('#imgOriLeft').html(getOppositeOrientation(imgOrient[0]));
 				        jQuery('#imgOriTop').html(getOppositeOrientation(imgOrient[1]));
 					}
+					
+					$.ajax({
+	                    url: 'overlayText.do',
+	                    data: {
+	                        'action': 'READ'
+	                    },
+	                    type: 'GET',
+	                    datatypr: 'json',
+	                    success: function(data) {
+	                        textOverlay = JSON.parse(data)
+	                    },
+	                    async: false
+	             });
+
+	             var imgLaterality = "";
+	             if (data['imgLaterality'] != undefined && data['imgLaterality'] != '') {
+	                 imgLaterality = data['imgLaterality'];
+	             }
+	             var viewPosition = '';
+	             if (data['viewPosition'] != undefined && data['viewPosition'] != '') {
+	                 viewPosition = data['viewPosition'];
+	             }
+
+	             var modality = "";
+	             if (data['modality'] != undefined && data['modality'] != '') {
+	                 modality = data['modality'];
+	             }
+	             
+	             var imageLater = textOverlay.imageLaterality;
+	             
+	             if (!((viewPosition == '' || viewPosition == undefined) && (imgLaterality == '' || imgLaterality == undefined))) {
+	            	 var laterality = imgLaterality + "(" + viewPosition + ")";
+
+	            	 if (imageLater.display == 'Yes') {
+	            		 if (imageLater.modality == 'ALL') {
+	            			 $('#imgLaterality').text(laterality);
+	            		 } else {
+	            			 var modalityList = imageLater.modalityList.split('/');
+	            			 if (imageLater.modality == 'SELECTED') {
+	            				 for (var i = 0; i < modalityList.length; i++) {
+	            					 if (modalityList[i] == modality) {
+	            						 $('#imgLaterality').text(laterality);
+	            					 }
+	            				 }
+	            			 } else {
+	            				 for (var i = 0; i < modalityList.length; i++) {
+	            					 if (modalityList[i] != modality) {
+	            						 $('#imgLaterality').text(laterality);
+	            					 }
+	            				 }
+	            			 }
+	            		 }
+	            	 }
+	             }
 				
 					if(modifiedWC!=undefined) {
 						jQuery("#windowLevel").html('WL: ' + modifiedWC + ' / ' + 'WW: ' + modifiedWW);

@@ -22,13 +22,13 @@
 *
 * Contributor(s):
 * Babu Hussain A
+* Balamurugan R
 * Devishree V
+* Guruprasath R
 * Meer Asgar Hussain B
 * Prakash J
 * Suresh V
 * Yogapraveen K
-* Guruprasath R
-* Balamurugan R
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -231,10 +231,28 @@ tr.even td.sorting_1 {
 							
 					  }
 			}],
-			"aoColumns": [null, null, null, null, null, null, null, null, { "bVisible": false }, { "bVisible": false }, { "bVisible": false }]
+			"aoColumns": [null, null, null, null, null, null, null, null, { "bVisible": false }, { "bVisible": false }, { "bVisible": false }],
+			"fnDrawCallback": function(oSettings) {
+	        	highlightModalities();
+	        }
 	});
 
-
+	function highlightModalities() {
+        $('[class^="CT"]').css("background", "#8D661F");
+        $('[class^="CR"]').css("background", "#008080");
+        $('[class^="MR"]').css("background", "#4F8F78");
+        $('[class^="DX"]').css("background", "#092B5A");
+        $('[class^="XA"]').css("background", "#BEB072");
+        $('[class^="PX"]').css("background", "#FF6347");
+        $('[class^="SC"]').css("background", "#6E5F5F");
+        $('[class^="OT"]').css("background", "#587BAC");
+        $('[class^="XC"]').css("background", "#FF6347");
+        $('[class^="SR"]').css("background", "#6E5F5F");
+        $('[class^="US"]').css("background", "#676F73");
+        $('[class^="ES"]').css("background", "#15607C");
+        $('[class^="ECG"]').css("background", "#736767");
+        $('[class^="PR"]').css("background", "#008080");
+    }
 
 	$.fn.dataTableInstances[<%=request.getParameter("tabIndex")%>] = dTable;
 
@@ -422,7 +440,9 @@ tr.even td.sorting_1 {
 						<td>${accessionNumber}</td>-->
 					<td data-order="${dateOrder}">${studyDate}</td>
 					<td>${studyDescription}</td>
-					<td>${modality}</td>
+					<td align="center">    
+						<div class="${modality}" style="color: #fff; font-weight: bold; display:inline; padding: 3px; text-align: center; background: #008080; border-radius: 10px;">${modality}</div>
+                    </td>
 					<td>${totalInstances}</td>
 					<td>${studyIUID}</td>
 					<td>${referPhysician}</td>

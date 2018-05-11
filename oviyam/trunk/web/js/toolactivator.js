@@ -29,6 +29,11 @@ function disableOtherTools(tool) {
 
 function onToolSelection(e) {
 	if(e.detail.tool==="txtOverlay") {
+		if (jQuery('#textOverlay').hasClass('active')) {
+            jQuery('#textOverlay').removeClass('active');
+        } else {
+            jQuery('#textOverlay').addClass('active');
+        }
 		jQuery('.textOverlay:not(#huDisplayPanel)').toggle();
 	} else if(e.detail.tool==="loop") {
 		doLoop(e.detail.isLoop);

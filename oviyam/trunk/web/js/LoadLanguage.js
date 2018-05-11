@@ -65,6 +65,8 @@ function loadLabels() {
     $('#updateListener').html(languages['Update']);
     $('#lblIoviyamCxt').html(languages['IOviyamCxt']);
     $('#updIoviyamCxt').html(languages['Update']);
+    $('#updateOverlay').html(languages['Update']);
+    $('#updDownloadStudy').html(languages['Update']);
 
     //query param.html
     $('#qpAddBtn').html(languages['Add']);
@@ -80,7 +82,8 @@ function loadLabels() {
     $('#saveTimeout').html(languages['Update']);
     $('#saveTheme').html(languages['Update']);
     $('#saveLanguage').html(languages['Update']);
-
+    $('#viewerPreferences').html(languages['Update']);
+    
     //New Search.html
     $("label[for=patId]").text(languages['PatientId']);
     $("label[for=patName]").text(languages['PatientName']);

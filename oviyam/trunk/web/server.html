@@ -55,6 +55,17 @@
         table#serverTable tr.odd.row_selected td {
             background-color: #718ea0;
         }
+        
+        .tblServerPreferences {
+            font-size: 14px;
+            padding: 15px;
+            table-layout: fixed;
+        }
+
+        .tblServerPreferences td {
+            width: 200px;
+        }
+        
     </style>
 </head>
 
@@ -86,86 +97,9 @@
         </table>
     </div>
 
-    <div id="panel4" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;height: 23%;margin-bottom: 20px;" role="panel">
-        <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
-            <div class="ui-panel-title">
-                <span class="ui-panel-title-text">Listener</span>
-            </div>
-        </h3>
-        <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
-            <div class="ui-panel-content-text" id="panel4_content">
-                <table style="width: 100%;font-size:14px;" id="listenerTable" cellpadding="3">
-                    <tbody>
-                        <tr>
-                            <td width="45%"><span class="ui-widget-content" id="lblAET" style="border: none;">AE Title</span></td>
-                            <td><input type="text" size="15" id="listener_ae"></td>
-                        </tr>
-                        <tr>
-                            <td><span class="ui-widget-content" id="lblport" style="border: none;">Port</span></td>
-                            <td><input type="text" size="15" id="listener_port"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td><button id="updateListener" class="cssButton">Update</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+	<div id="loadTabs">
 
-    <div id="panel5" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;margin-bottom: 20px;" role="panel">
-        <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
-            <div class="ui-panel-title">
-                <span class="ui-panel-title-text">iOviyam 2.0 Context</span>
-            </div>
-        </h3>
-        <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
-            <div class="ui-panel-content-text" id="panel5_content">
-                <table style="width: 100%;font-size:14px;" id="ioviyamCxtTable" cellpadding="3">
-                    <tbody>
-                        <tr>
-                            <td width="45%"><span class="ui-widget-content" id="lblIoviyamCxt" style="border: none;">iOviyam Context</span></td>
-                            <td><input type="text" size="15" id="ioviyamCxt"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td><button id="updIoviyamCxt" class="cssButton">Update</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="panel6" class="panel ui-helper-reset ui-widget ui-panel" style="width: 35%;height: 15%;margin-bottom: 20px;" role="panel">
-        <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
-            <div class="ui-panel-title">
-                <span class="ui-panel-title-text">Download Study</span>
-            </div>
-        </h3>
-        <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
-            <div class="ui-panel-content-text" id="panel6_content">
-                <table style="width: 100%;font-size:14px;" id="downloadStudyTable" cellpadding="3">
-                    <tbody>
-                        <tr>
-                            <td width="45%"><span class="ui-widget-content" id="lblDownloadStudy" style="border: none;">Users can download DICOM Study / Images</span></td>
-                            <td>
-                                <select id="downloadStudy" style="width:100px;">
-                                        <option value="Yes">Yes</option>
-                                        <option value="No">No</option>
-                                    </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td><button id="updDownloadStudy" class="cssButton">Update</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+     </div>
 
 </body>
 
