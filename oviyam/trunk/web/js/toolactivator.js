@@ -1,4 +1,6 @@
 var firstTry = true;
+var currentEvent, prevEvent;
+var speed;
 
 function enableTool(tool) {
 	jQuery('#tool').text(tool);
@@ -1067,6 +1069,12 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 				jQuery('.selected',window.parent.document).removeClass('selected');
 				var diffX = parseInt(evt.pageX-mouseLocX);
 				var diffY = parseInt(evt.pageY-mouseLocY);
+				
+				currentEvent = evt;
+	            var diff = calcAcceleration(diffX, diffY);
+
+	            diffX = diff.X;
+	            diffY = diff.Y;
 
 				modifiedWC=parseInt(modifiedWC)+diffY;
 	            modifiedWW=parseInt(modifiedWW)+diffX;
@@ -1087,6 +1095,32 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 		});
 		window.parent.enableWindowingContext();
 	}
+}
+
+
+setInterval(function() {
+    if (prevEvent && currentEvent) {
+        var movementX = Math.abs(currentEvent.screenX - prevEvent.screenX);
+        var movementY = Math.abs(currentEvent.screenY - prevEvent.screenY);
+        var movement = Math.sqrt(movementX * movementX + movementY * movementY);
+        speed = 10 * movement;
+    }
+    prevEvent = currentEvent;
+}, 100);
+
+function calcAcceleration(diffX, diffY) {
+    if (speed != undefined) {
+        speed = Math.round(speed / 2000);
+        if (speed > 0) {
+            diffX = speed * diffX;
+            diffY = speed * diffY;
+        }
+    }
+    var diff = {
+        "X": diffX,
+        "Y": diffY
+    };
+    return diff;
 }
 
 function applyPreset(wc,ww) {
