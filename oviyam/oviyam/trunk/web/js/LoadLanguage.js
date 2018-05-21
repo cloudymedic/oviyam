@@ -51,10 +51,10 @@ function loadLabels() {
     $('#lblPreferences').html(languages['Preferences']);
 
     //server.html
-    $('#verifyBtn').html(languages['']);
-    $('#addBtn').html(languages['']);
-    $('#editBtn').html(languages['']);
-    $('#deleteBtn').html(languages['']);
+    $('#verifyBtn').html(languages['Verify']);
+    $('#addBtn').html(languages['Add']);
+    $('#editBtn').html(languages['Edit']);
+    $('#deleteBtn').html(languages['Delete']);
     $('#lblDescription').html(languages['Description']);
     $('#lblAETitle').html(languages['AETitle']);
     $('#lblHostName').html(languages['HostName']);

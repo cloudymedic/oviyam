@@ -214,6 +214,7 @@ function displayOverlay(overlayText) {
 	
     if (imgLaterality.display.trim() == 'Yes') {
         $('#imgLaterality').prop('checked', true);
+        $('#showImgLatr').show();
         $('#modalityDropDown').val(imgLaterality.modality.trim());
         if (imgLaterality.modality.trim() == 'ALL') {
             $('#showImgLatrModality').hide();
