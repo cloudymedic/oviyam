@@ -66,6 +66,11 @@
             width: 200px;
         }
         
+        table#serverTable tr:hover td {
+            background: rgba(24, 143, 255, 0.16) !important;
+            cursor: pointer;
+        }
+        
     </style>
 </head>
 
@@ -95,6 +100,14 @@
             <tbody>
             </tbody>
         </table>
+    </div>
+    
+    <div>
+        <p class="ui-widget-content" style="border: none;background: initial;font-size: 13px;">
+            <b>Note:</b> For
+            <i>dcm4chee-arc-light</i> server, the WADO context should be
+            <del>wado</del>
+            "<ins>{{SERVER-CONTEXT}}/aets/{{AE TITLE}}/wado</ins>". Eg. "dcm4chee-arc/aets/DCM4CHEE/wado" .</p>
     </div>
 
 	<div id="loadTabs">
