@@ -105,63 +105,65 @@ function doImageTile(currSer) {
     var actFrame = getActiveFrame();
     actFrame = actFrame.contentDocumnet || actFrame.contentWindow.document;
     var src = jQuery('#frameSrc', actFrame).text();
-    var seriesUID = getParameter(src, 'series');
+    var seriesUID = "";
+    seriesUID = getParameter(src, 'series');
+    if (!seriesUID.includes("null")) {
     data = sessionStorage[seriesUID];
-    if (data) {
-        jQuery('#loadingView', window.parent.document).hide();
-        jQuery('.toggleOff').removeClass('toggleOff');
-        var divElement = document.getElementById('tabs_div');
-        jQuery(divElement).children().remove();
+     if (data) {
+       	jQuery('#loadingView', window.parent.document).hide();
+       	jQuery('.toggleOff').removeClass('toggleOff');
+       	var divElement = document.getElementById('tabs_div');
+       	jQuery(divElement).children().remove();
 
-        var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
+       	var seriesData = JSON.parse(sessionStorage[pat.studyUID]);
         selectedSeriesData = getSelectedSeries(currSer);
         var instCount = selectedSeriesData['totalInstances'];
 
         var cnt = 0,
-            divContent = '<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
+           	divContent = '<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
 
         var ser_Info = JSON.parse(sessionStorage[currSer]);
         ser_Info = ser_Info[0];
         var multiframe = false;
         if (ser_Info['numberOfFrames'] != '') {
-            multiframe = true;
-            instCount = ser_Info['numberOfFrames'];
+           	multiframe = true;
+           	instCount = ser_Info['numberOfFrames'];
         } else {
-            instCount = selectedSeriesData['totalInstances'];
+           	instCount = selectedSeriesData['totalInstances'];
         }
 
         for (var x = 0; x < rowIndex + 1; x++) {
-            divContent += '<tr>';
-            for (var y = 0; y < colIndex + 1; y++) {
-                divContent += '<td><iframe id="frame' + cnt;
-                divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+           	divContent += '<tr>';
+           	for (var y = 0; y < colIndex + 1; y++) {
+               	divContent += '<td><iframe id="frame' + cnt;
+               	divContent += '" height="100%" width="100%" frameBorder="0" scrolling="yes" ';
+
+               	if (cnt < instCount) {
+                   	var data = seriesData[cnt];
+                   	while (cnt < instCount && hasOnlyRawData(selectedSeriesData['seriesUID'])) {
+                       	cnt += 1;
+                       	data = seriesData[cnt];
+                   	}
 
                 if (cnt < instCount) {
-                    var data = seriesData[cnt];
-                    while (cnt < instCount && hasOnlyRawData(selectedSeriesData['seriesUID'])) {
-                        cnt += 1;
-                        data = seriesData[cnt];
-                    }
+                       	divContent += 'src="TileContent.html?serverURL=' + pat.serverURL + '&study=' + pat.studyUID + '&series=' + currSer +
+                           	'&object=' + ser_Info['SopUID'] + '&sopClassUID=' + ser_Info['SopClassUID'] + '&seriesDesc=' + selectedSeriesData['seriesDesc'] +
+                           	'&images=' + selectedSeriesData['totalInstances'] + '&modality=' + selectedSeriesData['modality'] +
+                           	'&contentType=' + pat.imgType + '&instanceNumber=';
+                       	if (multiframe) {
+                           	divContent += '0&numberOfFrames=' + ser_Info['numberOfFrames'] + '&frameNumber=' + cnt;
+                       	} else {
+                           	divContent += cnt;
+                       	}
 
-                    if (cnt < instCount) {
-                        divContent += 'src="TileContent.html?serverURL=' + pat.serverURL + '&study=' + pat.studyUID + '&series=' + currSer +
-                            '&object=' + ser_Info['SopUID'] + '&sopClassUID=' + ser_Info['SopClassUID'] + '&seriesDesc=' + selectedSeriesData['seriesDesc'] +
-                            '&images=' + selectedSeriesData['totalInstances'] + '&modality=' + selectedSeriesData['modality'] +
-                            '&contentType=' + pat.imgType + '&instanceNumber=';
-                        if (multiframe) {
-                            divContent += '0&numberOfFrames=' + ser_Info['numberOfFrames'] + '&frameNumber=' + cnt;
-                        } else {
-                            divContent += cnt;
-                        }
-
-                        divContent += '" style="background:#000; visibility: hidden;"></iframe></td>';
-                    } else {
-                        divContent += ' ' + 'style="background:#000" src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
-                    }
-                    cnt += 1;
+                       	divContent += '" style="background:#000; visibility: hidden;"></iframe></td>';
+                   	} else {
+                   		divContent += ' ' + 'style="background:#000" src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
+                   	}
+                   	cnt += 1;
                 } else {
-                    divContent += ' ' + 'style="background:#000"src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
-                    cnt += 1;
+                   	divContent += ' ' + 'style="background:#000"src ="TileContent.html?study=' + pat.studyUID + '"></iframe></td>';
+                   	cnt += 1;
                 }
             } // End of column iteration		
         } // End of row iteration
@@ -169,9 +171,10 @@ function doImageTile(currSer) {
         divElement.innerHTML = divContent;
         jQuery('#totRow', window.parent.document).text(rowIndex);
         jQuery('#totColumn', window.parent.document).text(colIndex);
-    } else {
-        jQuery('#loadingView', window.parent.document).show();
-        setTimeout("doImageTile('" + currSer + "')", 200);
+     } else {
+       	jQuery('#loadingView', window.parent.document).show();
+       	setTimeout("doImageTile('" + currSer + "')", 200);
+     }
     }
 }
 
@@ -392,16 +395,18 @@ function setSeriesIdentification() {
 				jQuery(cont_td.children().get(0)).css('background-color', 'rgb(255,0,0)');
 			} else {
 				var serUidTmp = contents.find('#serId').html().split('_');
-				var cont_td = jQuery('#' + serUidTmp[0].replace(/\./g,'_'), document);
+				if (serUidTmp.length == 2) {
+					var cont_td = jQuery('#' + serUidTmp[0].replace(/\./g,'_'), document);
 
-				var i = 1;
+					var i = 1;
 
-				cont_td.children().each(function(){
-					if(i==serUidTmp[1]) {
-						jQuery(this).css('background-color', 'rgb(255,0,0)');
-					}
-					i++;
-				});
+					cont_td.children().each(function(){
+						if(i==serUidTmp[1]) {
+							jQuery(this).css('background-color', 'rgb(255,0,0)');
+						}
+						i++;
+						});
+				  }
 			}
 		}
     }

@@ -281,6 +281,14 @@ function showImage(imgSrc, image) {
 	     iNo = getParameter(src, 'instanceNumber');
 	     total = parseInt(getParameter(src, 'images'));
 	 }
+	 
+	 if (imgSrc != null) {
+		 var imgNo = imgSrc.split('_')[1];
+	     if (imgNo >= total) {
+	    	 imgSrc = imgSrc.substring(0, imgSrc.lastIndexOf('_') + 1);
+	         imgSrc += iNo;
+	     }
+	 }
 
 	 if (total > iNo) {
 	

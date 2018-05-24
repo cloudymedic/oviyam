@@ -313,7 +313,10 @@ function rotateRightTextOverlay() {
  * @param {Window} tmpWindow
  */
 function doReset(toolid, tmpWindow) {
-	try{
+	  var src = jQuery('#frameSrc', tmpWindow.document).html();
+	  var seriesUid = getParameter(src, 'series');
+	  if (seriesUid != null && (!seriesUid.includes("null"))) {
+	   try{
 		if(jQuery('#tool', tmpWindow.document).html()!='') {
 			jQuery('#' + jQuery('#tool', tmpWindow.document).html(), window.parent.document).removeClass('toggleOff');
 			jQuery('#tool', tmpWindow.document).html('');
@@ -355,10 +358,11 @@ function doReset(toolid, tmpWindow) {
 			firstTry = false;
 			doReset(toolid, tmpWindow);
 		}
-	} catch (error) {
+	 } catch (error) {
 		console.error(error);
 		console.log('Dicom Image NOT AVAILABLE');
-	}
+	 } 
+  }
 }
 
 function doInvert(toolid) {
