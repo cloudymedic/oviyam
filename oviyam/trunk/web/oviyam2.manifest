@@ -1,8 +1,8 @@
 CACHE MANIFEST
+#version 2.7
 
 CACHE:
-viewer.html
-viewer_tools.html
+
 frameContent.html
 TileContent.html
 layout.html
@@ -99,6 +99,7 @@ images/rotate_left.png
 images/rotate_right.png
 images/reset.png
 images/invert.png
+images/imgTile.svg
 images/textoverlay.png
 images/Cube3D.png
 images/fullscreen1.png
@@ -131,6 +132,8 @@ css/images/selected.png
 
 
 NETWORK:
+viewer.html
+viewer_tools.html
 westContainer.jsp
 Study.jsp
 Image.do
