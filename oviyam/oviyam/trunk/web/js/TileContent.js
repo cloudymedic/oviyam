@@ -285,15 +285,15 @@ function showImage(imgSrc, image) {
 	 
 
 	 if (total > iNo) {
-	
-          if (imgSrc != null) {
-		     var imgNo = imgSrc.split('_')[1];
-	         if (imgNo >= total) {
-	        	 imgSrc = imgSrc.substring(0, imgSrc.lastIndexOf('_') + 1);
+        if (imgSrc != null) {
+		    var imgNo = imgSrc.split('_')[1];
+	        if (imgNo >= total) {
+	    	    imgSrc = imgSrc.substring(0, imgSrc.lastIndexOf('_') + 1);
                 iNo = total==1 ? 1 : iNo;
 	            imgSrc += iNo;
 	        }
-	     }
+	    }
+	
 		 var image = imgSrc != null ? jQuery('#' + imgSrc.replace(/\./g, '_'), window.parent.document).get(0) : image;
 
 		 var canvas = document.getElementById('imageCanvas');
