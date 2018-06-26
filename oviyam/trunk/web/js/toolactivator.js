@@ -340,6 +340,8 @@ function doReset(toolid, tmpWindow) {
 		tmpWindow.disableOtherTools(toolid);
 		resetAnnotation();
 		tmpWindow.state = {translationX : 0,translationY: 0,scale: 0,vflip: false,hflip: false,rotate: 0};
+		tmpWindow.brightnessVal = 0;
+        tmpWindow.contrastVal = 0;
 		tmpWindow.loadInstanceText(false,false);
 		tmpWindow.drawoutline();
 		doLoop(false);
@@ -381,17 +383,61 @@ function doInvert(toolid) {
  * @param {Window} tmpWindow 
  */
 function activateInvert(tmpWindow) {
+	var inst_text = jQuery("#totalImages").text().split("/");
+    var iNo = parseInt(inst_text[0].split(":")[1]);
+    var isMultiframe = inst_text[0].indexOf("Frame") >= 0;
+    
+    imageData = sessionStorage.getItem(seriesUid);
+
+    imageData = JSON.parse(imageData);
+    if (isMultiframe) {
+        imageData = imageData[0];
+    } else {
+        imageData = imageData[imgInc - 1];
+    }
+	
     var stateVal = tmpWindow.state;
     stateVal.invert = stateVal.invert ? false : true;
-    //window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
-    if (tmpWindow.modifiedWC != undefined && tmpWindow.modifiedWW != undefined &&
-        (tmpWindow.modifiedWC != tmpWindow.windowCenter || tmpWindow.modifiedWW != tmpWindow.windowWidth) ||
-        (tmpWindow.modifiedWC == tmpWindow.windowCenter || tmpWindow.modifiedWW == tmpWindow.windowWidth)) {
-        tmpWindow.iterateOverPixels();
-        tmpWindow.renderImg();
+    
+    if (!imageData['photometric'].includes('MONOCHROME')) {
+        invertImage(tmpWindow);
+        var tool = jQuery('#tool', tmpWindow.document).text();
+
+        if (tool.includes('windowing')) {
+            doWindowing1(true);
+        }
     } else {
-        window.parent.doInvert(jQuery('#imageCanvas', tmpWindow.document).get(0), jQuery('#tool', tmpWindow.document).html() === 'windowing');
+    //window.parent.doInvert(jQuery('#imageCanvas').get(0),jQuery('#tool').html()==='windowing');
+    	if (tmpWindow.modifiedWC != undefined && tmpWindow.modifiedWW != undefined &&
+    		(tmpWindow.modifiedWC != tmpWindow.windowCenter || tmpWindow.modifiedWW != tmpWindow.windowWidth) ||
+        	(tmpWindow.modifiedWC == tmpWindow.windowCenter || tmpWindow.modifiedWW == tmpWindow.windowWidth)) {
+        	tmpWindow.iterateOverPixels();
+        	tmpWindow.renderImg();
+    	} else {
+        	window.parent.doInvert(jQuery('#imageCanvas', tmpWindow.document).get(0), jQuery('#tool', tmpWindow.document).html() === 'windowing');
+    	}
     }
+}
+
+
+/**
+ * 
+ * @param {Window} tmpWindow 
+ */
+function invertImage(tmpWindow) {
+
+    var tmpCanvas = tmpWindow.document.getElementById('imageCanvas');
+    var tmpCtx = tmpCanvas.getContext('2d');
+
+    var pixelData1 = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+
+    for (var i = 0; i < pixelData1.data.length; i += 4) {
+        pixelData1.data[i] = 255 - pixelData1.data[i];
+        pixelData1.data[i + 1] = 255 - pixelData1.data[i + 1];
+        pixelData1.data[i + 2] = 255 - pixelData1.data[i + 2];
+
+    }
+    tmpCtx.putImageData(pixelData1, 0, 0);
 }
 
 function doMove() {
@@ -646,8 +692,13 @@ function getPixelData(firstTime) {
 		var iNo = inst_text[0].split(":")[1];
 		
 		try {
-			imageData = JSON.parse(sessionStorage[seriesUid])[imgInc-1];
+		  if(isMultiframe){
+                imageData = JSON.parse(sessionStorage[seriesUid])[0];
+            }else{
+                imageData = JSON.parse(sessionStorage[seriesUid])[imgInc - 1];
+          }
 
+		  if (imageData['photometric'].includes('MONOCHROME')) {
 			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;
 
 			if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
@@ -715,6 +766,13 @@ function getPixelData(firstTime) {
 				 winProgress = 0;
 				 xhr.send();
 			 }
+		  } else {
+              var canvas = document.getElementById('imageCanvas');
+              var context = canvas.getContext('2d');
+              // var imgdata = context.getImageData(0, 0, canvas.width, canvas.height);
+              doWindowing1(true);
+          }
+
 		} catch(exception) {
 			var imgSrc = jQuery('#' + (seriesUid + "_" + imgInc).replace(/\./g,'_'),window.parent.document).attr('src');
 			if (!imgSrc) {
@@ -970,6 +1028,112 @@ function deactivateMeasure(toolId) {
 	document.getElementById("canvasLayer2").style.cursor = 'default';
 	window.parent.disableMeasureContext();
 }
+
+var differX, differY;
+var initial = true;
+
+function doWindowing1(firstTime) {
+    var tmpCanvas = document.getElementById('imageCanvas');
+    var tmpCtx = tmpCanvas.getContext('2d');
+
+    this.pixelData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+
+    if (firstTime) {
+        jQuery('#canvasLayer2').mouseup(function(evt) {
+            if (evt.which == 1) {
+                state.drag = false;
+                evt.target.style.cursor = "default";
+            }
+        }).mousedown(function(evt) {
+            this.pixelData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+            state.drag = true;
+            mouseLocX = evt.pageX;
+            mouseLocY = evt.pageY;
+            evt.target.style.cursor = "url(images/wincursor.png), auto";
+            evt.preventDefault();
+            evt.stopPropagation();
+        }).mousemove(function(evt) {
+            var inst_text = jQuery("#totalImages").text().split("/");
+            iNo = inst_text[0].split(":")[1].trim();
+            var isMultiframe = (inst_text[0].indexOf("Frame") >= 0);
+            if (isMultiframe) {
+                frameInc = iNo;
+            } else {
+                imgInc = iNo;
+            }
+
+            if (state.drag) {
+                jQuery('.selected', window.parent.document).removeClass('selected');
+                var diffX = parseInt(evt.pageX - mouseLocX);
+                var diffY = parseInt(evt.pageY - mouseLocY);
+
+                currentEvent = evt;
+
+                var data = pixelData.data;
+                mouseLocX = evt.pageX;
+                mouseLocY = evt.pageY;
+
+                var brightnessMul = 5;
+                var i;
+                var bRed, bGreen, bBlue;
+                var red, green, blue;
+
+                if (differY != diffY) {
+                    for (i = 0; i < data.length; i += 4) {
+                        red = data[i];
+                        green = data[i + 1];
+                        blue = data[i + 2];
+
+                        if (diffY < 0) {
+                            brightnessVal = i == 0 ? (brightnessMul + brightnessVal) : brightnessVal;
+                            bRed = brightnessMul + red;
+                            bGreen = brightnessMul + green;
+                            bBlue = brightnessMul + blue;
+                        } else {
+                            brightnessVal = i == 0 ? (brightnessMul - brightnessVal) : brightnessVal;
+                            bRed = red - brightnessMul;
+                            bGreen = green - brightnessMul;
+                            bBlue = blue - brightnessMul;
+                        }
+
+                        data[i] = bRed; //RED
+                        data[i + 1] = bGreen; //GREEN
+                        data[i + 2] = bBlue; //BLUE
+
+                    }
+                    initial = false;
+                }
+
+                if (differX != diffX) {
+                    var contrast = 5;
+
+                    contrast = (contrast / 100) + 1; //convert to decimal & shift range: [0..2]
+                    var intercept = 128 * (1 - contrast);
+                    if (diffX < 0) {
+                        contrastVal--;
+                        for (i = 0; i < data.length; i += 4) { //r,g,b,a
+                            data[i] = data[i] / contrast - intercept;
+                            data[i + 1] = data[i + 1] / contrast - intercept;
+                            data[i + 2] = data[i + 2] / contrast - intercept;
+                        }
+                    } else {
+                        contrastVal++;
+                        for (i = 0; i < data.length; i += 4) { //r,g,b,a
+                            data[i] = data[i] * contrast + intercept;
+                            data[i + 1] = data[i + 1] * contrast + intercept;
+                            data[i + 2] = data[i + 2] * contrast + intercept;
+                        }
+                    }
+                }
+                tmpCanvas.getContext('2d').putImageData(pixelData, 0, 0);
+                differX = diffX;
+                differY = diffY;
+            }
+        });
+        window.parent.enableWindowingContext();
+    }
+}
+
 
 function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 	var rescaleSlope = parseFloat(imageData['rescaleSlope']), rescaleIntercept = parseFloat(imageData['rescaleIntercept']);
