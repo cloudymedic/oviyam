@@ -13,6 +13,8 @@ var mousePressed;
 var columns;
 var isSliderLoaded = false;
 var winProgress = 100;
+var brightnessVal = 0,
+	contrastVal = 0;
 
 jQuery('#ImagePane').ready(function() {
 
@@ -345,6 +347,107 @@ function showImg(imgSrc,img,updatePreview) {
 		jQuery('#viewSize').html('View size:' + canvas.width + "x" + canvas.height);
 		loadPreview(image);		
 	}	
+	
+	if (brightnessVal != 0 || contrastVal != 0) {
+	        changeImageData();
+	}
+}
+
+
+var imgData = {
+    "red": 0,
+    "green": 0,
+    "blue": 0
+};
+
+function changeImageData() {
+
+    var tmpCanvas = document.getElementById('imageCanvas');
+    var tmpCtx = tmpCanvas.getContext('2d');
+
+
+    pixelData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+    var data = pixelData.data;
+
+    var contrast = 5;
+
+    contrast = (contrast / 100) + 1; //convert to decimal & shift range: [0..2]
+    var intercept = 128 * (1 - contrast);
+
+    if (contrastVal < 0) {
+        contrastVal = Math.abs(contrastVal);
+        for (var j = 0; j < contrastVal; j++) {
+            for (i = 0; i < data.length; i += 4) {
+                if (j == 0) {
+                    imgData = {
+                        "red": data[i],
+                        "green": data[i + 1],
+                        "blue": data[i + 2]
+                    };
+                    imgData = changeBrightness(imgData);
+
+                    data[i] = imgData.red; //RED
+                    data[i + 1] = imgData.green; //GREEN
+                    data[i + 2] = imgData.blue; //BLUE
+
+                }
+                data[i] = data[i] / contrast - intercept;
+                data[i + 1] = data[i + 1] / contrast - intercept;
+                data[i + 2] = data[i + 2] / contrast - intercept;
+            }
+        }
+    } else {
+        for (var j = 0; j < contrastVal; j++) {
+            for (i = 0; i < data.length; i += 4) {
+                if (j == 0) {
+                    imgData = {
+                        "red": data[i],
+                        "green": data[i + 1],
+                        "blue": data[i + 2]
+                    };
+                    imgData = changeBrightness(imgData);
+
+                    data[i] = imgData.red; //RED
+                    data[i + 1] = imgData.green; //GREEN
+                    data[i + 2] = imgData.blue; //BLUE
+                }
+                data[i] = data[i] * contrast + intercept;
+                data[i + 1] = data[i + 1] * contrast + intercept;
+                data[i + 2] = data[i + 2] * contrast + intercept;
+            }
+        }
+    }
+    tmpCanvas.getContext('2d').putImageData(pixelData, 0, 0);
+}
+
+/**
+ * 
+ * @param {JSON} imgData 
+ */
+function changeBrightness(imgData) {
+    var bRed, bGreen, bBlue;
+
+    bRed = brightnessVal + imgData.red;
+    bGreen = brightnessVal + imgData.green;
+    bBlue = brightnessVal + imgData.blue;
+
+    bRed = bRed > -255 ? bRed : imgData.red;
+    bGreen = bGreen > -255 ? bGreen : imgData.green;
+    bBlue = bBlue > -255 ? bBlue : imgData.blue;
+    bRed = bRed < 255 ? bRed : imgData.red;
+    bGreen = bGreen < 255 ? bGreen : imgData.green;
+    bBlue = bBlue < 255 ? bBlue : imgData.blue;
+
+    if (state.invert) {
+        imgData.red = 255 - bRed; //RED
+        imgData.green = 255 - bGreen; //GREEN
+        imgData.blue = 255 - bBlue; //BLUE
+    } else {
+        imgData.red = bRed;
+        imgData.green = bGreen;
+        imgData.blue = bBlue;
+    }
+    return imgData;
 }
 
 function loadTextOverlay() {

@@ -214,7 +214,9 @@ public class InstanceServlet extends HttpServlet {
 	                    String resclaeslp = rescaleSlope!=null ? new String(rescaleSlope.getBytes()) : "1.0";
 	                    String resclaeintercept = rescaleIntercept!=null ? new String(rescaleIntercept.getBytes()) : "0.0";
 	                    int bitsStored1 = bitsStored!=null ? bitsStored.getInt(false) : 12; 
-	                    boolean monochrome = photometricInterpretation!=null ? new String(photometricInterpretation.getBytes()).trim().equalsIgnoreCase("MONOCHROME1") ? true : false : false;	                    
+	                    boolean monochrome = photometricInterpretation!=null ? new String(photometricInterpretation.getBytes()).trim().equalsIgnoreCase("MONOCHROME1") ? true : false : false;
+	                    String photometric = photometricInterpretation!=null ? new String(photometricInterpretation.getBytes()).trim() : " ";
+	                   
 	                    int pixRep = pixelRep!=null ? pixelRep.getInt(false) : -1;
 	                    double frameTime = frmTime!=null ? frmTime.getDouble(false) : 0;
 	
@@ -263,6 +265,7 @@ public class InstanceServlet extends HttpServlet {
 	                    jsonObj.put("imgLaterality", imgLtr);
 	                    jsonObj.put("viewPosition", viewPos);
 	                    jsonObj.put("modality", modality);
+	                    jsonObj.put("photometric", photometric);
 	
 	                    dis.close();
 	                    is.close();
