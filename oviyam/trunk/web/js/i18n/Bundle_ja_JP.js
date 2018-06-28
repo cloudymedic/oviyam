@@ -1,6 +1,6 @@
 var languages = {
 		PageTitle: "Oviyam",
-		Version:"2.7",
+		VersionNo:"2.7",
 		UserName: "ユーザ名",
 		Password: "パスワード",
 		Login: "ログイン",
@@ -56,6 +56,24 @@ var languages = {
 		AutoRefresh: "自動更新",
 		IOviyamCxt: "iOviyamコンテキスト",
 		disclaimer: "This version of Oviyam, being a free open-source software (FOSS), is not certified as a commercial medical device (FDA or CE-1).",
-	    limitation: "Please check with local compliance office for possible limitations in its clinical use."
-
+	    limitation: "Please check with local compliance office for possible limitations in its clinical use.",
+	    Brain: "脳",
+		Abdomen: "腹部",
+		Lung: "肺",
+		Bone: "骨",
+		Head: "頭/ネック",
+		Default: "既定",
+		Line: "ライン",
+		Rectangle: "矩形",
+		Oval: "楕円形",
+		Angle: "角度",
+		DeleteAll: "すべて削除",
+		Workstation: "DICOM Web Workstation",
+		Version: "Version",
+		RememberMe: "思い出す キープ",
+		Creteria: "No search criteria",
+		Message: "No filters have been selected. The search may take long time. Do you want to proceed?",
+		ViewerPreference: "Viewer Preferences",
+		prefetch: "Pre-fetch other studies of the selected patient",
+		sessTimeout: "Session Timeout"
 };

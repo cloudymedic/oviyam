@@ -1,22 +1,24 @@
 
-// getting selected language from cookies 
-var lang = getCookie('language');
-if (typeof lang == 'undefined' || lang.trim() == 'en_GB') {
-    $.getScript('js/i18n/Bundle.js', function() {
-        loadLabels();
-    });
-} else {
-    var fileName = 'js/i18n/' + "Bundle_" + lang + ".js";
-    $.getScript(fileName, function() {
-        loadLabels();
-    });
+loadLanguages();
+function loadLanguages() {
+	//getting selected language from cookies 
+	var lang = getCookie('language');
+	if (typeof lang == 'undefined' || lang.trim() == 'en_GB') {
+		$.getScript('js/i18n/Bundle.js', function() {
+			loadLabels();
+		});
+	} else {
+		var fileName = 'js/i18n/' + "Bundle_" + lang + ".js";
+		$.getScript(fileName, function() {
+			loadLabels();
+		});
+	}
 }
-
 
 function loadLabels() {
     //index.html
 	$(document).attr('title', languages['PageTitle']);	
-	$('#productName').html(languages['PageTitle'] + "<br><span class='versionSpan' style='font-size:10px; '>  Version " + languages['Version'] + "</span> ");
+	$('#productName').html(languages['PageTitle'] + "<br><span class='versionSpan' style='font-size:10px; '>" + languages['Version'] + " " + languages['VersionNo'] + "</span> ");
     $('#lblPatientName').html(languages['PatientName']);
     $('#lblPatientID').html(languages['PatientId']);
     $('#lblDOB').html(languages['BirthDate']);
@@ -44,6 +46,21 @@ function loadLabels() {
     $('#lblfullscreen').attr('title', languages['FullScreen']);
     $('#lblMetadata').attr('title', languages['MetaData']);
     $('#lblLines').attr('title', languages['Lines']);
+    
+
+    $('#abdomen').text(languages['Abdomen']);
+    $('#lung').text(languages['Lung']);
+    $('#brain').text(languages['Brain']);
+    $('#bone').text(languages['Bone']);
+    $('#head').text(languages['Head']);
+    $('#defaultWin').text(languages['Default']);
+
+    $('#line').text(languages['Line']);
+    $('#rectangle').text(languages['Rectangle']);
+    $('#oval').text(languages['Oval']);
+    $('#angle').text(languages['Angle']);
+    $('#delete').text(languages['Delete']);
+    $('#deleteAll').text(languages['DeleteAll']);
 
     //config.html
     $('#lblServer').html(languages['Server']);
@@ -83,6 +100,9 @@ function loadLabels() {
     $('#saveTheme').html(languages['Update']);
     $('#saveLanguage').html(languages['Update']);
     $('#viewerPreferences').html(languages['Update']);
+    $("[name='lblPreferences']").html(languages['ViewerPreference']);
+    $("[name='lblPrefetch']").html(languages['prefetch']);
+    $("[name='lblSessTimeout']").html(languages['sessTimeout']);
     
     //New Search.html
     $("label[for=patId]").text(languages['PatientId']);

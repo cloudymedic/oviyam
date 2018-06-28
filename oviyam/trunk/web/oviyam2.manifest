@@ -77,7 +77,6 @@ js/lib/raphaelle.js
 js/framecontent.js
 js/TileContent.js
 js/lib/smartslider.js
-js/i18n/Bundle.js
 js/lib/jqcontextmenu.js
 
 
@@ -132,6 +131,11 @@ css/images/selected.png
 
 
 NETWORK:
+
+js/i18n/Bundle.js
+js/i18n/Bundle_de_DE.js
+js/i18n/Bundle_es_ES.js
+js/i18n/Bundle_ta_IN.js
 viewer.html
 viewer_tools.html
 westContainer.jsp

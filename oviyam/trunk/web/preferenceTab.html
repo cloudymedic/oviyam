@@ -295,7 +295,7 @@
     <div id="panel1" class="panel ui-helper-reset ui-widget ui-panel" style="width: 45%;height: 10%;margin-bottom:10px" role="panel">
         <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
             <div class="ui-panel-title">
-                <span class="ui-panel-title-text">Viewer Preferences</span>
+                <span class="ui-panel-title-text" name="lblPreferences">Viewer Preferences</span>
             </div>
         </h3>
         <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
@@ -311,7 +311,7 @@
                                         </select>
                                     </td> -->
                         <tr>
-                            <td style="width: 40%"><span class="ui-widget-content" style="border:none;">Pre-fetch other studies of the selected patient</span></td>
+                            <td style="width: 40%"><span class="ui-widget-content" style="border:none;" name="lblPrefetch">Pre-fetch other studies of the selected patient</span></td>
 
                             <td align="right" style="width:40%">
                                 <select id="prefetchStudies" style="width:100px;">
@@ -331,7 +331,7 @@
     <div id="panel2" class="panel ui-helper-reset ui-widget ui-panel" style="width: 45%;height: 10%;margin-bottom: 10px;" role="panel">
         <h3 class="ui-helper-reset ui-widget-header ui-panel-header ui-corner-top">
             <div class="ui-panel-title">
-                <span class="ui-panel-title-text">Session Timeout</span>
+                <span class="ui-panel-title-text" name="lblSessTimeout">Session Timeout</span>
             </div>
         </h3>
         <div class="ui-helper-reset ui-widget-content ui-panel-content ui-corner-bottom" style="display: block;">
@@ -339,7 +339,7 @@
                 <table style="width: 100%;">
                     <tbody>
                         <tr>
-                            <td style="width: 40%"><input type="checkbox" id="timeoutEnabled" /><span class="ui-widget-content" style="border:none;">Session timeout</span></td>
+                            <td style="width: 40%"><input type="checkbox" id="timeoutEnabled" /><span class="ui-widget-content" style="border:none;" name="lblSessTimeout">Session timeout</span></td>
                             <td align="right" style="width:40%"><input type="text" size="10" id="timeoutTF">
                                 <select id="timeDropdown">
                                             <option value="minutes" selected>Minutes</option>
