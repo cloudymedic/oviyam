@@ -3,6 +3,7 @@ var directLaunch = false;
 
 
 function enableDownload(downloadStudy) {
+	loadLanguages();
     $.post("DwnStudyConfig.do", {
         'action': 'READ'
     }, function(data) {

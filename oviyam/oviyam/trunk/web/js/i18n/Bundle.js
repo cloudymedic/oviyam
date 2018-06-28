@@ -1,6 +1,6 @@
 var languages = {
     PageTitle: "Oviyam",
-    Version:"2.7",
+    VersionNo:"2.7",
     UserName: "User Name",
     Password: "Password",
     Login: "Login",
@@ -54,6 +54,24 @@ var languages = {
     AutoRefresh: "Auto Refresh",
     IOviyamCxt: "iOviyam Context",   
     disclaimer: "This version of Oviyam, being a free open-source software (FOSS), is not certified as a commercial medical device (FDA or CE-1).",
-    limitation: "Please check with local compliance office for possible limitations in its clinical use."
-
+    limitation: "Please check with local compliance office for possible limitations in its clinical use.",
+    Brain: "Brain",
+    Abdomen: "Abdomen",
+    Lung: "Lung",
+    Bone: "Bone",
+    Head: "Head/Neck",
+    Default: "Default",
+    Line: "Line",
+    Rectangle: "Rectangle",
+    Oval: "Oval",
+    Angle: "Angle",
+    DeleteAll: "Delete All",
+    Workstation: "DICOM Web Workstation",
+    Version: "Version",
+    RememberMe: "Remember Me",
+    Creteria: "No search criteria",
+	Message: "No filters have been selected. The search may take long time. Do you want to proceed?",
+	ViewerPreference: "Viewer Preferences",
+    prefetch: "Pre-fetch other studies of the selected patient",
+    sessTimeout: "Session Timeout"
 };

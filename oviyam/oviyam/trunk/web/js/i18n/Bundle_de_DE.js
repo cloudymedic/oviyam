@@ -1,6 +1,6 @@
 var languages = {
     PageTitle: "Radiologie WebViewer",
-    Version:"2.7",
+    VersionNo:"2.7",
     UserName: "Benutzername",
     Password: "Passwort",
     Login: "Login",
@@ -54,5 +54,24 @@ var languages = {
     AutoRefresh: "Automatisch aktualisieren",
     IOviyamCxt: "iOviyam Context",
     disclaimer: "This version of Oviyam, being a free open-source software (FOSS), is not certified as a commercial medical device (FDA or CE-1).",
-    limitation: "Please check with local compliance office for possible limitations in its clinical use."
+    limitation: "Please check with local compliance office for possible limitations in its clinical use.",
+    Brain: "Gehirn",
+    Abdomen: "Abdomen",
+    Lung: "Lunge",
+    Bone: "Knochen",
+    Head: "Kopf/Hals",
+    Default: "Default",
+    Line: "Linie",
+    Rectangle: "Rechteck",
+    Oval: "Oval",
+    Angle: "Winkel",
+    DeleteAll: "alles löschen",
+    Workstation: "DICOM Web-Arbeitsplatz",
+    Version: "Version",
+    RememberMe: "Erinnere dich an mich",
+    Creteria: "Keine Suchkriterien",
+    Message: "Es wurden keine Filter ausgewählt. Die Suche kann sehr lange dauern. Möchtest du fortfahren?",
+    ViewerPreference: "Viewer Preferences",
+    prefetch: "Pre-fetch other studies of the selected patient",
+    sessTimeout: "Session Timeout"
 };

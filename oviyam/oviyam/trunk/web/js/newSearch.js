@@ -1,4 +1,17 @@
+var language;
 function searchClick(searchBtn) {
+	var lang = getCookie('language');
+	if (typeof lang == 'undefined' || lang.trim() == 'en_GB') {
+	    $.getScript('js/i18n/Bundle.js', function () {
+	        language = languages;
+	    });
+	} else {
+	    var fileName = 'js/i18n/' + "Bundle_" + lang + ".js";
+	    $.getScript(fileName, function () {
+	        language = languages;
+	        console.log(language);
+	    });
+	}
 	$('#buttonContainer').find('.ui-state-active').removeClass('ui-state-active');
     var inputFields = $(searchBtn).parent().parent().parent().find('input');
     var searchURL = "queryResult.jsp?";
@@ -59,7 +72,7 @@ function searchClick(searchBtn) {
     $(divContent).html('');    
 
     if(searchURL.trim()==('queryResult.jsp?')) {
-    	jConfirm('No filters have been selected. The search may take long time. Do you want to proceed?', 'No search criteria',function(doQry) {
+    	jConfirm(language['Message'], language['Creteria'], function (doQry) {
 			if(doQry==true) {
 				var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
 			    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";

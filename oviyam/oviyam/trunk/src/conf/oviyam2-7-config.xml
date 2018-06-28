@@ -53,6 +53,12 @@
          <localeID>ja_JP</localeID>
          <selected>false</selected>
       </language>
+      <language>
+         <lang>Spanish</lang>
+         <country>Spain</country>
+         <localeID>es_ES</localeID>
+         <selected>false</selected>
+      </language>
    </languages>
    
    <ioviyam-context>/ioviyam2</ioviyam-context>

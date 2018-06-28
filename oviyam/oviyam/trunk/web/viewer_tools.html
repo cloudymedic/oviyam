@@ -455,13 +455,13 @@
         <div class="toggleButton" align="center" id="windowing">
             <img src="images/windowing.png" id="lblWindowing" class="imgOff" alt="Windowing" title="Windowing">
             <ul id="winContext" class="contextMenu" style="width:90px; position:fixed; background:#000;">
-                <li><a href="#" class="cmenuItem" onclick="doPreset(50,320); jQuery(this).addClass('selected');">Abdomen</a></li>
-                <li><a href="#" class="cmenuItem" onclick="doPreset(-600,1600); jQuery(this).addClass('selected');">Lung</a></li>
-                <li><a href="#" class="cmenuItem" onclick="doPreset(40,80); jQuery(this).addClass('selected');">Brain</a></li>
-                <li><a href="#" class="cmenuItem" onclick="doPreset(480,2500); jQuery(this).addClass('selected');">Bone</a></li>
-                <li><a href="#" class="cmenuItem" onclick="doPreset(90,350); jQuery(this).addClass('selected');">Head/Neck</a></li>
+                <li><a href="#" id="abdomen" class="cmenuItem" onclick="doPreset(50,320); jQuery(this).addClass('selected');">Abdomen</a></li>
+                <li><a href="#" id="lung" class="cmenuItem" onclick="doPreset(-600,1600); jQuery(this).addClass('selected');">Lung</a></li>
+                <li><a href="#" id="brain" class="cmenuItem" onclick="doPreset(40,80); jQuery(this).addClass('selected');">Brain</a></li>
+                <li><a href="#" id="bone" class="cmenuItem" onclick="doPreset(480,2500); jQuery(this).addClass('selected');">Bone</a></li>
+                <li><a href="#" id="head" class="cmenuItem" onclick="doPreset(90,350); jQuery(this).addClass('selected');">Head/Neck</a></li>
                 <li type='separator' style="height: 2px; background-color: #00CC66;"></li>
-                <li><a href="#" class="selected cmenuItem" onclick="doPreset(); jQuery(this).addClass('selected');">Default</a></li>
+                <li><a href="#" id="defaultWin" class="selected cmenuItem" onclick="doPreset(); jQuery(this).addClass('selected');">Default</a></li>
             </ul>
         </div>
         <div class="toggleButton" align="center" id="zoom" onclick="doTool(this.id);">
@@ -524,8 +524,8 @@
                 <li><a id="oval" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('oval'); ">Oval</a></li>
                 <li><a id="angle" href="#" class="cmenuItem" onclick="jQuery('.selectedshape').removeClass('selectedshape'); jQuery(this).addClass('selectedshape'); doTool('angle'); ">Angle</a></li>
                 <li type='separator' style="height: 2px; background-color: #00CC66;"></li>
-                <li><a href="#" class="cmenuItem" onclick="doTool('delete');">Delete </a></li>
-                <li><a href="#" class="cmenuItem" onclick="doTool('clearAll');">Delete All </a></li>
+                <li><a href="#" id="delete" class="cmenuItem" onclick="doTool('delete');">Delete </a></li>
+                <li><a href="#" id="deleteAll" class="cmenuItem" onclick="doTool('clearAll');">Delete All </a></li>
             </ul>
         </div>
 
