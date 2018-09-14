@@ -334,8 +334,8 @@ function doReset(toolid, tmpWindow) {
             tmpWindow.imgInc = parseInt(iNo);
         }
 
-		tmpWindow.modifiedWC = windowCenter;
-		tmpWindow.modifiedWW = windowWidth;
+		tmpWindow.modifiedWC = undefined;
+		tmpWindow.modifiedWW = undefined;
 		tmpWindow.doMouseWheel = true;
 		tmpWindow.disableOtherTools(toolid);
 		resetAnnotation();
