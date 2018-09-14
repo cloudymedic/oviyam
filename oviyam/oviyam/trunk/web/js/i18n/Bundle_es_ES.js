@@ -1,6 +1,6 @@
 var languages = {
     PageTitle: "Oviyam",
-    VersionNo: "2.7",
+    VersionNo: "2.7.1",
     UserName: "usuario",
     Password: "contraseña",
     Login: "iniciar sesión",
