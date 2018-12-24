@@ -189,6 +189,7 @@ $(document).ready(function () {
                         	jConfirm(language['Message'], language['Creteria'], function (doQry) {
                                 if (doQry == true) {
                                     searchURL += "&dcmURL=" + dUrl;
+                                    searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
                                     doQuery(searchURL, autoRef, divContent);
                                 } else {
                                     $('label[for="' + id + '"]').removeClass("ui-state-active");
@@ -196,6 +197,7 @@ $(document).ready(function () {
                             });
                         } else {
                             searchURL += "&dcmURL=" + dUrl;
+                            searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
                             doQuery(searchURL, autoRef, divContent);
                         }
 

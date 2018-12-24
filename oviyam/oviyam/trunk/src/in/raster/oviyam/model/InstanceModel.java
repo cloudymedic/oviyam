@@ -21,10 +21,13 @@
  *
  * Contributor(s):
  * Babu Hussain A
+ * Balamurugan R
  * Devishree V
+ * Guruprasath R
  * Meer Asgar Hussain B
  * Prakash J
  * Suresh V
+ * Yogapraveen K
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -72,21 +75,20 @@ public class InstanceModel implements Serializable{
 	 *            The Dataset instance contains the Instance informations.
 	 */
 	public InstanceModel(Dataset ds) {
-		sopIUID = ds.getString(Tags.SOPInstanceUID);
-		instanceNumber = ds.getString(Tags.InstanceNumber)!=null ? ds.getString(Tags.InstanceNumber) : "unknown";
-		sopClassUID = ds.getString(Tags.SOPClassUID)!=null ? ds.getString(Tags.SOPClassUID) : "unknown";
-		numberOfFrames = ds.getString(Tags.NumberOfFrames)!=null ? ds.getString(Tags.NumberOfFrames) : "0";
+		setSopIUID(ds.getString(Tags.SOPInstanceUID));
+		setInstanceNumber(ds.getString(Tags.InstanceNumber));
+		setSopClassUID(ds.getString(Tags.SOPClassUID));
+		setNumberOfFrames(ds.getString(Tags.NumberOfFrames));
 		
 		int rows,columns;
 		
 		rows = ds.getInteger(Tags.Rows)!=null ? ds.getInteger(Tags.Rows) : 512;
 		columns = ds.getInteger(Tags.Columns)!=null ? ds.getInteger(Tags.Columns) : 512;	
+		calculateThumbSize(String.valueOf(rows),String.valueOf(columns));
+	}
+	
+	public InstanceModel(){
 		
-		if(columns>rows) {			
-			thumbSize = "width: 70px;";
-		} else {			
-			thumbSize = "height: 70px;";
-		}
 	}
 
 	/**
@@ -97,6 +99,10 @@ public class InstanceModel implements Serializable{
 	public String getSopIUID() {
 		return sopIUID;
 	}
+	
+	public void setSopIUID(String sopIUID){
+		this.sopIUID = sopIUID;
+	}
 
 	/**
 	 * Getter for property instanceNumber.
@@ -104,7 +110,11 @@ public class InstanceModel implements Serializable{
 	 * @return Value of property instanceNumber.
 	 */
 	public String getInstanceNumber() {
-		return instanceNumber;
+		return instanceNumber !=null ? instanceNumber : "unknown";
+	}
+	
+	public void setInstanceNumber(String instanceNo) {
+		this.instanceNumber = instanceNo ;
 	}
 
 	/**
@@ -113,7 +123,11 @@ public class InstanceModel implements Serializable{
 	 * @return Value of property sopClassUID.
 	 */
 	public String getSopClassUID() {
-		return sopClassUID;
+		return sopClassUID !=null ? sopClassUID : "unknown";
+	}
+	
+	public void setSopClassUID(String sopClassUID) {
+		this.sopClassUID = sopClassUID;
 	}
 
 	/**
@@ -122,7 +136,11 @@ public class InstanceModel implements Serializable{
 	 * @return Value of property numberOfFrames.
 	 */
 	public String getNumberOfFrames() {
-		return numberOfFrames;
+		return numberOfFrames !=null ? numberOfFrames : "0";
+	}
+	
+	public void setNumberOfFrames(String NoFrames) {
+		this.numberOfFrames = NoFrames;
 	}
 	
 	/**
@@ -132,5 +150,17 @@ public class InstanceModel implements Serializable{
 	 */
 	public String getThumbSize() {
 		return thumbSize;
+	}
+	
+	public void calculateThumbSize(String row,String column) {
+		int rowSize = Integer.valueOf(row);
+		int columnSize = Integer.valueOf(column);
+		
+		if(columnSize>rowSize) {			
+			thumbSize = "width: 70px;";
+		} else {			
+			thumbSize = "height: 70px;";
+		}
+		
 	}
 }

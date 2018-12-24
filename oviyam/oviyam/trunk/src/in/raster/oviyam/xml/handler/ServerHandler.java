@@ -44,11 +44,12 @@ package in.raster.oviyam.xml.handler;
 
 import in.raster.oviyam.xml.model.Configuration;
 import in.raster.oviyam.xml.model.Server;
+
 import java.util.List;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 
 import org.apache.log4j.Logger;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 /**
  * 
@@ -124,6 +125,7 @@ public class ServerHandler {
 					serObj.setPort(server.getPort());
 					serObj.setRetrieve(server.getRetrieve());
 					serObj.setWadocontext(server.getWadocontext());
+					serObj.setProtocol(server.getProtocol());
 					serObj.setWadoport(server.getWadoport());
 					serObj.setImageType(server.getImageType());
 					serObj.setPreviewStatus(server.isPreviewEnabled());
@@ -158,6 +160,29 @@ public class ServerHandler {
 			}
 		}
 
+		return resultObj;
+	}
+	
+	public Server findServerByAetIpPort(String AETitle, String hostName, String port){
+		Server resultObj = null;
+		List<Server> serversList = config.getServersList();
+
+		if (AETitle != null && AETitle.length() > 0 && hostName != null && hostName.length() > 0 && port != null && port.length() > 0) {
+			try {
+				for (Server serObj : serversList) {
+					if (serObj.getAetitle().equals(AETitle)&& serObj.getHostname().equals(hostName)&& serObj.getPort().equals(port)) {
+						resultObj = serObj;
+						break;
+					}
+				}
+			} catch (Exception ex) {
+				log.error("Error while finding server by name");
+			}
+		} else {
+			if (serversList.size() == 1) {
+				resultObj = (Server) serversList.get(0);
+			}
+		}
 		return resultObj;
 	}
 	

@@ -428,7 +428,7 @@ tr.even td.sorting_1 {
 				accessionNumber="${param.accessionNumber}"
 				referPhysician="${param.referPhysician}"
 				studyDescription="${param.studyDesc}" dcmURL="${param.dcmURL}"
-				fromTime="${param.fromTime}" toTime="${param.toTime}">
+				fromTime="${param.fromTime}" toTime="${param.toTime}" serverURL="${param.serverURL}">
 				<tr>
 					<td><img src="images/details_open.png" alt="" /> <img
 						src="images/green.png" style="display: none;" id="${studyIUID}"

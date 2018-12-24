@@ -55,6 +55,7 @@ $(document).ready(function() {
         searchURL += '&tabIndex=' + tabIndex;
         
         searchURL += "&preview=" + $('.ui-tabs-selected').find('a').attr('preview');
+        searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
         
         divContent += '_content'; 
 

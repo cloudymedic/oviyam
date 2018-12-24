@@ -21,10 +21,13 @@
  *
  * Contributor(s):
  * Babu Hussain A
+ * Balamurugan R
  * Devishree V
+ * Guruprasath R
  * Meer Asgar Hussain B
  * Prakash J
  * Suresh V
+ * Yogapraveen K
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,13 +46,19 @@
 package in.raster.oviyam.handler;
 
 import in.raster.oviyam.ImageInfo;
+import in.raster.oviyam.ImageInfoWeb;
 import in.raster.oviyam.model.InstanceModel;
 import in.raster.oviyam.util.InstanceComparator;
+import in.raster.oviyam.xml.handler.ServerHandler;
+import in.raster.oviyam.xml.model.Server;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -66,6 +75,7 @@ public class ImageHandler extends SimpleTagSupport {
 	private String study;
 	private String series;
 	private String dcmURL;
+	private String serverURL = "";
 
 	/**
 	 * Setter for property patientId.
@@ -112,6 +122,18 @@ public class ImageHandler extends SimpleTagSupport {
 	}
 
 	/**
+     * Setter for property ServerURL.
+     * @param serverURL The String object registers the serverURL.
+     */
+     public void setServerURL(String serverURL) {
+         if(patientId == null) {
+             this.serverURL = "";
+         } else {
+             this.serverURL = serverURL;
+         }
+     }
+	
+	/**
 	 * Overridden Tag handler method. Default processing of the tag. This method
 	 * will send the ImageInfo to generate a HTML page during its execution.
 	 * 
@@ -121,9 +143,36 @@ public class ImageHandler extends SimpleTagSupport {
 	public void doTag() throws JspException, IOException {
 
 		ImageInfo imageInfo = null;
+		ImageInfoWeb imageInfoWeb = null;
+		
+		ArrayList<InstanceModel> instances =null;
 		try {
 			imageInfo = new ImageInfo();
-			imageInfo.callFindWithQuery(patientId, study, series, null, dcmURL);
+			imageInfoWeb = new ImageInfoWeb();
+			instances = new ArrayList<InstanceModel>();
+		
+			 String[] dcmUrl = dcmURL.split(":");
+             
+             String AETitle = dcmUrl[1].substring(2);
+             String hostName = dcmUrl[2];
+             hostName = hostName.substring(hostName.indexOf("@")+1);
+             String port = dcmUrl[3];
+	            
+	            ServerHandler sHandler = new ServerHandler();
+	            Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);            
+	            
+	            String wadoContext = server.getWadocontext();
+	          
+	            if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
+	           	 	wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
+	           	 	serverURL = serverURL.substring(0,serverURL.lastIndexOf("/"));
+	           	 	imageInfoWeb.callWithWebQuery(patientId, study, series, null, serverURL);
+	           	 	instances = imageInfoWeb.getInstancesList();
+	            }else{
+	            	imageInfo.callFindWithQuery(patientId, study, series, null, dcmURL);
+	            	instances = imageInfo.getInstancesList();
+	            }
+
 		} catch (Exception e) {
 			log.error(
 					"Unable to create instance of ImageInfo and access the callFindWithQuery()",
@@ -132,8 +181,6 @@ public class ImageHandler extends SimpleTagSupport {
 		}
 
 		try {
-			ArrayList<InstanceModel> instances = imageInfo.getInstancesList();
-
 			Collections.sort(instances, new InstanceComparator());
 
 			for (int instanceCount = 0; instanceCount < instances.size(); instanceCount++) {

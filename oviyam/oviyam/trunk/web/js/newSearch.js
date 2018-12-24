@@ -67,23 +67,52 @@ function searchClick(searchBtn) {
     if(modalities!='') {
         searchURL += '&modality=' + modalities.trim();
     }   
-    
+    searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
     var divContent = $('.ui-tabs-selected').find('a').attr('href') + '_content';
-    $(divContent).html('');    
+    $(divContent).html('');   
+    
+    var dUrl = $('.ui-tabs-selected').find('a').attr('name');
 
-    if(searchURL.trim()==('queryResult.jsp?')) {
-    	jConfirm(language['Message'], language['Creteria'], function (doQry) {
-			if(doQry==true) {
-				var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
-			    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
-				doQuery(searchURL,divContent);
-			} 
-	    });   	
-    } else {
-    	var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
-    	searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
-    	doQuery(searchURL,divContent);
-    }  
+    if (dUrl == null) {
+        var msg = "Please select remote server!!!";
+        noty({
+            text: msg,
+            layout: 'topRight',
+            type: 'error'
+        });
+
+        return;
+    }
+
+    $.get("Echo.do?dicomURL=" + dUrl, function (data) {
+        if (data == "EchoSuccess") {
+        	 if(searchURL.trim()==('queryResult.jsp?')) {
+        	    	jConfirm(language['Message'], language['Creteria'], function (doQry) {
+        				if(doQry==true) {
+        					var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+        				    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
+        					doQuery(searchURL,divContent);
+        				} 
+        		    });   	
+        	    } else {
+        	    	var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+        	    	searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
+        	    	doQuery(searchURL,divContent);
+        	    }  
+        } else {
+        	var msg = "Server not available";
+            noty({
+                text: msg,
+                layout: 'topRight',
+                type: 'error'
+            });
+
+            return;
+        }
+        
+    });
+
+   
    
 } // end of searchClick()
 

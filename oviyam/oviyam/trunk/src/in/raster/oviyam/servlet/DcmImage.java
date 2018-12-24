@@ -61,7 +61,11 @@ import org.apache.log4j.Logger;
  */
 public class DcmImage extends HttpServlet {
 
-    /*
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/*
      * Initialize the Logger.
      */
     private static Logger log = Logger.getLogger(DcmImage.class);

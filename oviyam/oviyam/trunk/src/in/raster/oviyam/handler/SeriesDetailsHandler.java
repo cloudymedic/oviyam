@@ -19,12 +19,15 @@
 * Portions created by the Initial Developer are Copyright (C) 2014
 * the Initial Developer. All Rights Reserved.
 *
-* Contributor(s):
-* Babu Hussain A
-* Devishree V
-* Meer Asgar Hussain B
-* Prakash J
-* Suresh V
+ * Contributor(s):
+ * Babu Hussain A
+ * Balamurugan R
+ * Devishree V
+ * Guruprasath R
+ * Meer Asgar Hussain B
+ * Prakash J
+ * Suresh V
+ * Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,16 +46,22 @@
 package in.raster.oviyam.handler;
 
 import in.raster.oviyam.SeriesInfo;
+import in.raster.oviyam.SeriesInfoWeb;
 import in.raster.oviyam.model.SeriesModel;
 import in.raster.oviyam.util.SeriesComparator;
+import in.raster.oviyam.xml.handler.ServerHandler;
+import in.raster.oviyam.xml.model.Server;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Collections;
+import java.util.Date;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -63,11 +72,13 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
 
     //Initialize logger
     private static Logger log = Logger.getLogger(SeriesDetailsHandler.class);
+    ArrayList<SeriesModel> seriesList = null;
 
     //Attribute variables for this tag
     private String patientId;
     private String study;
     private String dcmURL;
+    private String serverURL = "";
 
     /**
      * Setter for property patientId
@@ -96,6 +107,18 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
     public void setDcmURL(String dcmURL) {
         this.dcmURL = dcmURL;
     }
+    
+    /**
+     * Setter for property ServerURL.
+     * @param serverURL The String object registers the serverURL.
+     */
+     public void setServerURL(String serverURL) {
+         if(patientId == null) {
+             this.serverURL = "";
+         } else {
+             this.serverURL = serverURL;
+         }
+     }
 
     /**
      * Overridden Tag handler method. Default processing of the tag.
@@ -107,6 +130,7 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
     public void doTag() throws JspException, IOException {
 
         SeriesInfo seriesInfo = null;
+        SeriesInfoWeb seriesInfoWeb = null;
 
         try {
             /**
@@ -114,14 +138,38 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
              * study and patient.
              */
             seriesInfo = new SeriesInfo();
-            seriesInfo.callFindWithQuery(patientId, study, dcmURL);
+            seriesInfoWeb = new SeriesInfoWeb();
+            
+            String[] dcmUrl = dcmURL.split(":");
+            
+            String AETitle = dcmUrl[1].substring(2);
+            String hostName = dcmUrl[2];
+            hostName = hostName.substring(hostName.indexOf("@")+1);
+            String port = dcmUrl[3];
+            
+            ServerHandler sHandler = new ServerHandler();
+            Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);            
+            
+            String wadoContext = server.getWadocontext();
+            
+          
+            if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
+           	 	wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
+           	 	serverURL = serverURL.substring(0,serverURL.lastIndexOf("/"));
+           	 	seriesInfoWeb.callWithWebQuery(patientId, study, serverURL);
+           	 	seriesList = seriesInfoWeb.getSeriesList();
+            }else{
+            	seriesInfo.callFindWithQuery(patientId, study, dcmURL);
+            	seriesList = seriesInfo.getSeriesList();
+            }
+            
         } catch(Exception e) {
             log.error("Unable to create instance of SeriesInfo and access its callFindWithQuery()" , e);
             return;
         }
 
         try {        	
-            ArrayList<SeriesModel> seriesList = seriesInfo.getSeriesList();
+            
 
             Collections.sort(seriesList, new SeriesComparator());
 

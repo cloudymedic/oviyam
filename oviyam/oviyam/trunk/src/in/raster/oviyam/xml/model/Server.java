@@ -21,10 +21,13 @@
  *
  * Contributor(s):
  * Babu Hussain A
+ * Balamurugan R
  * Devishree V
+ * Guruprasath R
  * Meer Asgar Hussain B
  * Prakash J
  * Suresh V
+ * Yogapraveen K
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -69,6 +72,9 @@ public class Server {
 
 	@Element(required = false)
 	private String wadocontext;
+	
+	@Element(required = false)
+	private String protocol = "WADO";
 
 	@Element(required = false)
 	private String wadoport;
@@ -134,6 +140,14 @@ public class Server {
 
 	public void setWadocontext(String wadocontext) {
 		this.wadocontext = wadocontext;
+	}
+	
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
 	}
 
 	public String isPreviewEnabled() {
