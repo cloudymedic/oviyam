@@ -19,12 +19,15 @@
 * Portions created by the Initial Developer are Copyright (C) 2014
 * the Initial Developer. All Rights Reserved.
 *
-* Contributor(s):
-* Babu Hussain A
-* Devishree V
-* Meer Asgar Hussain B
-* Prakash J
-* Suresh V
+ * Contributor(s):
+ * Babu Hussain A
+ * Balamurugan R
+ * Devishree V
+ * Guruprasath R
+ * Meer Asgar Hussain B
+ * Prakash J
+ * Suresh V
+ * Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,7 +46,10 @@
 package in.raster.oviyam.servlet;
 
 import in.raster.oviyam.PatientInfo;
+import in.raster.oviyam.PatientInfoWeb;
 import in.raster.oviyam.model.StudyModel;
+import in.raster.oviyam.xml.handler.ServerHandler;
+import in.raster.oviyam.xml.model.Server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -68,7 +74,11 @@ import org.json.JSONObject;
  */
 public class OtherStudiesInfo extends HttpServlet {
 
-    //Initialize the Logger.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//Initialize the Logger.
     private static Logger log = Logger.getLogger(OtherStudiesInfo.class);
       
 
@@ -85,15 +95,37 @@ public class OtherStudiesInfo extends HttpServlet {
     throws ServletException, IOException {
         String patID = request.getParameter("patientID");
         String studyUID = request.getParameter("studyUID");
-        String dcmURL = request.getParameter("dcmURL");       
-        
+        String dcmURL = request.getParameter("dcmURL");  
+        String serverURL = request.getParameter("serverURL");
             
-            PatientInfo patientInfo = new PatientInfo(); 
-            patientInfo.callFindWithQuery(patID, "", dcmURL);
+            ArrayList<StudyModel> studyList = null;
+            
+            String[] dcmUrl = dcmURL.split(":");
+            
+            String AETitle = dcmUrl[1].substring(2);
+            String hostName = dcmUrl[2];
+            hostName = hostName.substring(hostName.indexOf("@")+1);
+            String port = dcmUrl[3];
+            
+            ServerHandler sHandler = new ServerHandler();
+            Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);            
+            
+            String wadoContext = server.getWadocontext();
+            
+            if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
+            	PatientInfoWeb patientInfoWeb = new PatientInfoWeb();
+           	 	wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
+           	 	serverURL = serverURL.substring(0,serverURL.lastIndexOf("/"));
+           	 	patientInfoWeb.callWithWebQuery(patID, "", "", "", "", "", "", "", "", serverURL);
+           	 	studyList = patientInfoWeb.getStudyList();
+            }else{
+            	PatientInfo patientInfo = new PatientInfo();
+            	patientInfo.callFindWithQuery(patID, "", dcmURL);
+            	studyList = patientInfo.getStudyList();
+            }
+            
             JSONArray sArray = new JSONArray();
             
-
-            ArrayList<StudyModel> studyList = patientInfo.getStudyList();
             StudyComparator comparator = new StudyComparator(studyUID);
             Collections.sort(studyList, comparator);
             

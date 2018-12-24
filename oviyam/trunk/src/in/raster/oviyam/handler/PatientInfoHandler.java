@@ -19,12 +19,15 @@
 * Portions created by the Initial Developer are Copyright (C) 2014
 * the Initial Developer. All Rights Reserved.
 *
-* Contributor(s):
-* Babu Hussain A
-* Devishree V
-* Meer Asgar Hussain B
-* Prakash J
-* Suresh V
+ * Contributor(s):
+ * Babu Hussain A
+ * Balamurugan R
+ * Devishree V
+ * Guruprasath R
+ * Meer Asgar Hussain B
+ * Prakash J
+ * Suresh V
+ * Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,15 +46,21 @@
 package in.raster.oviyam.handler;
 
 import in.raster.oviyam.PatientInfo;
+import in.raster.oviyam.PatientInfoWeb;
 import in.raster.oviyam.model.StudyModel;
+import in.raster.oviyam.xml.handler.ServerHandler;
+import in.raster.oviyam.xml.model.Server;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -68,15 +77,17 @@ public class PatientInfoHandler extends SimpleTagSupport {
     private String modality = "";
     private String from = "";
     private String to = "";
-    private String searchDays;
     private String accessionNumber = "";
     private String dcmURL = "";
     private String fromTime = "";
     private String toTime = "";
     private String referPhysician = "";
     private String studyDescription = "";
+    private String serverURL = "";
     
     PatientInfo patientInfo;
+    PatientInfoWeb patientInfoWeb;
+    ArrayList<StudyModel> studyList = null;
 
     /**
      * Setter for property patientId.
@@ -156,9 +167,7 @@ public class PatientInfoHandler extends SimpleTagSupport {
       */
      public void setSearchDays(String searchDays) {
          if(searchDays == null) {
-             this.searchDays = "";
          } else {
-             this.searchDays = searchDays;
          }
      }
 
@@ -233,6 +242,17 @@ public class PatientInfoHandler extends SimpleTagSupport {
             this.studyDescription = studyDescription;
          }
      }
+     /**
+      * Setter for property ServerURL.
+      * @param serverURL The String object registers the serverURL.
+      */
+      public void setServerURL(String serverURL) {
+          if(patientId == null) {
+              this.serverURL = "";
+          } else {
+              this.serverURL = serverURL;
+          }
+      }
 
      /**
       * Overridden Tag handler method. Default processing of the tag.
@@ -249,13 +269,14 @@ public class PatientInfoHandler extends SimpleTagSupport {
               * the configured server.
               */
              patientInfo = new PatientInfo();
+             patientInfoWeb = new PatientInfoWeb();
          } catch(Exception e) {
              log.error("Unable to create instance of PatientInfo.", e);
              return;
          }
          
          try {
-
+        	
              String searchDates = from + "-" + to;
 
              if(searchDates.trim().equals("-")) {
@@ -268,13 +289,42 @@ public class PatientInfoHandler extends SimpleTagSupport {
                  studyTime = "";
              }
              
-             if(patientId.indexOf("|") >= 0) {
-            	 String[] patIDs = patientId.split("\\|");
-            	 for(int j=0; j<patIDs.length; j++) {
-                	 patientInfo.callFindWithQuery(patIDs[j], patientName, birthDate, searchDates, studyTime, modality, accessionNumber, referPhysician, studyDescription, dcmURL);
+             
+             String[] dcmUrl = dcmURL.split(":");
+             
+             String AETitle = dcmUrl[1].substring(2);
+             String hostName = dcmUrl[2];
+             hostName = hostName.substring(hostName.indexOf("@")+1);
+             String port = dcmUrl[3];
+             
+             ServerHandler sHandler = new ServerHandler();
+             Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);            
+             
+             String wadoContext = server.getWadocontext();
+             
+             if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
+            	 wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
+            	 serverURL = serverURL.substring(0,serverURL.lastIndexOf("/"));
+            	 if(modality.indexOf("\\")>0){
+            		 String[] modalities = modality.split("\\\\");
+            		 for(String modalitiesInStudy: modalities){
+            			 callWebQuery(searchDates, studyTime, modalitiesInStudy, serverURL);
+            		 }
+            	 }else{
+            		 callWebQuery(searchDates, studyTime, modality, serverURL);
             	 }
-             } else {
-            	 patientInfo.callFindWithQuery(patientId, patientName, birthDate, searchDates, studyTime, modality, accessionNumber, referPhysician, studyDescription, dcmURL);
+            	 studyList = removeDuplicate(studyList);
+             }else{
+            	 if(patientId.indexOf("|") >= 0) {
+                	 String[] patIDs = patientId.split("\\|");
+                	 for(int j=0; j<patIDs.length; j++) {
+                		 patientInfo.callFindWithQuery(patIDs[j], patientName, birthDate, searchDates, studyTime, modality, accessionNumber, referPhysician, studyDescription, dcmURL);
+                		 studyList = patientInfo.getStudyList();
+                	 }
+                 } else {
+                	 patientInfo.callFindWithQuery(patientId, patientName, birthDate, searchDates, studyTime, modality, accessionNumber, referPhysician, studyDescription, dcmURL);
+                	 studyList = patientInfo.getStudyList();
+                 }
              }
         
          } catch(Exception e) {
@@ -288,7 +338,7 @@ public class PatientInfoHandler extends SimpleTagSupport {
           */
          try {
              // ArrayList contains the StudyModels.
-        	 ArrayList<StudyModel> studyList = patientInfo.getStudyList();        	 
+//        	 ArrayList<StudyModel> studyList = patientInfo.getStudyList();        	 
         	 
              getJspContext().setAttribute("studyList", studyList, PageContext.SESSION_SCOPE);
 
@@ -367,5 +417,53 @@ public class PatientInfoHandler extends SimpleTagSupport {
              e.printStackTrace();
          }
      }
+     
+     /**
+      * calls the web query function to get patient information.
+      * 
+      * @param searchDates
+      * @param studyTime
+      * @param modality
+      * @param wadoURL
+      */
+     private void callWebQuery(String searchDates, String studyTime, String modality, String wadoURL){
+    	 if(patientId.indexOf("|") >= 0) {
+        	 String[] patIDs = patientId.split("\\|");
+        	 for(int j=0; j<patIDs.length; j++) {
+        		 patientInfoWeb.callWithWebQuery(patIDs[j], patientName, birthDate, searchDates, studyTime, modality, accessionNumber, referPhysician, studyDescription, wadoURL);
+        		 studyList = patientInfoWeb.getStudyList();
+        	 }
+         } else {
+        	 patientInfoWeb.callWithWebQuery(patientId, patientName, birthDate, searchDates, studyTime, modality, accessionNumber, referPhysician, studyDescription, wadoURL);
+        	 studyList = patientInfoWeb.getStudyList();
+         }
+     }
+     
+     /**
+      * removes the duplicate value from the studylist ArrayList.
+      * 
+      * @param list
+      * @return StudyList
+      */
+     private ArrayList<StudyModel> removeDuplicate(ArrayList<StudyModel> list) { 
+    	ArrayList<StudyModel> clone = (ArrayList<StudyModel>) this.studyList.clone();
+    	ArrayList<StudyModel> duplicate = new ArrayList<StudyModel>();
+    	 for (StudyModel item : list) { 
+    		 int i =0;
+    		 for(StudyModel element : list){
+    			 if(!duplicate.contains(element)){
+        			 if(item.equals(element)){
+        				 i++;
+        			 }
+    			 }
+    			 if(i>1){
+    				 duplicate.add(element);
+    				 clone.remove(element);
+    				 i=1;
+    			 }
+    		 }
+    	}
+    	 return clone; 
+    }
 
 }

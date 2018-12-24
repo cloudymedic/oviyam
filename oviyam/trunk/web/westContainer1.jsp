@@ -246,7 +246,7 @@
         </div>
        <br>
    		<div id="previews" style="overflow: auto; height: 90%;">
-   			 <ser:Series patientId="${param.patient}" study="${param.study}" dcmURL="${param.dcmURL}">
+   			 <ser:Series patientId="${param.patient}" study="${param.study}" dcmURL="${param.dcmURL}" serverURL="${param.wadoUrl}">
        			 <c:set var="middle" value="${numberOfImages/2}" />
         		<fmt:formatNumber var="middle" maxFractionDigits="0" value="${middle}" />
        			<table class="seriesTable" id="${fn:replace(seriesId, '.','_')}_table">
@@ -275,18 +275,18 @@
 						            </tr> -->
            							 <tr>
 						                <td colspan="2">
-								            <img:Image patientId="${param.patient}" study="${param.study}" series="${seriesId}" dcmURL="${param.dcmURL}">
+								            <img:Image patientId="${param.patient}" study="${param.study}" series="${seriesId}" dcmURL="${param.dcmURL}" serverURL="${param.wadoUrl}">
 							            	<c:choose>
 							                    <c:when test="${modality == 'SR'}">
-							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/SR_Latest.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}" ondblclick="openSeriesInViewer(this)" />
+							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/SR_Latest.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&dicomURL=${param.dcmURL}" ondblclick="openSeriesInViewer(this)" />
 							                    </c:when>
 
                    								<c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.104.1'}">
-							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}" ondblclick="openSeriesInViewer(this)" />
+							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&dicomURL=${param.dcmURL}" ondblclick="openSeriesInViewer(this)" />
 							                    </c:when>	
 							                    
 							                    <c:when test="${fn:contains(sopClassUID,'1.2.840.10008.5.1.4.1.1.9')}"> <!-- Wave Forms -->
-							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&rid=true" ondblclick="openSeriesInViewer(this)" />
+							                        <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&rid=true&dicomURL=${param.dcmURL}" ondblclick="openSeriesInViewer(this)" />
 							                    </c:when>
 							                    
 							                    <c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.66'}"> <!-- Raw Data Storage -->
@@ -326,12 +326,12 @@
 	                    					        <c:otherwise>	                    					        
 		                    				           <c:choose>
                                                         	<c:when test="${multiframe=='yes'}">
-                                                            	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}&frameNumber=1"
+                                                            	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}&frameNumber=1&dicomURL=${param.dcmURL}"
                                                                 	ondblclick="openSeriesInViewer(this);" />
                                                             </c:when>
                                                             <c:otherwise>
                                                             	<c:if test="${(instanceNumber == middle) || (instanceNumber==1) || (instanceNumber==numberOfImages)}">
-                                                                	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}" ondblclick="openSeriesInViewer(this);"
+                                                                	<img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&contentType=${param.contentType}&dicomURL=${param.dcmURL}" ondblclick="openSeriesInViewer(this);"
                                                                     	/>
                                                                 </c:if>
                                                             </c:otherwise>

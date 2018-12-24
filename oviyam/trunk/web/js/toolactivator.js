@@ -127,7 +127,7 @@ function onToolSelection(e) {
 function activateTools(toolid, callingFunction) {
     var iframe = window.parent.document.getElementsByTagName('iframe');
     if (iframe.length > 1 && iframe[0].src.includes('TileContent.html') ||
-        toolid == 'zoom' || toolid == 'pan' || toolid == 'windowing') {
+        toolid == 'zoom' || toolid == 'move' || toolid == 'windowing') {
         for (var i = 0; i < iframe.length; i++) {
         	firstTry = true;
             var tmpWindow = iframe[i].contentWindow;
@@ -141,7 +141,7 @@ function activateTools(toolid, callingFunction) {
             total = parseInt(total);
             if (total > iNo || toolid == 'vflip' || toolid == 'hflip' || toolid == 'rotateLeft' || toolid == 'rotateRight' || toolid == 'reset') {
                 callingFunction(toolid, tmpWindow);
-            } else if(tmpWindow.location.href.includes('frameContent')&&(toolid == 'zoom'|| toolid == 'pan' || toolid == 'windowing')){
+            } else if(tmpWindow.location.href.includes('frameContent')&&(toolid == 'zoom'|| toolid == 'move' || toolid == 'windowing')){
 				callingFunction(toolid, tmpWindow);
 			}
         }

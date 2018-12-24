@@ -256,7 +256,8 @@ function fetchOtherStudies() {
             $.post("otherStudies.do", {
                 "patientID": pat.pat_ID,
                 "studyUID": pat.studyUID,
-                "dcmURL": pat.dicomURL
+                "dcmURL": pat.dicomURL,
+                "serverURL":pat.serverURL
             }, function(data) {
                 if (data.length > 0) {
                     $("#otherStudiesInfo").text((data.length + " archived") + (data.length > 1 ? " studies" : " study") + " found.");

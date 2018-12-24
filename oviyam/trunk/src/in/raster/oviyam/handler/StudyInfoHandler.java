@@ -172,7 +172,7 @@ public class StudyInfoHandler extends SimpleTagSupport {
 		}
 	}
 
-	public class StudyComparator implements Comparator {		
+	public class StudyComparator implements Comparator<Object> {		
 
 		public int compare(Object o1, Object o2) {
 			StudyModel sm1 = (StudyModel) o1;

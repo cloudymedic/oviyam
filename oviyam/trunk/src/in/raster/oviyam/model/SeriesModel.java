@@ -19,12 +19,15 @@
 * Portions created by the Initial Developer are Copyright (C) 2014
 * the Initial Developer. All Rights Reserved.
 *
-* Contributor(s):
-* Babu Hussain A
-* Devishree V
-* Meer Asgar Hussain B
-* Prakash J
-* Suresh V
+ * Contributor(s):
+ * Babu Hussain A
+ * Balamurugan R
+ * Devishree V
+ * Guruprasath R
+ * Meer Asgar Hussain B
+ * Prakash J
+ * Suresh V
+ * Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -53,7 +56,11 @@ import org.dcm4che.dict.Tags;
  */
 public class SeriesModel implements Serializable {
 
-    // variables
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// variables
     private String seriesIUID;
     private String seriesNumber;
     private String seriesDate;
@@ -71,14 +78,18 @@ public class SeriesModel implements Serializable {
      * @param dataSet The Dataset instance contains the Series Information.
      */
     public SeriesModel(Dataset ds) {
-        seriesIUID = ds.getString(Tags.SeriesInstanceUID);
-        seriesNumber = ds.getString(Tags.SeriesNumber)!=null ? ds.getString(Tags.SeriesNumber) : "unknown";
-        seriesDate = ds.getString(Tags.SeriesDate)!=null ? ds.getString(Tags.SeriesDate) : "";
-        seriesTime = ds.getString(Tags.SeriesTime)!=null ? ds.getString(Tags.SeriesTime) : "";
-        seriesDescription = ds.getString(Tags.SeriesDescription)!=null? ds.getString(Tags.SeriesDescription).replace("^", " ") : "";
-        modality = ds.getString(Tags.Modality)!=null ? ds.getString(Tags.Modality) : "unknown";
-        numberOfInstances = ds.getString(Tags.NumberOfSeriesRelatedInstances)!=null ? ds.getString(Tags.NumberOfSeriesRelatedInstances) : "";
-        bodyPartExamined = ds.getString(Tags.BodyPartExamined)!=null ? ds.getString(Tags.BodyPartExamined) : "";
+        setSeriesIUID(ds.getString(Tags.SeriesInstanceUID));
+        setSeriesNumber(ds.getString(Tags.SeriesNumber));
+        setSeriesDate(ds.getString(Tags.SeriesDate));
+        setSeriesTime(ds.getString(Tags.SeriesTime));
+        setSeriesDescription(ds.getString(Tags.SeriesDescription));
+        setModality(ds.getString(Tags.Modality));
+        setNumberOfInstances(ds.getString(Tags.NumberOfSeriesRelatedInstances));
+        setBodyPartExamined(ds.getString(Tags.BodyPartExamined));
+    }
+    
+    public SeriesModel(){
+    	
     }
 
     /**
@@ -88,61 +99,92 @@ public class SeriesModel implements Serializable {
     public String getSeriesIUID() {
         return seriesIUID;
     }
+    
+    public void setSeriesIUID(String seriesIUID) {
+		this.seriesIUID = seriesIUID;
+	}
 
     /**
      * Getter for property seriesNumber
      * @return Value of property seriesNumber
      */
     public String getSeriesNumber() {
-        return seriesNumber;
+        return  seriesNumber != null ? seriesNumber : "unknown";
     }
 
+    public void setSeriesNumber(String seriesNumber) {
+		this.seriesNumber = seriesNumber;
+	}
     /**
      * Getter for property seriesDate
      * @return Value of property seriesDate
      */
     public String getSeriesDate() {
-        return seriesDate;
+        return seriesDate !=null ?seriesDate : "";
     }
+    
+    public void setSeriesDate(String seriesDate) {
+		this.seriesDate = seriesDate;
+	}
 
     /**
      * Getter for property seriesTime
      * @return Value of property seriesTime
      */
     public String getSeriesTime() {
-        return seriesTime;
+        return seriesTime != null ? seriesTime : "";
     }
+    
+    public void setSeriesTime(String seriesTime) {
+		this.seriesTime = seriesTime;
+	}
 
     /**
      * Getter for property seriesDescription
      * @return Value of property seriesDescription
      */
     public String getSeriesDescription() {
-        return seriesDescription;
+        return seriesDescription !=null? seriesDescription.replace("^", " ") : "";
     }
+    
+    public void setSeriesDescription(String seriesDesc) {
+		this.seriesDescription = seriesDesc;
+	}
 
     /**
      * Getter for property modality
      * @return Value of property modality
      */
     public String getModality() {
-        return modality;
+        return modality !=null ? modality : "unknown";
     }
+    
+    public void setModality(String modality) {
+		this.modality = modality;
+	}
 
     /**
      * Getter for property numberOfInstances
      * @return Value of property numberOfInstances
      */
     public String getNumberOfInstances() {
-        return numberOfInstances;
+        return numberOfInstances != null ? numberOfInstances : "";
     }
+    
+    public void setNumberOfInstances(String NoInstances) {
+		this.numberOfInstances = NoInstances;
+	}
 
     /**
      * Getter for property bodyPartExamined
      * @return Value of property bodyPartExamined
      */
     public String getBodyPartExamined() {
-        return bodyPartExamined;
+        return bodyPartExamined !=null ? bodyPartExamined : "";
     }
+    
+    public void setBodyPartExamined(String bodyPart) {
+		this.bodyPartExamined = bodyPart;
+	}
 
 }

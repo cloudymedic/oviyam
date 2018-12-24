@@ -49,7 +49,7 @@ import java.util.Comparator;
  *
  * @author asgar
  */
-public class SeriesComparator implements Comparator {
+public class SeriesComparator implements Comparator<Object> {
 
     public int compare(Object o1, Object o2) {
         SeriesModel sm1 = (SeriesModel) o1;

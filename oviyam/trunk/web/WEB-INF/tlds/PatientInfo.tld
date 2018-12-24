@@ -62,5 +62,9 @@
       <name>studyDescription</name>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>serverURL</name>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
 </taglib>

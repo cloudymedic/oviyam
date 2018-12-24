@@ -16,14 +16,16 @@ $(document).ready(function() {
 
     $("#addBtn").click(function() {
         if (!addBtnPressed) {
-            var str = '<tr style="width:100%"><td><input type="checkbox" disabled="true" /></td><td><input type="text" id="desc" style="width:100%"></td>' +
-                '<td><input type="text" id="aet" style="width:100%"></td>' +
-                '<td><input type="text" id="host" style="width:100%"></td><td><input type="text" id="port" style="width:100%"></td>' +
-                '<td><select id="retrieve" style="width:100%" onchange="hideWadoFields()"><option value="WADO">WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET">C-GET</option></select></td>' +
-                '<td><input type="text" id="wadoCxt" value="wado" style="width:100%" title="WADO Context"></td><td><input type="text" id="wadoPort" value="8080" style="width:100%" title="WADO Port">' +
-                '<td><select id="imgType" style="width:100%"><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select></td>' +
-                '<td><input type="checkbox" id="preview" style="width: 50%;" checked>' +
-                '<a href="#" onClick="insertTable();"><img src="images/save.png"></a></td></tr>';
+        	var str = '<tr style="width:100%"><td><input type="checkbox" disabled="true" /></td><td><input type="text" id="desc" style="width:100%"></td>' +
+            	'<td><input type="text" id="aet" size=15 style="width:100%"></td>' +
+            	'<td><input type="text" id="host" size=15 style="width:100%"></td><td><input type="text" id="port" size=15 style="width:100%"></td>' +
+            	'<td><select id="retrieve" style="width:100%" onchange="hideWadoFields()"><option value="WADO">WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET">C-GET</option></select></td>' +
+            	'<td><input type="text" id="wadoCxt" size=15 value="wado" style="width:100%" title="WADO Context"></td>' +
+            	'<td><select id="protocol" style="width:100%"><option value="WADO">WADO</option><option value="QIDO-RS">QIDO-RS</option></select></td>' +
+            	'<td><input type="text" id="wadoPort" size=15 value="8080" style="width:100%" title="WADO Port">' +
+            	'<td><select id="imgType" style="width:100%"><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select></td>' +
+            	'<td><input type="checkbox" id="preview" style="width: 50%;" checked>' +
+            	'<a href="#" onClick="insertTable();"><img src="images/save.png"></a></td></tr>';
             //var wid = $("#serverTable").css('width');
             $("#serverTable > tbody:last").append(str);
             addBtnPressed = true;
@@ -109,6 +111,7 @@ function insertTable() {
                 'port': $("#port").val(),
                 'retrieve': $("#retrieve").val(),
                 'wadoContext': $("#wadoCxt").val(),
+                'protocol': $('#protocol').val(),
                 'wadoPort': $("#wadoPort").val(),
                 'imageType': $("#imgType").val(),
                 'previews': $('#preview').prop('checked') ? 'true' : 'false',
@@ -152,6 +155,7 @@ function editTable() {
             'port': $("#port").val(),
             'retrieve': $("#retrieve").val(),
             'wadoContext': $("#wadoCxt").val(),
+            'protocol': $('#protocol').val(),
             'wadoPort': $("#wadoPort").val(),
             'imageType': $("#imgType").val(),
             'previews': $('#preview').prop('checked') ? 'true' : 'false',
@@ -183,6 +187,11 @@ function loadTable() {
                 if (typeof row['wadocontext'] != 'undefined') {
                     wadoCxt = row['wadocontext'];
                 }
+                
+                var protocol = '';
+                if (typeof row['protocol'] != 'undefined') {
+                    protocol = row['protocol'];
+                }
 
                 var wadoPort = '';
                 if (typeof row['wadoport'] != 'undefined') {
@@ -213,6 +222,7 @@ function loadTable() {
                     row['port'],
                     retrieveType,
                     wadoCxt,
+                    protocol,
                     wadoPort,
                     imageType,
                     preview
@@ -222,7 +232,7 @@ function loadTable() {
                 $("#listener_ae").val(callingAET);
                 $("#listener_port").val(row['listenerPort'].trim());
             }
-        })
+        });
     });
 
 }
@@ -292,9 +302,10 @@ function editSelectedRow() {
 
         var currRet = $selRow.find('td:nth-child(6)').html();
         var currWadoCxt = $selRow.find('td:nth-child(7)').html();
-        var currWadoPort = $selRow.find('td:nth-child(8)').html();
-        var currImageType = $selRow.find('td:nth-child(9)').html();
-        var currentPreview = $selRow.find('td:nth-child(10)').find('.previewChk').prop('checked');
+        var currProtocol = $selRow.find('td:nth-child(8)').html();
+        var currWadoPort = $selRow.find('td:nth-child(9)').html();
+        var currImageType = $selRow.find('td:nth-child(10)').html();
+        var currentPreview = $selRow.find('td:nth-child(11)').find('.previewChk').prop('checked');
 
         var str = '<td><input type="checkbox" disabled="true" CHECKED /></td><td><input type="text" id="desc" disabled="true" value="' + currDesc + '"></td>' +
             '<td><input type="text" id="aet" value="' + currAET + '"></td>' +
@@ -311,7 +322,16 @@ function editSelectedRow() {
         } else {
             str += '<td><select id="retrieve" value="' + currRet + '" style="width:100%" onchange="hideWadoFields()"><option value="WADO" selected>WADO</option><option value="C-MOVE">C-MOVE</option><option value="C-GET">C-GET</option></select></td>';
         }
-        str += '<td><input type="text" id="wadoCxt" value="' + currWadoCxt + '" style="width:100%" title="WADO Context"></td><td><input type="text" id="wadoPort" value="' + currWadoPort + '" style="width:100%" title="WADO Port"></td>';
+        str += '<td><input type="text" id="wadoCxt" value="' + currWadoCxt + '" style="width:100%" title="WADO Context"></td>';
+        
+        if (currProtocol == 'QIDO-RS') {
+
+            str += '<td><select id="protocol" value="' + currProtocol + '" style="width:100%"' + imgTypeDisabled + '><option value="WADO">WADO</option><option value="QIDO-RS" selected>QIDO-RS</option></select></td>';
+        } else {
+            str += '<td><select id="protocol" value="' + currProtocol + '" style="width:100%"' + imgTypeDisabled + '><option value="WADO" selected>WADO</option><option value="QIDO-RS">QIDO-RS</option></select></td>';
+
+        }
+        str += '<td><input type="text" id="wadoPort" size=15 value="' + currWadoPort + '" style="width:100%" title="WADO Port"></td>';
 
         if (currImageType == "PNG") {
             str += '<td><select id="imgType" value="' + currImageType + '" style="width:100%"' + imgTypeDisabled + '><option value="JPEG">JPEG</option><option value="PNG" selected>PNG</option></select></td>';
@@ -403,11 +423,14 @@ function hideWadoFields() {
         $("#wadoCxt").attr('disabled', 'disabled');
         $('#wadoPort').attr('disabled', 'disabled');
         $("#wadoCxt").val("");
+        $('#protocol').val("WADO");
+        $('#protocol').attr('disabled', 'disabled');
         $('#wadoPort').val("");
         $('#imgType').val("JPEG");
         $('#imgType').attr('disabled', 'disabled');
     } else {
         $("#wadoCxt").removeAttr('disabled');
+        $("#protocol").removeAttr('disabled');
         $('#wadoPort').removeAttr('disabled');
         $("#wadoCxt").val("wado");
         $('#wadoPort').val("8080");

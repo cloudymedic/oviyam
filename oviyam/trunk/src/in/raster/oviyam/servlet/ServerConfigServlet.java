@@ -19,12 +19,15 @@
 * Portions created by the Initial Developer are Copyright (C) 2014
 * the Initial Developer. All Rights Reserved.
 *
-* Contributor(s):
-* Babu Hussain A
-* Devishree V
-* Meer Asgar Hussain B
-* Prakash J
-* Suresh V
+ * Contributor(s):
+ * Babu Hussain A
+ * Balamurugan R
+ * Devishree V
+ * Guruprasath R
+ * Meer Asgar Hussain B
+ * Prakash J
+ * Suresh V
+ * Yogapraveen K
 *
 * Alternatively, the contents of this file may be used under the terms of
 * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -58,7 +61,11 @@ import org.apache.log4j.Logger;
  */
 public class ServerConfigServlet extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(ServerConfigServlet.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static Logger log = Logger.getLogger(ServerConfigServlet.class);
    
     /** 
      * Handles the HTTP <code>GET</code> method.
@@ -76,6 +83,8 @@ public class ServerConfigServlet extends HttpServlet {
         String port = request.getParameter("port");
         String retrieve = request.getParameter("retrieve");
         String wadoCxt = request.getParameter("wadoContext");
+        String protocol = request.getParameter("protocol");
+        
         String wadoport = request.getParameter("wadoPort");
         String imageType = request.getParameter("imageType");
         String previews = request.getParameter("previews");
@@ -93,6 +102,7 @@ public class ServerConfigServlet extends HttpServlet {
             sm.setPort(port);
             sm.setRetrieve(retrieve);
             sm.setWadocontext(wadoCxt);
+            sm.setProtocol(protocol);
             sm.setWadoport(wadoport);
             sm.setImageType(imageType);
             sm.setPreviewStatus(previews);
