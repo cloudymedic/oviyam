@@ -443,7 +443,7 @@
 
                                                                 <c:when test="${sopClassUID == '1.2.840.10008.5.1.4.1.1.104.1'}">
                                                                     <!-- Enacpsulated PDF -->
-                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&dicomURL=${param.dcmURL}"
+                                                                    <img name="${instanceNumber}" id="${fn:replace(seriesId, '.','_')}_${instanceNumber}" style="${thumbSize}" src="images/pdf.png" class="image" imgSrc="Image.do?serverURL=${param.wadoUrl}&study=${param.study}&series=${seriesId}&object=${imageId}&sopClassUID=${sopClassUID}&dicomURL=${param.dcmURL}&pdf=yes"
                                                                         onclick="changeSeries(this)" ondragstart="clearSelectedFrames()" ondragend="changeOnDrag(this);" />
                                                                 </c:when>
 
