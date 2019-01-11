@@ -49,7 +49,7 @@ var languages = {
     Update: "Update",
     FilterName: "Filter Name",
     StudyDateFilter: "Study Date Filter",
-    StudytimeFilter: "Study time Filter",
+    StudytimeFilter: "Study Time Filter",
     ModalityFilter: "Modality Filter",
     AutoRefresh: "Auto Refresh",
     IOviyamCxt: "iOviyam Context",   
