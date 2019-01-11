@@ -182,7 +182,7 @@ $(document).ready(function() {
             },
             dataType: 'json',
             success: function(data) {
-                if (data.result.includes('Success')) {
+                if (data.result.indexOf('Success') >= 0) {
                     displayMsg('success', languages.overlayUpdateSuccess);
                 } else {
                     displayMsg('error', languages.overlayUpdateError);
