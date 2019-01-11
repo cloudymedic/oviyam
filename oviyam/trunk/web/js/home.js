@@ -202,7 +202,7 @@ $(document).ready(function () {
                         }
 
                     } else {
-                        var msg = "Server not available";
+                        var msg = languages.serverUnavailable;
                         noty({
                             text: msg,
                             layout: 'topRight',

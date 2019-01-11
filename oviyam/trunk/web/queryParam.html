@@ -21,6 +21,9 @@
                     "bPaginate": false,
                     "bFilter": false,
                     "bSort": false,
+                    "oLanguage": {
+                        "sInfo": languages.Info
+                    }
                 });
     
                 loadQueryParamTable();
@@ -47,7 +50,7 @@
                             }
                         });
                     } else {
-                        var msg = 'Please select query parameter to delete';
+                        var msg = languages.queryDeleteWarn;
                         $.ambiance({
                             message: msg,
                             type: 'error'
@@ -184,11 +187,13 @@
                 text-align: justify;
             }
             #queryParamDiv tr.odd {
+            	color: #000;
                 background-color: #bbbbbb;
     
             }
     
             #queryParamDiv tr.even {
+            	color: #000;	
                 background-color: #fff;
     
             }

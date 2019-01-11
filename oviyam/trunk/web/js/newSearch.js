@@ -67,7 +67,7 @@ function searchClick(searchBtn) {
     if(modalities!='') {
         searchURL += '&modality=' + modalities.trim();
     }   
-    searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
+    
     var divContent = $('.ui-tabs-selected').find('a').attr('href') + '_content';
     $(divContent).html('');   
     
@@ -90,17 +90,19 @@ function searchClick(searchBtn) {
         	    	jConfirm(language['Message'], language['Creteria'], function (doQry) {
         				if(doQry==true) {
         					var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+        					searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
         				    searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
         					doQuery(searchURL,divContent);
         				} 
         		    });   	
         	    } else {
         	    	var wado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
+        	    	searchURL += "&serverURL=" + $('.ui-tabs-selected').find('a').attr('wadoUrl');
         	    	searchURL += '&ris=' + wado.substring(0,wado.indexOf('wado'))+"ris/Report.do?studyUID=";
         	    	doQuery(searchURL,divContent);
         	    }  
         } else {
-        	var msg = "Server not available";
+        	var msg = languages.serverUnavailable;
             noty({
                 text: msg,
                 layout: 'topRight',

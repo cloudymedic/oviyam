@@ -51,7 +51,7 @@ $(document).ready(function() {
                 }
             });
         } else {
-            msg = "Please select server!!!";
+            msg = languages.verifyWarn;
             $.ambiance({
                 message: msg,
                 type: 'error'
@@ -65,10 +65,13 @@ $(document).ready(function() {
         //"sPaginationType": "full_numbers"
         "bPaginate": false,
         "bFilter": false,
-        "bSort": false
+        "bSort": false,
+        "oLanguage": {
+            "sInfo": languages.Info
+        },
     });
 
-    $(".fg-toolbar.ui-corner-tl").html('<b>Servers</b>');
+    $(".fg-toolbar.ui-corner-tl").html('<b>' + languages['Server'] + '</b>');
 
     $("#deleteBtn").click(function() {
         deleteSelectedRow();
@@ -123,9 +126,9 @@ function insertTable() {
                 if (msg1.trim() == 'success') {
                     oTable.fnClearTable();
                     loadTable();
-                    msg = "Server added!!!";
+                    msg = languages.addSuccess;
                 } else if (msg1.trim() == 'duplicate') {
-                    msg = "Logical name already exists!!!";
+                    msg = languages.existWarn;
                 }
                 $.ambiance({
                     message: msg,
@@ -134,7 +137,7 @@ function insertTable() {
             }
         });
     } else {
-        msg = "Please enter all the details";
+        msg = languages.addWarn;
         $.ambiance({
             message: msg,
             type: 'error'
@@ -166,7 +169,7 @@ function editTable() {
         success: function(msg1) {
             oTable.fnClearTable();
             loadTable();
-            var msg = "Server edited!!!";
+            var msg = languages.editSuccess;
             $.ambiance({
                 message: msg,
                 type: 'success'
@@ -274,7 +277,7 @@ function deleteSelectedRow() {
                 oTable.fnClearTable();
                 loadTable();
 
-                msg = "Server deleted";
+                msg = languages.deleteSuccess;
                 $.ambiance({
                     message: msg,
                     type: 'success'
@@ -282,7 +285,7 @@ function deleteSelectedRow() {
             }
         });
     } else {
-        msg = "Please select server to delete";
+        msg = languages.deleteWarn;
         $.ambiance({
             message: msg,
             type: 'error'
@@ -350,7 +353,7 @@ function editSelectedRow() {
 
         editBtnPressed = true;
     } else {
-        var msg = "Please select server to edit";
+        var msg = languages.editWarn;
         $.ambiance({
             message: msg,
             type: 'error'
