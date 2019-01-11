@@ -199,12 +199,16 @@ tr.even td.sorting_1 {
 .dataTables_filter {
 	font-size: 14px;
 }
+.dataTables_scrollBody table thead{
+	display:none;
+}
 </style>
 <script type="text/javascript" src="js/LoadLanguage.js"></script>
 <script type="text/javascript">
 	var dTable;
 	$(document).ready(function () {
 	var tableName = '#<%=tabName%>_table';
+	
 	dTable = $(tableName).DataTable({
 			"bJQueryUI": true,
 			//"sPaginationType": "full_numbers",											
@@ -410,15 +414,15 @@ tr.even td.sorting_1 {
 		<thead>
 			<tr>
 				<th></th>
-				<th id='patientId'></th>
-				<th id='patientName'></th>
-				<th id="gender"></th>
+				<th class='patientId'></th>
+				<th class='patientName'></th>
+				<th class="gender"></th>
 				<!--<th><fmt:message key='dateOfBirth' bundle="${lang}" /></th>
 					<th><fmt:message key='accessionNumber' bundle="${lang}" /></th>-->
-				<th id='studyDate'></th>
-				<th id='studyDescp'></th>
-				<th id='lblModality'></th>
-				<th id='instanceCnt'></th>
+				<th class='studyDate'></th>
+				<th class='studyDescp'></th>
+				<th class='lblModality'></th>
+				<th class='instanceCnt'></th>
 				<th>Study Instance UID</th>
 				<th>Refer Physician</th>
 				<th>Series Count</th>

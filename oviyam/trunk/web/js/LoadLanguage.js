@@ -133,13 +133,13 @@ function loadLabels() {
     $(".clearBtn").text(languages['Reset']);
 
     //queryResult.jsp
-    $("#patientId").text(languages.PatientId);
-    $("#patientName").text(languages.PatientName);
-    $("#studyDate").text(languages.StudyDate);
-    $("#studyDescp").text(languages.StudyDesc);
-    $("#instanceCnt").text(languages.InstanceCount);
-    $('#lblModality').text(languages.Modality);
-    $('#gender').text(languages.Gender);
+    $(".patientId").text(languages.PatientId);
+    $(".patientName").text(languages.PatientName);
+    $(".studyDate").text(languages.StudyDate);
+    $(".studyDescp").text(languages.StudyDesc);
+    $(".instanceCnt").text(languages.InstanceCount);
+    $('.lblModality').text(languages.Modality);
+    $('.gender').text(languages.Gender);
 }
 
 function getCookie(c_name)
