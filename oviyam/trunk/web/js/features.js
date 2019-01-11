@@ -20,15 +20,9 @@ String.prototype.replaceAll = function(pcFrom, pcTo){
 }
 
 function createEvent(eventName, obj) {
-	var event,ieVersion;
-	if(ieVersion<=11) { //TODO
-	} else {
-		event = new CustomEvent(
-			eventName,{
-				detail: obj
-			}
-		);
-	}
+	var event = document.createEvent('CustomEvent');
+	var params = { bubbles: false, cancelable: false, detail: obj };
+	event.initCustomEvent(eventName, params.bubbles, params.cancelable, params.detail);
 	window.dispatchEvent(event);
 }
 
@@ -107,7 +101,7 @@ function doImageTile(currSer) {
     var src = jQuery('#frameSrc', actFrame).text();
     var seriesUID = "";
     seriesUID = getParameter(src, 'series');
-    if (!seriesUID.includes("null")) {
+    if (!seriesUID.indexOf("null") >= 0) {
     data = sessionStorage[seriesUID];
      if (data) {
        	jQuery('#loadingView', window.parent.document).hide();

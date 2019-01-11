@@ -126,7 +126,7 @@ function onToolSelection(e) {
  */
 function activateTools(toolid, callingFunction) {
     var iframe = window.parent.document.getElementsByTagName('iframe');
-    if (iframe.length > 1 && iframe[0].src.includes('TileContent.html') ||
+    if (iframe.length > 1 && iframe[0].src.indexOf('TileContent.html') >= 0 ||
         toolid == 'zoom' || toolid == 'move' || toolid == 'windowing') {
         for (var i = 0; i < iframe.length; i++) {
         	firstTry = true;
@@ -141,7 +141,7 @@ function activateTools(toolid, callingFunction) {
             total = parseInt(total);
             if (total > iNo || toolid == 'vflip' || toolid == 'hflip' || toolid == 'rotateLeft' || toolid == 'rotateRight' || toolid == 'reset') {
                 callingFunction(toolid, tmpWindow);
-            } else if(tmpWindow.location.href.includes('frameContent')&&(toolid == 'zoom'|| toolid == 'move' || toolid == 'windowing')){
+            } else if(tmpWindow.location.href.indexOf('frameContent') >= 0 &&(toolid == 'zoom'|| toolid == 'move' || toolid == 'windowing')){
 				callingFunction(toolid, tmpWindow);
 			}
         }
@@ -315,7 +315,7 @@ function rotateRightTextOverlay() {
 function doReset(toolid, tmpWindow) {
 	  var src = jQuery('#frameSrc', tmpWindow.document).html();
 	  var seriesUid = getParameter(src, 'series');
-	  if (seriesUid != null && (!seriesUid.includes("null"))) {
+	  if (seriesUid != null && (!seriesUid.indexOf("null") >= 0)) {
 	   try{
 		if(jQuery('#tool', tmpWindow.document).html()!='') {
 			jQuery('#' + jQuery('#tool', tmpWindow.document).html(), window.parent.document).removeClass('toggleOff');
@@ -369,7 +369,7 @@ function doReset(toolid, tmpWindow) {
 
 function doInvert(toolid) {
 	 var iframe = window.parent.document.getElementsByTagName('iframe');
-	 if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+	 if (iframe.length > 1 && iframe[0].src.indexOf('TileContent.html') >= 0) {
 	     for (var i = 0; i < iframe.length; i++) {
 	         activateInvert(iframe[i].contentWindow);
 	     }
@@ -399,11 +399,11 @@ function activateInvert(tmpWindow) {
     var stateVal = tmpWindow.state;
     stateVal.invert = stateVal.invert ? false : true;
     
-    if (!imageData['photometric'].includes('MONOCHROME')) {
+    if (!imageData['photometric'].indexOf('MONOCHROME') >= 0) {
         invertImage(tmpWindow);
         var tool = jQuery('#tool', tmpWindow.document).text();
 
-        if (tool.includes('windowing')) {
+        if (tool.indexOf('windowing') >= 0) {
             doWindowing1(true);
         }
     } else {
@@ -467,7 +467,7 @@ function doMove() {
         state.drag = false;
         e.target.style.cursor = "default";
         var iframe = window.parent.document.getElementsByTagName('iframe');
-        if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+        if (iframe.length > 1 && iframe[0].src.indexOf('TileContent.html') >= 0) {
             for (var i = 0; i < iframe.length; i++) {
                 var tmpWindow = iframe[i].contentWindow;
                 var iFState = tmpWindow.state;
@@ -698,7 +698,7 @@ function getPixelData(firstTime) {
                 imageData = JSON.parse(sessionStorage[seriesUid])[imgInc - 1];
           }
 
-		  if (imageData['photometric'].includes('MONOCHROME')) {
+		  if (imageData['photometric'].indexOf('MONOCHROME') >= 0) {
 			var url = "pixel.do?requestType=WADO&contentType=application/dicom&study=" + window.parent.pat.studyUID + "&series=" + seriesUid + "&object=" + imageData['SopUID'] + "&transferSyntax=1.2.840.10008.1.2.1" + "&serverURL=" + window.parent.pat.serverURL;
 
 			if(jQuery('#multiframe').css('visibility')!="hidden") { // Multiframe
@@ -810,7 +810,7 @@ function unbindWindowing(toolId) {
 	var isMultiframe;
 	var iNo;
 	var totalImages;
-	if ($(iframe[0]).attr('src').includes('TileContent.html')) {
+	if ($(iframe[0]).attr('src').indexOf('TileContent.html') >= 0) {
 		for (var i = 0; i < iframe.length; i++) {
 			var tmpWindow = iframe[i].contentWindow;
 			var src = jQuery('#frameSrc', tmpWindow.document).text();
@@ -1182,7 +1182,7 @@ function doWindowing(imageData,huDisplay,wlDisplay, firstTime) {
 				jQuery('.contextMenu').hide();
 //				jQuery('.selected').removeClass('selected');
 				var iframe = window.parent.document.getElementsByTagName('iframe');
-	            if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+	            if (iframe.length > 1 && iframe[0].src.indexOf('TileContent.html') >= 0) {
 	                for (var i = 0; i < iframe.length; i++) {
 	                    var tmpWindow = iframe[i].contentWindow;
 	                    tmpWindow.modifiedWC = modifiedWC;
@@ -1383,7 +1383,7 @@ function doZoom() {
 		state.drag = false;
 		e3.target.style.cursor = "default";
 		var iframe = window.parent.document.getElementsByTagName('iframe');
-        if (iframe.length > 1 && iframe[0].src.includes('TileContent.html')) {
+        if (iframe.length > 1 && iframe[0].src.indexOf('TileContent.html') >= 0) {
             for (var i = 0; i < iframe.length; i++) {
                 var tmpWindow = iframe[i].contentWindow;
                 var iFState = tmpWindow.state;

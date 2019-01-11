@@ -183,7 +183,7 @@
                                         parent.selectedFrame = null; //For IE
                                         var iFrame = window.parent.document.getElementsByTagName('iframe');
 
-                                        if (iFrame.length > 1 && $(iFrame[0]).attr('src').includes('TileContent.html')) {
+                                        if (iFrame.length > 1 && $(iFrame[0]).attr('src').indexOf('TileContent.html') >= 0) {
                                             var total = getTotalInstance(image);
                                             var currSer = getCurrentSeries(image);
                                             var selectedSeriesData = getSelectedSeries(currSer);

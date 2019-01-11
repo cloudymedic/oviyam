@@ -1076,7 +1076,7 @@ function load(isMultiframe,iNo,total) {
             	data = data[iNo];
             }
             var tmp = '';
-            if (src.includes('windowWidth')) {
+            if (src.indexOf('windowWidth') >= 0) {
                 tmp = src.replace('windowWidth=' + winWidth, 'windowWidth=' + data['windowWidth']);
                 tmp = tmp.replace('windowCenter=' + winCenter, 'windowCenter=' + data['windowCenter']);
                 jQuery('#frameSrc').text(tmp);
