@@ -116,11 +116,11 @@
 <!--                     <td style="width:50px;"> -->
 						<td>
                         <label for="patId">Patient ID</label>
-                        <input type="search" id="patId" placeholder="Patient ID" />
+                        <input type="search" id="patId" name='patId' placeholder="Patient ID" />
                     </td>
                     <td>
                         <label for="patName">Patient Name</label>
-                        <input type="search" id="patName" placeholder="Patient Name" />
+                        <input type="search" id="patName" name='patName' placeholder="Patient Name" />
                     </td>
                    <!-- <td>
                         <label for="accessionNo">Accession Number</label>
@@ -143,15 +143,15 @@
                 <tr>   
                 	<td>
                         <label for="studyDesc">Study Description</label>
-                        <input type="search" id="studyDesc" placeholder="Study/Procedure name" />
+                        <input type="search" id="studyDesc" name="studyDesc" placeholder="Study/Procedure name" />
                     </td>
                                      
                     <td>
                         <label for="referPhysician">Referring Physician</label>
-                        <input type="search" id="referPhysician" placeholder="Referring Physician" />
+                        <input type="search" id="referPhysician"  name="referPhysician" placeholder="Referring Physician" />
                     </td>
                     <td>
-                    	<div style="float: left; width: 10em; font-size: 14px; margin-top: 6px;"> Modality </div>
+                    	<div style="float: left; width: 10em; font-size: 14px; margin-top: 6px;"name='lblModality'> Modality </div>
                        
                         <select id="<%=request.getParameter("tabName")%>_modalities" multiple="multiple" class="modalitiesList <%=request.getParameter("tabName")%>_modalities" style="display: none;">
                             

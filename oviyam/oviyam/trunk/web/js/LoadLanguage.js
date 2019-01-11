@@ -27,6 +27,8 @@ function loadLabels() {
     $('#lblStudyDescription').html(languages['StudyDesc']);
     $('#lblModality').html(languages['Modality']);
     $('#lblInstanceCount').html(languages['InstanceCount']);
+    $('#lblSettings').html(languages.Settings);
+    $('#lblLogout').html(languages.logout);
 
     //Tools.html
     $('#lblLayout').attr('title', languages['Layout']);
@@ -84,6 +86,8 @@ function loadLabels() {
     $('#updIoviyamCxt').html(languages['Update']);
     $('#updateOverlay').html(languages['Update']);
     $('#updDownloadStudy').html(languages['Update']);
+    $('#lblDownloadStudy').html(languages.downloadImgLbl);
+    $("#panel7Header").html(languages.dwnldHeader);
 
     //query param.html
     $('#qpAddBtn').html(languages['Add']);
@@ -92,6 +96,7 @@ function loadLabels() {
     $('#lblStudyDateFilter').html(languages['StudyDateFilter']);
     $('#lblStudytimeFilter').html(languages['StudytimeFilter']);
     $('#lblModalityFilter').html(languages['ModalityFilter']);
+    $('#lblStudyDescFilter').html(languages['StudyDesc']);
     $('#lblAutoRefresh').html(languages['AutoRefresh']);
 
     //preference.html
@@ -103,19 +108,38 @@ function loadLabels() {
     $("[name='lblPreferences']").html(languages['ViewerPreference']);
     $("[name='lblPrefetch']").html(languages['prefetch']);
     $("[name='lblSessTimeout']").html(languages['sessTimeout']);
+    $("[name='themeSelect']").text(languages['themeSelect']);
+    $("[name='lblCountry']").text(languages['country']);
+    $("[name='lblLanguage']").text(languages['language']);
+    $("[name='lblLocale']").text(languages['locale']);
     
     //New Search.html
     $("label[for=patId]").text(languages['PatientId']);
+    $('[name="patId"]').attr('placeholder', languages['PatientId']);
     $("label[for=patName]").text(languages['PatientName']);
+    $('[name="patName"]').attr('placeholder', languages['PatientName']);
     $("label[for=accessionNo]").text(languages['AccessionNumber']);
+    $('[name="accessionNo"]').attr('placeholder', languages['AccessionNumber']);
     $("label[for=birthDate]").text(languages['BirthDate']);
     $("label[for=studyDesc]").text(languages['StudyDesc']);
+    $('[name="studyDesc"]').attr('placeholder', languages['StudyDesc']);
     $("label[for=referPhysician]").text(languages['ReferPhysician']);
+    $('[name="referPhysician"]').attr('placeholder', languages['ReferPhysician']);
+    $("[name='lblModality']").text(languages['Modality']);
     $(".bdate").prev().text(languages['BirthDate']);
     $(".fsdate").prev().text(languages['FromStudyDate']);
     $(".tsdate").prev().text(languages['ToStudyDate']);
     $(".searchBtn").text(languages['Search']);
     $(".clearBtn").text(languages['Reset']);
+
+    //queryResult.jsp
+    $("#patientId").text(languages.PatientId);
+    $("#patientName").text(languages.PatientName);
+    $("#studyDate").text(languages.StudyDate);
+    $("#studyDescp").text(languages.StudyDesc);
+    $("#instanceCnt").text(languages.InstanceCount);
+    $('#lblModality').text(languages.Modality);
+    $('#gender').text(languages.Gender);
 }
 
 function getCookie(c_name)

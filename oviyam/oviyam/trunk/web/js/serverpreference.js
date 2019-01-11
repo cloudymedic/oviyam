@@ -13,15 +13,9 @@ $(document).ready(function() {
             dataType: 'text',
             success: function(msg1) {
                 if (msg1.trim() == 'success') {
-                    $.ambiance({
-                        message: "Listener details updated and listener restarted!!!",
-                        type: 'success'
-                    });
+                	displayMsg('success', languages.listenerUpdateSuccess);
                 } else {
-                    $.ambiance({
-                        message: "Error while updating listener details!!!",
-                        type: 'error'
-                    });
+                	displayMsg('error', languages.listenerUpdateError);
                 }
             }
         });
@@ -30,11 +24,11 @@ $(document).ready(function() {
     $('#updIoviyamCxt').click(function() {
         var iOvmCxt = $('#ioviyamCxt').val().trim();
         if (iOvmCxt.length == 0) {
-            alert("iOviyam context should not be empty!!!");
+        	displayMsg("error", languages.iOviyamEmpty);
             return;
         }
         if (iOvmCxt.indexOf("\/") != 0) {
-            alert("iOviyam context must starts with /");
+        	displayMsg("error", languages.iOviyamInValid);
             return;
         }
 
@@ -48,15 +42,9 @@ $(document).ready(function() {
             dataType: 'text',
             success: function(msg2) {
                 if (msg2.trim() == 'success') {
-                    $.ambiance({
-                        message: "iOviyam context updated successfully!!!",
-                        type: 'success'
-                    });
+                	displayMsg('success', languages.iOviyamUpdateSuccess);
                 } else {
-                    $.ambiance({
-                        message: 'Error while updating iOviyam context!!!',
-                        type: 'error'
-                    });
+                	displayMsg('error', languages.iOviyamUpdateError);
                 }
             }
         });
@@ -77,15 +65,9 @@ $(document).ready(function() {
             dataType: 'text',
             success: function(msg3) {
                 if (msg3.trim() == 'success') {
-                    $.ambiance({
-                        message: "Download Study updated successfully!!!",
-                        type: 'success'
-                    });
+                	displayMsg('success', languages.downloadUpdateSuccess);
                 } else {
-                    $.ambiance({
-                        message: 'Error while updating Download Study!!!',
-                        type: 'error'
-                    });
+                	displayMsg('error', languages.downloadUpdateError);
                 }
             }
         });
@@ -115,7 +97,7 @@ $(document).ready(function() {
         if(overlayText.result =='Success'){
         	displayOverlay(overlayText);
         }else{
-        	displayMsg("error", "Failed to read Text Overlay");
+        	displayMsg("error", languages.overlayReadError);
         }
         
     }, 'json');
@@ -127,8 +109,9 @@ $(document).ready(function() {
             overlayText = data;
             if(overlayText.result =='Success'){
             	displayOverlay(overlayText);
+            	displayMsg('success', languages.overlayUpdateSuccess);
             }else{
-            	displayMsg("error", "Failed to reset Text Overlay");
+            	displayMsg("error", languages.overlayResetError);
             }
 
         }, 'json');
@@ -176,7 +159,7 @@ $(document).ready(function() {
             if (allModality != 'ALL') {
                 modalities = $('#modalityList').val().trim();
                 if (modalities.length < 2) {
-                    displayMsg('error', 'please enter correct modality List');
+                    displayMsg('error', languages.modalityValidError);
                     return;
                 }
             }
@@ -200,9 +183,9 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 if (data.result.includes('Success')) {
-                    displayMsg('success', 'text overlay updated successfully');
+                    displayMsg('success', languages.overlayUpdateSuccess);
                 } else {
-                    displayMsg('error', 'failed to update text overlay');
+                    displayMsg('error', languages.overlayUpdateError);
                 }
             }
         });

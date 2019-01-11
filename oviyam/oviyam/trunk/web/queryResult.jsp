@@ -200,7 +200,7 @@ tr.even td.sorting_1 {
 	font-size: 14px;
 }
 </style>
-
+<script type="text/javascript" src="js/LoadLanguage.js"></script>
 <script type="text/javascript">
 	var dTable;
 	$(document).ready(function () {
@@ -212,7 +212,12 @@ tr.even td.sorting_1 {
 			"responsive": true,
 			//"bFilter": false,
 			"oLanguage": {
-					"sSearch": "Filter  "
+				"sSearch": languages.Filter,
+				"sLengthMenu": languages.LengthMenu,
+				"sZeroRecords": languages.ZeroRecords,
+				"sInfo": languages.Info,
+				"sInfoEmpty": languages.InfoEmpty,
+				"sInfoFiltered": languages.InfoFiltered
 			},
 			"sScrollY": "87%",
 			"bScrollCollapse": true,
@@ -405,19 +410,18 @@ tr.even td.sorting_1 {
 		<thead>
 			<tr>
 				<th></th>
-				<th><fmt:message key='patientID' bundle="${lang}" /></th>
-				<th><fmt:message key='patientName' bundle="${lang}" /></th>
-				<th>Gender</th>
+				<th id='patientId'></th>
+				<th id='patientName'></th>
+				<th id="gender"></th>
 				<!--<th><fmt:message key='dateOfBirth' bundle="${lang}" /></th>
 					<th><fmt:message key='accessionNumber' bundle="${lang}" /></th>-->
-				<th><fmt:message key='studyDate' bundle="${lang}" /></th>
-				<th><fmt:message key='studyDescription' bundle="${lang}" /></th>
-				<th>Modality</th>
-				<th><fmt:message key="instanceCount" bundle="${lang}" /></th>
+				<th id='studyDate'></th>
+				<th id='studyDescp'></th>
+				<th id='lblModality'></th>
+				<th id='instanceCnt'></th>
 				<th>Study Instance UID</th>
 				<th>Refer Physician</th>
 				<th>Series Count</th>
-
 			</tr>
 		</thead>
 		<tbody>
