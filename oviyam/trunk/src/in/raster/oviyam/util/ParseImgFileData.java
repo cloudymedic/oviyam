@@ -189,6 +189,10 @@ public class ParseImgFileData {
 					imgPixelSpacingEle.getBytes()) : "";
 			String totalFrames = totalFramesEle != null ? new String(
 					totalFramesEle.getBytes()) : "";
+			boolean multiFrame = true;
+	        if(totalFrames.trim().equalsIgnoreCase("1") || totalFrames.trim().length() == 0){
+	           	multiFrame = false;
+	        }
 			String imgLtr = imgLaterality != null ? new String(
 					imgLaterality.getBytes()) : "";
 			String viewPos = viewPosition != null ? new String(
@@ -228,6 +232,7 @@ public class ParseImgFileData {
 			jsonObj.put("viewPosition", viewPos);
 			jsonObj.put("modality", modality);
 			jsonObj.put("photometric", photometric);
+			jsonObj.put("multiframe", multiFrame);
 			
 		} catch (Exception ex) {
 			log.error("Unable to read Dicom Data", ex);

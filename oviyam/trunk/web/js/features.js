@@ -118,9 +118,8 @@ function doImageTile(currSer) {
 
         var ser_Info = JSON.parse(sessionStorage[currSer]);
         ser_Info = ser_Info[0];
-        var multiframe = false;
-        if (ser_Info['numberOfFrames'] != '') {
-           	multiframe = true;
+        var multiframe = ser_Info['multiframe'];
+		if (multiframe == true) {
            	instCount = ser_Info['numberOfFrames'];
         } else {
            	instCount = selectedSeriesData['totalInstances'];

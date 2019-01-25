@@ -726,7 +726,7 @@ function loadInstanceText(checkForUpdate, autoplay) {
                  
                 }
 
-                if (data['numberOfFrames'] != undefined && data['numberOfFrames'] != '') {
+                if (data['numberOfFrames'] != undefined && data['numberOfFrames'] != '' && data['multiframe']) {
                     jQuery("#totalImages").html('Frames: ' + frameInc + ' / ' + data['numberOfFrames']);
                     total = data['numberOfFrames'];
                     jQuery('#multiframe').css('visibility', 'visible');
@@ -1229,10 +1229,8 @@ function toggleLayout() {
     
     var ser_Info = JSON.parse(sessionStorage[currSer]);
     ser_Info = ser_Info[0];
-    var multiframe = false;
-    
-    if (ser_Info['numberOfFrames'] != '') {
-        multiframe = true;
+    var multiframe = ser_Info['multiframe'];
+    if (multiframe == true) {
         totalImages = ser_Info['numberOfFrames'];
         imgInCnt = getParameter(src, 'frameNumber');
     } else {

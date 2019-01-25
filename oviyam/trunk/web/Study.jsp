@@ -209,11 +209,8 @@
 
                                             var ser_Info = JSON.parse(sessionStorage[currSer]);
                                             ser_Info = ser_Info[0];
-                                            var multiframe = false;
-                                            if (ser_Info['numberOfFrames'] != '') {
-                                                multiframe = true;
-                                            }
-
+                                            var multiframe = ser_Info['multiframe'];
+                                            
                                             divContent = '<table width="100%" height="100%" cellspacing="2" cellpadding="0" border="0" >';
                                             var count = 0;
                                             for (x = 0; x <= rowIndex; x++) {
