@@ -179,6 +179,10 @@ public class ParseMetadata {
 			pixelSpacing = pixelSpacing != null ? pixelSpacing : "";
 			imgPixelSpacing = imgPixelSpacing != null ? imgPixelSpacing : "";
 			totalFrames = totalFrames != null ? totalFrames : "";
+			boolean multiFrame = true;
+            if(totalFrames.trim().equalsIgnoreCase("1") || totalFrames.trim().length() == 0){
+            	 multiFrame = false;
+            }
 			imgLtr = imgLtr != null ? imgLtr : "";
 			viewPos = viewPos != null ? viewPos : "";
 			modality = modality != null ? modality : "";
@@ -244,6 +248,7 @@ public class ParseMetadata {
 			jsonObj.put("viewPosition", viewPos);
 			jsonObj.put("modality", modality);
 			jsonObj.put("photometric", photometric);
+			jsonObj.put("multiframe", multiFrame);
 
 		} catch (Exception e) {
 			log.error("Unable to add data into json", e);
