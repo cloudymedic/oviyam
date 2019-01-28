@@ -1,6 +1,6 @@
 var languages = {
     PageTitle: "ஓவியம்",
-    VersionNo:"2.7.1",
+    VersionNo:"2.7.2",
     UserName: "பயனர் பெயர்",
     Password: "கடவுச்சொல்",
     Login: "உள்நுழைக",
