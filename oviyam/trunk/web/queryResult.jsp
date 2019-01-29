@@ -199,7 +199,7 @@ tr.even td.sorting_1 {
 .dataTables_filter {
 	font-size: 14px;
 }
-.dataTables_scrollBody table thead{
+.dataTables_scrollHead table thead{
 	display:none;
 }
 </style>
@@ -208,6 +208,8 @@ tr.even td.sorting_1 {
 	var dTable;
 	$(document).ready(function () {
 	var tableName = '#<%=tabName%>_table';
+	var searchPane = '#<%=tabName%>_search';
+	$(searchPane).show();
 	
 	dTable = $(tableName).DataTable({
 			"bJQueryUI": true,
@@ -270,20 +272,32 @@ tr.even td.sorting_1 {
 			$('#Toggler').css('top', '0.5%');
 	}                 
 	});
+	
+	$('.dataTables_scrollBody table thead').click(function () {
+		$('.dataTables_scrollBody table thead').hide();
+		$('.dataTables_scrollHead table thead').show();
+	});
 
 	function toggleDivider(divider) {
-			var westPane = $('#<%=tabName%>_westPane');
+		var serverName = $("#tabUL .ui-state-active").find('a').get(0);
+		serverName = $(serverName).attr('href');
+		$('.dataTables_scrollBody table thead').hide();
+		$('.dataTables_scrollHead table thead').show();
+
+		var toggler = $(serverName + '_Toggler');
+		var westPane = $(serverName + '_westPane');
+		var searchPane = $(serverName + '_search');
 
 			if ($(westPane).is(":visible")) {
 					// $(westPane).html('');
 					$(westPane).hide();
-					console.log($('#Toggler').next());
-					console.log($('#Toggler').next());
-					$('#Toggler').next().css('width', '100%');
-					$('#Toggler').next().css('left', '0px');
-					$('#Toggler').css('left', '0px');
+					console.log($(toggler).next());
+					console.log($(toggler).next());
+					$(toggler).next().css('width', '100%');
+					$(toggler).next().css('left', '0px');
+					$(toggler).css('left', '0px');
 					$(divider).attr('title', 'Show Preview');
-					if ($('#<%=tabName%>_search').is(":visible")) {
+					if ($(searchPane).is(":visible")) {
 							$(divider).css('background', 'url("images/showall.png")');
 							$(divider).next().css('background', 'url("images/hideall.png")');
 					} else {
@@ -293,11 +307,11 @@ tr.even td.sorting_1 {
 			} else {
 					loadWest();
 					$(westPane).show();
-					$('#Toggler').next().css('left', '256px');
-					$('#Toggler').next().css('width', $('body').width() - 260 + 'px');
+					$(toggler).next().css('left', '256px');
+					$(toggler).next().css('width', $('body').width() - 260 + 'px');
 					$(divider).attr('title', 'Hide Preview');
-					$('#Toggler').css('left', '256px');
-					if ($('#<%=tabName%>_search').is(":visible")) {
+					$(toggler).css('left', '256px');
+					if ($(searchPane).is(":visible")) {
 							$(divider).css('background', 'url("images/hidewest.png")');
 							$(divider).next().css('background', 'url("images/hidesearch.png")');
 					} else {
@@ -305,26 +319,31 @@ tr.even td.sorting_1 {
 							$(divider).next().css('background', 'url("images/showall.png")');
 					}
 			}
-			$('#<%=tabName%>_table').css('width', '100%');
+			$('#' + tableName + '_table').css('width', '100%');
 			dTable.columns.adjust().draw();
 	}
 
 	function toggleSearch(divider) {
-			var searchPane = $('#<%=tabName%>_search');
-			var tabContent = $('#<%=tabName%>_content');
-
+		$('.dataTables_scrollBody table thead').hide();
+		$('.dataTables_scrollHead table thead').show();
+		var serverName = $("#tabUL .ui-state-active").find('a').get(0);
+		serverName = $(serverName).attr('href');
+		var westPane = $(serverName + '_westPane');
+		var searchPane = $(serverName + '_search');
+		var tabContent = $(serverName + '_content');
+		var toggler = $(serverName + '_Toggler');
 
 			if ($(searchPane).is(":visible")) {
 					$(searchPane).hide();
 					// $(tabContent).css('height', '100%');
 					$(tabContent).css('height', '83%');
-					$('#Toggler').css('top', '1%');
-					$('#Toggler').next().css('top', '0px');
+					$(toggler).css('top', '1%');
+					$(toggler).next().css('top', '0px');
 					// $('#Toggler').next().css('height', '100%');
-					$('#Toggler').next().css('height', '83%');
+					$(toggler).next().css('height', '83%');
 					$(divider).attr('title', 'Show Search');
 
-					if ($('#<%=tabName%>_westPane').is(":visible")) {
+					if ($(westPane).is(":visible")) {
 							$(divider).css('background', 'url("images/showall.png")');
 							$(divider).prev().css('background', 'url("images/hideall.png")');
 					} else {
@@ -335,11 +354,11 @@ tr.even td.sorting_1 {
 					$(searchPane).show();
 					$(divider).attr('title', 'Hide Search');
 					$(tabContent).css('height', '83%');
-					$('#Toggler').css('top', '13.5%');
-					$('#Toggler').next().css('top', '13%');
-					$('#Toggler').next().css('height', '83%');
+					$(toggler).css('top', '13.5%');
+					$(toggler).next().css('top', '13%');
+					$(toggler).next().css('height', '83%');
 
-					if ($('#<%=tabName%>_westPane').is(":visible")) {
+					if ($(westPane).is(":visible")) {
 							$(divider).css('background', 'url("images/hidesearch.png")');
 							$(divider).prev().css('background','url("images/hidewest.png")');
 					} else {
@@ -371,17 +390,17 @@ tr.even td.sorting_1 {
 			<div id="<%=tabName%>_westPane"
 				style="width: 255px; visibility: visible; display: block; z-index: 0; float: left; height: 94%;"></div>
 
-			<div id="Toggler"
+			<div id="<%=tabName%>_Toggler"
 				style="position: absolute; top: 13.5%; left: 256px; z-index: 3;">
 
-				<div id="westToggler" name="testToggler" title="Hide Preview"
+				<div id="<%=tabName%>_westToggler" name="testToggler" title="Hide Preview"
 					class="ui-state-default"
 					onmouseover="this.className='ui-state-hover'"
 					onmouseout="this.className='ui-state-default'"
 					style="width: 24px; height: 24px; cursor: pointer; float: left; z-index: 3; background: url('images/hidewest.png'); border: none;"
 					onclick="this.className='ui-state-default';toggleDivider(this);"></div>
 
-				<div id="searchToggler" title="Hide Search"
+				<div id="<%=tabName%>_searchToggler" title="Hide Search"
 					class="ui-state-default toggler"
 					onmouseover="this.className='ui-state-hover'"
 					onmouseout="this.className='ui-state-default'"

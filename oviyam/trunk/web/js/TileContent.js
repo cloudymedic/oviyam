@@ -1010,8 +1010,8 @@ function loadImg(isMultiframe, iNo, iFrame) {
 	try {
 		$('#thickLocationPanel', iFrame).hide();
 		var imgSrc = null;
-		var winCenter = $('#winCenter').text();
-		var winWidth = $('#winWidth').text();
+		var winCenter = windowCenter;
+        var winWidth = windowWidth;
 		if ((window.parent.pat.serverURL.indexOf('wado') > 0 && modifiedWC != undefined && modifiedWW != undefined && (modifiedWC != windowCenter || modifiedWW != windowWidth)) || ((winCenter != undefined && winCenter != null) || (winWidth != undefined && winWidth != null))) {
 			if (!isMultiframe) {
 				imgSrc = jQuery('#' + (seriesUid + "_" + iNo).replace(/\./g, '_'), window.parent.document).attr('src');
@@ -1028,10 +1028,13 @@ function loadImg(isMultiframe, iNo, iFrame) {
 				imgSrc = imgSrc.trim() + '&windowWidth=' + modifiedWW;
 				$('#winCenter', iFrame).text(modifiedWC);
             	$('#winWidth', iFrame).text(modifiedWW);
-            	
+            	jQuery("#windowLevel", iFrame).html('WL: ' + modifiedWC + ' / ' + 'WW: ' + modifiedWW);
 			} else {
 				imgSrc += '&windowCenter=' + winCenter;
 				imgSrc = imgSrc.trim() + '&windowWidth=' + winWidth;
+				$('#winCenter', iFrame).text(winCenter);
+                $('#winWidth', iFrame).text(winWidth);
+                jQuery("#windowLevel", iFrame).html('WL: ' + winCenter + ' / ' + 'WW: ' + winWidth);
 			}	
 			
 			jQuery("#wltmpImg", iFrame).attr('src', imgSrc);
