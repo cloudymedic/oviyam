@@ -83,7 +83,6 @@ public class ServerConfigServlet extends HttpServlet {
         String port = request.getParameter("port");
         String retrieve = request.getParameter("retrieve");
         String wadoCxt = request.getParameter("wadoContext");
-        String protocol = request.getParameter("protocol");
         
         String wadoport = request.getParameter("wadoPort");
         String imageType = request.getParameter("imageType");
@@ -102,7 +101,6 @@ public class ServerConfigServlet extends HttpServlet {
             sm.setPort(port);
             sm.setRetrieve(retrieve);
             sm.setWadocontext(wadoCxt);
-            sm.setProtocol(protocol);
             sm.setWadoport(wadoport);
             sm.setImageType(imageType);
             sm.setPreviewStatus(previews);

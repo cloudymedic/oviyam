@@ -72,9 +72,6 @@ public class Server {
 
 	@Element(required = false)
 	private String wadocontext;
-	
-	@Element(required = false)
-	private String protocol = "WADO";
 
 	@Element(required = false)
 	private String wadoport;
@@ -140,14 +137,6 @@ public class Server {
 
 	public void setWadocontext(String wadocontext) {
 		this.wadocontext = wadocontext;
-	}
-	
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
 	}
 
 	public String isPreviewEnabled() {

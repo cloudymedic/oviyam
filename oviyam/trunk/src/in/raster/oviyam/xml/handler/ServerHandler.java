@@ -125,7 +125,6 @@ public class ServerHandler {
 					serObj.setPort(server.getPort());
 					serObj.setRetrieve(server.getRetrieve());
 					serObj.setWadocontext(server.getWadocontext());
-					serObj.setProtocol(server.getProtocol());
 					serObj.setWadoport(server.getWadoport());
 					serObj.setImageType(server.getImageType());
 					serObj.setPreviewStatus(server.isPreviewEnabled());

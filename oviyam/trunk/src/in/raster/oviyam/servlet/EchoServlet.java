@@ -46,15 +46,9 @@
 package in.raster.oviyam.servlet;
 
 import in.raster.oviyam.delegate.EchoService;
-import in.raster.oviyam.xml.handler.ServerHandler;
-import in.raster.oviyam.xml.model.Server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,7 +56,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dcm4che.util.DcmURL;
-import org.json.JSONObject;
 
 /**
  * Servlet implementation class EchoServlet
@@ -87,69 +80,14 @@ public class EchoServlet extends HttpServlet {
 
 		String dcmURL = request.getParameter("dicomURL");
 
-		String[] dcmUrl = dcmURL.split(":");
-
-		String AETitle = dcmUrl[1].substring(2);
-		String hostName = dcmUrl[2];
-
-		hostName = hostName.substring(hostName.indexOf("@") + 1);
-		String port = dcmUrl[3];
-
-		ServerHandler sHandler = new ServerHandler();
-		Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);
-
 		String status = "";
 
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-		if (server.getProtocol().equalsIgnoreCase("QIDO-RS")) {
-			try {
-				String wadoContext = server.getWadocontext();
-				wadoContext = wadoContext.substring(0,
-						wadoContext.lastIndexOf("/"));
-				String wadoURL = hostName + ":" + server.getWadoport() + "/"
-						+ wadoContext;
-
-				wadoURL += "/dimse/" + server.getAetitle();
-				wadoURL = "http://" + wadoURL;
-				
-				URL url = new URL(wadoURL);
-				HttpURLConnection conn = (HttpURLConnection) url
-						.openConnection();
-				conn.setRequestMethod("POST");
-				conn.setRequestProperty("Accept", "application/json");
-				if (conn.getResponseCode() != 200) {
-					System.out.println("Echo failed");
-					out.print("Echo failed");
-				}
-				BufferedReader br = new BufferedReader(new InputStreamReader(
-						(conn.getInputStream())));
-
-				String output;
-
-				String returnValue = "";
-				while ((output = br.readLine()) != null) {
-					returnValue += output;
-				}
-
-				JSONObject jsonObj = new JSONObject(returnValue);
-				String result = jsonObj.getString("result");
-				if (result.equalsIgnoreCase("0")) {
-					status = "EchoSuccess";
-				} else {
-					status = "Echo failed";
-				}
-
-			} catch (Exception e) {
-				status = "Echo failed";
-			}
-		} else {
-			DcmURL url = new DcmURL(dcmURL);
-			EchoService echo = new EchoService();
-			echo.checkEcho(url);
-			status = echo.getStatus().trim();
-
-		}
+		DcmURL url = new DcmURL(dcmURL);
+		EchoService echo = new EchoService();
+		echo.checkEcho(url);
+		status = echo.getStatus().trim();
 
 		out.print(status);
 		out.close();
