@@ -46,7 +46,7 @@
 package in.raster.oviyam.handler;
 
 import in.raster.oviyam.SeriesInfo;
-import in.raster.oviyam.SeriesInfoWeb;
+
 import in.raster.oviyam.model.SeriesModel;
 import in.raster.oviyam.util.SeriesComparator;
 import in.raster.oviyam.xml.handler.ServerHandler;
@@ -130,7 +130,7 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
     public void doTag() throws JspException, IOException {
 
         SeriesInfo seriesInfo = null;
-        SeriesInfoWeb seriesInfoWeb = null;
+        
 
         try {
             /**
@@ -138,30 +138,9 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
              * study and patient.
              */
             seriesInfo = new SeriesInfo();
-            seriesInfoWeb = new SeriesInfoWeb();
             
-            String[] dcmUrl = dcmURL.split(":");
-            
-            String AETitle = dcmUrl[1].substring(2);
-            String hostName = dcmUrl[2];
-            hostName = hostName.substring(hostName.indexOf("@")+1);
-            String port = dcmUrl[3];
-            
-            ServerHandler sHandler = new ServerHandler();
-            Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);            
-            
-            String wadoContext = server.getWadocontext();
-            
-          
-            if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
-           	 	wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
-           	 	serverURL = serverURL.substring(0,serverURL.lastIndexOf("/"));
-           	 	seriesInfoWeb.callWithWebQuery(patientId, study, serverURL);
-           	 	seriesList = seriesInfoWeb.getSeriesList();
-            }else{
-            	seriesInfo.callFindWithQuery(patientId, study, dcmURL);
-            	seriesList = seriesInfo.getSeriesList();
-            }
+            seriesInfo.callFindWithQuery(patientId, study, dcmURL);
+            seriesList = seriesInfo.getSeriesList();
             
         } catch(Exception e) {
             log.error("Unable to create instance of SeriesInfo and access its callFindWithQuery()" , e);

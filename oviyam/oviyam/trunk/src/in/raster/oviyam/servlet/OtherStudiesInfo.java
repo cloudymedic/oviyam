@@ -46,10 +46,7 @@
 package in.raster.oviyam.servlet;
 
 import in.raster.oviyam.PatientInfo;
-import in.raster.oviyam.PatientInfoWeb;
 import in.raster.oviyam.model.StudyModel;
-import in.raster.oviyam.xml.handler.ServerHandler;
-import in.raster.oviyam.xml.model.Server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -99,30 +96,10 @@ public class OtherStudiesInfo extends HttpServlet {
         String serverURL = request.getParameter("serverURL");
             
             ArrayList<StudyModel> studyList = null;
-            
-            String[] dcmUrl = dcmURL.split(":");
-            
-            String AETitle = dcmUrl[1].substring(2);
-            String hostName = dcmUrl[2];
-            hostName = hostName.substring(hostName.indexOf("@")+1);
-            String port = dcmUrl[3];
-            
-            ServerHandler sHandler = new ServerHandler();
-            Server server = sHandler.findServerByAetIpPort(AETitle, hostName, port);            
-            
-            String wadoContext = server.getWadocontext();
-            
-            if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
-            	PatientInfoWeb patientInfoWeb = new PatientInfoWeb();
-           	 	wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
-           	 	serverURL = serverURL.substring(0,serverURL.lastIndexOf("/"));
-           	 	patientInfoWeb.callWithWebQuery(patID, "", "", "", "", "", "", "", "", serverURL);
-           	 	studyList = patientInfoWeb.getStudyList();
-            }else{
-            	PatientInfo patientInfo = new PatientInfo();
-            	patientInfo.callFindWithQuery(patID, "", dcmURL);
-            	studyList = patientInfo.getStudyList();
-            }
+                   
+            PatientInfo patientInfo = new PatientInfo();
+            patientInfo.callFindWithQuery(patID, "", dcmURL);
+            studyList = patientInfo.getStudyList();
             
             JSONArray sArray = new JSONArray();
             

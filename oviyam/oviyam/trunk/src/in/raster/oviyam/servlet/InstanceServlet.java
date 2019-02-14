@@ -46,14 +46,10 @@
 package in.raster.oviyam.servlet;
 
 import in.raster.oviyam.ImageInfo;
-import in.raster.oviyam.ImageInfoWeb;
 import in.raster.oviyam.model.InstanceModel;
 import in.raster.oviyam.util.InstanceComparator;
 import in.raster.oviyam.util.ParseImgFileData;
-import in.raster.oviyam.util.ParseMetadata;
 import in.raster.oviyam.xml.handler.LanguageHandler;
-import in.raster.oviyam.xml.handler.ServerHandler;
-import in.raster.oviyam.xml.model.Server;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,33 +101,13 @@ public class InstanceServlet extends HttpServlet {
 		String seriesUID = request.getParameter("seriesUID");
 		String dcmURL = request.getParameter("dcmURL");
 		String wadoURL = request.getParameter("serverURL");
-		String webURL = wadoURL;
 
 		ImageInfo imageInfo = new ImageInfo();
-		ImageInfoWeb imageInfoWeb = new ImageInfoWeb();
+		
 		ArrayList<InstanceModel> instanceList = null;
 		
-		String[] dcmUrl = dcmURL.split(":");
-		
-		String AETitle = dcmUrl[1].substring(2);
-        String hostName = dcmUrl[2];
-        hostName = hostName.substring(hostName.indexOf("@")+1);
-        String port = dcmUrl[3];
-		
-		ServerHandler sHandler = new ServerHandler();
-		Server server = sHandler.findServerByAetIpPort(AETitle,
-				hostName, port);
-
-		if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
-			String wadoContext = server.getWadocontext();
-			wadoContext = wadoContext.substring(0, wadoContext.lastIndexOf("/"));
-			webURL = webURL.substring(0, webURL.lastIndexOf("/"));
-       	 	imageInfoWeb.callWithWebQuery(patID, studyUID, seriesUID, null, webURL);
-       	 	instanceList = imageInfoWeb.getInstancesList();
-		}else{
-			imageInfo.callFindWithQuery(patID, studyUID, seriesUID, null, dcmURL);
-			instanceList = imageInfo.getInstancesList();
-		}
+		imageInfo.callFindWithQuery(patID, studyUID, seriesUID, null, dcmURL);
+		instanceList = imageInfo.getInstancesList();
 		
 		Collections.sort(instanceList, new InstanceComparator());
 
@@ -155,40 +131,26 @@ public class InstanceServlet extends HttpServlet {
 				InstanceModel im = (InstanceModel) instanceList.get(i);
 
 				String objectUID = im.getSopIUID();
-				String wadoURL1 = webURL;
+				
 				String UrlTmp = null;
 
 				try {
-					
-					if(server.getProtocol().equalsIgnoreCase("QIDO-RS")){
-						wadoURL1 += "/rs/studies/" + studyUID;
-						wadoURL1 +="/series/"+seriesUID;
-						wadoURL1 += "/instances/"+im.getSopIUID();
-						wadoURL1 += "/metadata";
-						URL url = new URL(wadoURL1);
-						ParseMetadata metadata = new ParseMetadata(url);
-						jsonArray.put(metadata.readImageData(im));
-
-					}else {
-						if (!(!wadoURL.equals("C-MOVE") && !wadoURL.equals("C-GET"))) {
-							UrlTmp = fname + File.separator + objectUID;
-							is = new FileInputStream(new File(UrlTmp));
-						} else {
-							UrlTmp = wadoURL + "&objectUID=" + objectUID
-									+ "&transferSyntax=1.2.840.10008.1.2.1";
-							URL url = new URL(UrlTmp);
-							is = url.openStream();
-						}
-						ParseImgFileData dicomFile = new ParseImgFileData(is);
-
-						jsonArray.put(dicomFile.readDicomFile(im));
+					if (!(!wadoURL.equals("C-MOVE") && !wadoURL.equals("C-GET"))) {
+						UrlTmp = fname + File.separator + objectUID;
+						is = new FileInputStream(new File(UrlTmp));
+					} else {
+						UrlTmp = wadoURL + "&objectUID=" + objectUID
+								+ "&transferSyntax=1.2.840.10008.1.2.1";
+						URL url = new URL(UrlTmp);
+						is = url.openStream();
 					}
+					ParseImgFileData dicomFile = new ParseImgFileData(is);
+					jsonArray.put(dicomFile.readDicomFile(im));
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			// }
 
 			PrintWriter out = response.getWriter();
 			out.print(jsonArray);
