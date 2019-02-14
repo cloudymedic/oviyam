@@ -107,9 +107,9 @@ public class DcmImage extends HttpServlet {
         String transferSyntax = request.getParameter("transferSyntax");
         String frameNo = request.getParameter("frameNumber");
         String isRID = request.getParameter("rid");
-        String isPDF = request.getParameter("pdf");
+        String isECG = request.getParameter("ECG");
 
-        if(isRID==null || isPDF !=null) {
+        if(isRID==null && isECG == null) {
 	        imageURL = serverURL + "?requestType=WADO&studyUID=" + study + "&seriesUID=" + series + "&objectUID=" + object;
 	
 	        if(contentType != null) {

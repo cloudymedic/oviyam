@@ -767,8 +767,13 @@ function resizeCanvas() { //To resize the canvas on any screen size change
 }
 
 function loadPDF(src) {
-	var imgSrc = 'Image.do?serverURL=' + parent.pat.serverURL + '&study=' + getParameter(src,'study') + '&series=' + seriesUid + '&object=' + getParameter(src,'object') + '&rid=' + getParameter(src,'rid') + "&pdf=yes";
+	var imgSrc = 'Image.do?serverURL=' + parent.pat.serverURL + '&study=' + getParameter(src,'study') + '&series=' + seriesUid + '&object=' + getParameter(src,'object');
 	var frame = window.parent.getActiveFrame();
+
+	let sopClassUID = getParameter(src, 'sopClassUID');
+	if (sopClassUID.indexOf('1.2.840.10008.5.1.4.1.1.9') >= 0) {
+		imgSrc += "&ECG=yes";
+	}
 	frame.src = imgSrc;	
 }
 

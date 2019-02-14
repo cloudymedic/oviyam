@@ -273,6 +273,11 @@ tr.even td.sorting_1 {
 	}                 
 	});
 	
+	$('.fg-toolbar').click(function () {
+		$('.dataTables_scrollBody table thead').hide();
+		$('.dataTables_scrollHead table thead').show();
+	});
+	
 	$('.dataTables_scrollBody table thead').click(function () {
 		$('.dataTables_scrollBody table thead').hide();
 		$('.dataTables_scrollHead table thead').show();
