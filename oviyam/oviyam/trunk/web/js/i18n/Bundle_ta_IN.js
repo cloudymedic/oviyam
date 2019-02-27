@@ -114,5 +114,6 @@ var languages = {
     dwnldHeader: "பட பதிவிறக்கம்",
     downloadImgLbl: "பயனர்கள் படங்களை பதிவிறக்க முடியும்",
     updateSuccess: "வெற்றிகரமாக மேம்படுத்தப்பட்டது",
-    updateError: "புதுப்பிப்பு தோல்வியடைந்தது"    
+    updateError: "புதுப்பிப்பு தோல்வியடைந்தது",
+    dateFormat:"DD-MM-YYYY"
 };

@@ -1,8 +1,9 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <script type="text/javascript" src="js/newSearch.js"></script>
+        <script type="text/javascript" src="js/lib/moment.js"></script>
         <script type="text/javascript" src="js/LoadLanguage.js"></script>
+        <script type="text/javascript" src="js/newSearch.js"></script>
         <script type="text/javascript" src="js/lib/jquery-gentleSelect.js"></script>
         <link rel="stylesheet" type="text/css" href="css/jquery.alerts.css" />
         <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
@@ -12,9 +13,12 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $('button').button();
-                $('.bdate').datepicker();
-                $('.fsdate').datepicker();
-                $('.tsdate').datepicker();
+                
+                let dateFormat = "";
+                dateFormat = languages.dateFormat.toLowerCase().replace('yyyy','yy');
+                $('.bdate').datepicker({ dateFormat: dateFormat});
+                $('.fsdate').datepicker({ dateFormat: dateFormat});
+                $('.tsdate').datepicker({ dateFormat: dateFormat});
                 
                 $('#<%=request.getParameter("tabName")%>_modalities').gentleSelect({
 			   		 columns: 3,
