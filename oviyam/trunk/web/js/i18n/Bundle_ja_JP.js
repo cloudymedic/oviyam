@@ -116,5 +116,6 @@ var languages = {
 		dwnldHeader: "画像ダウンロード",
 		downloadImgLbl: "ユーザーは画像をダウンロードできます",
 		updateSuccess: "更新成功",
-		updateError: "アップデートに失敗しました"
+		updateError: "アップデートに失敗しました",
+		dateFormat:"YYYY/MM/DD"
 };

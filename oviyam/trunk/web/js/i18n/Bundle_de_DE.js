@@ -114,5 +114,6 @@ var languages = {
     dwnldHeader: "Bild herunterladen",
     downloadImgLbl: "Benutzer können Bilder herunterladen",
     updateSuccess: "Erfolgreich geupdated",
-    updateError: "Update fehlgeschlagen"
+    updateError: "Update fehlgeschlagen",
+    dateFormat:"DD.MM.YYYY"
 };

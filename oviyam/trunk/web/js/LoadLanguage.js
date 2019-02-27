@@ -127,8 +127,11 @@ function loadLabels() {
     $('[name="referPhysician"]').attr('placeholder', languages['ReferPhysician']);
     $("[name='lblModality']").text(languages['Modality']);
     $(".bdate").prev().text(languages['BirthDate']);
+    $('.bdate').attr('placeholder', languages['dateFormat']);
     $(".fsdate").prev().text(languages['FromStudyDate']);
+    $('.fsdate').attr('placeholder', languages['dateFormat']);
     $(".tsdate").prev().text(languages['ToStudyDate']);
+    $('.tsdate').attr('placeholder', languages['dateFormat']);
     $(".searchBtn").text(languages['Search']);
     $(".clearBtn").text(languages['Reset']);
 

@@ -143,11 +143,8 @@ function resetClick(resetBtn, div) {
 }
 
 function convertToDcm4cheeDate(givenDate) {
-    var retVal = "";
-    if(givenDate != "") {
-        var str = givenDate.split("/");
-        retVal = str[2] + str[0] + str[1];
-    }
+	let retVal = moment(givenDate, languages.dateFormat).format('YYYYMMDD');
+    
     return(retVal);
 }
 
