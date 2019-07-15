@@ -455,7 +455,8 @@ function loadTextOverlay() {
 	jQuery("#patGender").html(window.parent.pat.pat_gender);
 
 	var src = jQuery('#frameSrc').html();
-	jQuery('#seriesDesc').html(getParameter(src,'seriesDesc'));
+	src = decodeURI(src);
+	jQuery('#seriesDesc').html(getParameter(src, 'seriesDesc'));
 	jQuery('#modalityDiv').html(getParameter(src,'modality'));
 	total = parseInt(getParameter(src,'images'));
 	jQuery('#totalImages').html(total>1 ? 'Images:' + (imgInc) + '/' + total :'Image:' + (imgInc) + '/' + total);

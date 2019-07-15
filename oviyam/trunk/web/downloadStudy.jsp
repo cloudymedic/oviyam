@@ -51,8 +51,10 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
                     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
                         <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-
-
+							<%
+                        		String studyDesc = new String(request.getParameter("studyDesc")
+                                	.getBytes("ISO-8859-1"), "UTF-8");
+                    		%>
                             <html>
 
                             <head>
@@ -130,7 +132,7 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                             <body>
                                 <c:if test="${param.descDisplay=='true'}">
                                     <div id='${param.study}' class="accordion1" title="${tooltip}">
-                                        <input type="checkbox" name="${param.study}" id="studyCheck" onchange="selectStudy(this)"> ${param.studyDesc}
+                                        <input type="checkbox" name="${param.study}" id="studyCheck" onchange="selectStudy(this)"> <%=studyDesc%>
                                         <span style="float: right; padding-right: 3%">${param.studyDate}</span>
                                     </div>
                                 </c:if>

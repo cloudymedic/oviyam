@@ -52,7 +52,10 @@
                 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
                     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
                         <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-
+							<%
+                        		String studyDesc = new String(request.getParameter("studyDesc")
+                                	.getBytes("ISO-8859-1"), "UTF-8");
+                    		%>
                             <html>
 
                             <head>
@@ -314,7 +317,7 @@
 
                             <body>
                                 <c:if test="${param.descDisplay=='true'}">
-                                    <div id='${param.study}' class="accordion open" title="${tooltip}" onclick="acc(jQuery(this));">${param.studyDesc}</div>
+                                    <div id='${param.study}' class="accordion open" title="${tooltip}" onclick="acc(jQuery(this));"><%=studyDesc%></div>
                                 </c:if>
                                 <div>
                                     <ser:Series patientId="${param.patient}" study="${param.study}" dcmURL="${param.dcmURL}" serverURL="${param.wadoUrl}">
@@ -501,7 +504,7 @@
                                     if (sessionStorage[studyId] == undefined) {
                                         var study = {
                                             "studyUID": studyId,
-                                            "studyDesc": "${param.studyDesc}",
+                                            "studyDesc": "<%=studyDesc%>",
                                             "studyDate": "${param.studyDate}"
                                         };
                                         var studyData = sessionStorage["${param.patient}"];
