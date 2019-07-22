@@ -57,6 +57,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import in.raster.oviyam.handler.DownloadHandler;
@@ -74,6 +75,9 @@ public class DownloadStudyServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(DownloadStudyServlet.class);
     
     PrintWriter out = null;
+    DownloadModel downloadModel;
+	DownloadHandler downloadHandler;
+	String returnValue = "";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
     	try {
@@ -82,54 +86,7 @@ public class DownloadStudyServlet extends HttpServlet {
     			RequestDispatcher rd = request.getRequestDispatcher("/download.do");
     			rd.forward(request, response);
     		} else {
-    			String downloadRequest = request.getParameter("downloadRequest").trim();
-    			AtomicLong counter = new AtomicLong(System.currentTimeMillis());
-        		long currTime = counter.getAndIncrement();
-        		String requestedTime = String.valueOf(currTime);
-        		JSONArray jsonArray=null;
-        		
-        		String returnValue = "";
-    			out = response.getWriter();
-    			HttpSession session = request.getSession(true);
-    			String sessionID = session.getId();
-    			DownloadModel downloadModel = new DownloadModel();
-    			DownloadHandler downloadHandler = new DownloadHandler(downloadModel);
-    			downloadModel.setSessionID(sessionID);
-        	
-    			JSONObject requestedValues = new JSONObject(downloadRequest);
-    			String patientInfo = requestedValues.getString("patientInfo");
-    			String selectedSeries = requestedValues.getString("selectedSeries");
-    			String downloadFileType = requestedValues.getString("downloadFileType");
-    			downloadModel.setDownloadFileType(downloadFileType);
-    			JSONObject patientInfoObj = new JSONObject(patientInfo); 
-    			downloadModel.setPatientInfo(patientInfoObj);;
-    			
-    			try {
-    				jsonArray = new JSONArray(selectedSeries);
-    				for(int i=0;i<jsonArray.length();i++) {
-    					JSONObject jsonObject = jsonArray.getJSONObject(i);
-    					downloadModel.setSelectedSeries(jsonObject);
-    					downloadHandler.processSeries();
-    				}
-    			}catch (Exception e) {
-    				log.error("Error in parsing Json Data",e);
-    			}
-    		
-    			downloadHandler.createZipFile();
-    			File dir = new File(downloadModel.getDownloadPath());
-    			downloadHandler.deleteFile(dir);
-    			downloadHandler.calculateFileSize();
-    			returnValue += downloadModel.getZipFileName();
-    			returnValue += "|" + downloadModel.getFileSize();
-    			returnValue +="|"+ requestedTime;
-    			session.setAttribute(requestedTime+"_downloadPath", downloadModel.getZipFilePath());
-    			session.setAttribute(requestedTime+"_sessionIDFilePath", downloadModel.getSessionIDFilePath());
-    			session.setAttribute(requestedTime+"_fileName", downloadModel.getZipFileName());
-    			session.setAttribute("tempFilePath", downloadModel.getTempFilePath());
-    			log.info("ZIP FILE CREATION COMPLETED....");
-    			log.info("WAITING FOR CONFIRMATION OF DOWNLOAD...");
-    			out.print(returnValue);
-    			out.close();
+    			processRequest(request, response);
     		}
     	}catch (Exception e) {
 			log.error("ERROR IN PROCESSING IMAGE",e);
@@ -143,4 +100,137 @@ public class DownloadStudyServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    /**
+	 * @param request
+	 * @param response
+	 */
+	private void processRequest(HttpServletRequest request,
+			HttpServletResponse response) {
+		try {
+			response.setCharacterEncoding("UTF-8");
+			String downloadRequest = new String(request
+					.getParameter("downloadRequest").trim()
+					.getBytes("ISO-8859-1"), "UTF-8");
+
+			out = response.getWriter();
+			HttpSession session = request.getSession(true);
+			String sessionID = session.getId();
+
+			downloadModel = new DownloadModel();
+			downloadHandler = new DownloadHandler(downloadModel);
+			downloadModel.setSessionID(sessionID);
+
+			initiateDownloadProcess(downloadRequest);
+
+			processZipCreation();
+
+			setDownloadInfo(session);
+			log.info("ZIP FILE CREATION COMPLETED....");
+			log.info("WAITING FOR CONFIRMATION OF DOWNLOAD...");
+			out.print(returnValue);
+			out.close();
+		} catch (Exception e) {
+			log.error("Error", e);
+		}
+	}
+
+	/**
+	 * initiates the image fetch process by getting the information about the
+	 * study/series which is to be downloaded.
+	 * 
+	 * @param downloadInfo
+	 */
+	private void initiateDownloadProcess(String downloadInfo) {
+		try {
+			JSONObject requestedValues = new JSONObject(downloadInfo);
+			String patientInfo = requestedValues.getString("patientInfo");
+			String selectedSeries;
+
+			selectedSeries = requestedValues.getString("selectedSeries");
+
+			String downloadFileType = requestedValues
+					.getString("downloadFileType");
+			downloadModel.setDownloadFileType(downloadFileType);
+			JSONObject patientInfoObj = new JSONObject(patientInfo);
+			downloadModel.setPatientInfo(patientInfoObj);
+
+			JSONArray jsonArray = null;
+			try {
+				jsonArray = new JSONArray(selectedSeries);
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject jsonObject = jsonArray.getJSONObject(i);
+					downloadModel.setSelectedSeries(jsonObject);
+					downloadHandler.processSeries();
+				}
+			} catch (Exception e) {
+				log.error("Error in Fetching Image", e);
+				out.print("ERROR");
+				out.close();
+			}
+		} catch (JSONException e1) {
+			log.error("Error in parsing Json Data", e1);
+			out.print("ERROR");
+			out.close();
+		}
+	}
+
+	/**
+	 * initaites the zip file creation.
+	 */
+	private void processZipCreation() {
+		downloadHandler.createZipFile();
+		File dir = new File(downloadModel.getDownloadPath());
+		downloadHandler.deleteFile(dir);
+		if (checkPathExist(downloadModel.getZipFilePath()))
+			downloadHandler.calculateFileSize();
+		else {
+			out.print("ERROR");
+			out.close();
+		}
+	}
+
+	/**
+	 * get the time of the request to differentiate the each request.
+	 * 
+	 * @return requestedTime
+	 */
+	private String getRequestedTime() {
+		AtomicLong counter = new AtomicLong(System.currentTimeMillis());
+		long currTime = counter.getAndIncrement();
+		String requestedTime = String.valueOf(currTime);
+		return requestedTime;
+	}
+
+	/**
+	 * set the information about the download in return value and session
+	 * attributes to process the download.
+	 * 
+	 * @param session
+	 */
+	private void setDownloadInfo(HttpSession session) {
+		String requestedTime = getRequestedTime();
+		returnValue += downloadModel.getZipFileName();
+		returnValue += "|" + downloadModel.getFileSize();
+		returnValue += "|" + requestedTime;
+		session.setAttribute(requestedTime + "_downloadPath",
+				downloadModel.getZipFilePath());
+		session.setAttribute(requestedTime + "_sessionIDFilePath",
+				downloadModel.getSessionIDFilePath());
+		session.setAttribute(requestedTime + "_fileName",
+				downloadModel.getZipFileName());
+		session.setAttribute("tempFilePath", downloadModel.getTempFilePath());
+	}
+
+	/**
+	 * check whether the file path exist or not.
+	 * 
+	 * @param path
+	 * @return boolean
+	 */
+	private boolean checkPathExist(String path) {
+		File file = new File(path);
+		if (file.exists())
+			return true;
+		return false;
+	}
 }

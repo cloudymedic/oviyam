@@ -53,11 +53,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -105,7 +105,6 @@ public class DownloadHandler {
 		JSONObject selectedSeries = downloadModel.getSelectedSeries();
 		JSONObject patientInfo = downloadModel.getPatientInfo();
 		patID = patientInfo.getString("patientID").trim();
-		//String patientName = patientInfo.getString("patientName").trim();
 		String patientName = removeSpecialChar(patientInfo.getString("patientName").trim());
 		studyUID = patientInfo.getString("studyID").trim();
 		dcmURL = patientInfo.getString("dcmURL").trim();
@@ -136,7 +135,6 @@ public class DownloadHandler {
 		downloadDirectory += File.separator + patientName + "_" + patID;
 		downloadDirectory += File.separator + removeSpecialChar(studyDesc) + "_" + removeSpecialChar(studyDate);
 		downloadDirectory += File.separator + removeSpecialChar(seriesDesc) + "_" + removeSpecialChar(seriesDate);
-
 		wadoURL += "?requestType=WADO&studyUID=" + studyUID + "&seriesUID=" + seriesUID;
 
 		if (downloadFileType.equalsIgnoreCase("JPEG")) {
@@ -273,34 +271,48 @@ public class DownloadHandler {
 	 * 
 	 */
 	public void createZipFile() {
+		ZipArchiveOutputStream archive = null;
+		OutputStream archiveStream = null;
 		try {
 			String zipDirName = downloadModel.getZipFilePath();
 			File dir = new File(zipDirName);
 			populateFilesList(dir);
 			zipDirName = isZipFileExist(zipDirName, 0);
 			zipDirName += ".zip";
-			FileOutputStream fileOutputStream = new FileOutputStream(zipDirName);
-			ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+			archiveStream = new FileOutputStream(zipDirName);
+			archive = (ZipArchiveOutputStream) new ArchiveStreamFactory()
+					.createArchiveOutputStream(ArchiveStreamFactory.ZIP,
+							archiveStream);
+			// Set the character endcoding for zipping the file name which has UTF-8 characters.
+			archive.setEncoding("UTF-8");
+			archive.setFallbackToUTF8(true);
+			archive.setUseLanguageEncodingFlag(true);
+			archive.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
+			// adding each file in a folder into zip file
 			for (String filePath : filesListInDir) {
-				ZipEntry zipEntry = new ZipEntry(
-						filePath.substring(dir.getAbsolutePath().length() + 1, filePath.length()));
-				zipOutputStream.putNextEntry(zipEntry);
+				ZipArchiveEntry zipEntry = new ZipArchiveEntry(
+						filePath.substring(dir.getAbsolutePath().length() + 1,
+								filePath.length()));
+				archive.putArchiveEntry(zipEntry);
 				FileInputStream fileInputStream = new FileInputStream(filePath);
-				byte[] buffer = new byte[1024];
-				int length;
-				while ((length = fileInputStream.read(buffer)) > 0) {
-					zipOutputStream.write(buffer, 0, length);
-				}
-				zipOutputStream.closeEntry();
+				IOUtils.copy(fileInputStream, archive);
 				fileInputStream.close();
+				archive.closeArchiveEntry();
 			}
-			zipOutputStream.close();
-			fileOutputStream.close();
+			archive.finish();
 			downloadModel.setZipFilePath(zipDirName);
 		} catch (Exception e) {
 			log.error("ERROR WHILE ZIPPING ", e);
+		} finally {
+			try {
+				if (archive != null)
+					archive.close();
+				if (archiveStream != null)
+					archiveStream.close();
+			} catch (IOException e) {
+				log.error("ERROR ", e);
+			}
 		}
-
 	}
 
 	/**
@@ -355,17 +367,21 @@ public class DownloadHandler {
 	 * @throws IOException
 	 */
 
-	public void deleteFile(File dir) throws IOException {
-		File[] fileList = dir.listFiles();
-		if (fileList != null) {
-			for (File file : fileList) {
-				if (file.isFile()) {
-					file.delete();
-				} else
-					deleteFile(file);
+	public void deleteFile(File dir) {
+		try {
+			File[] fileList = dir.listFiles();
+			if (fileList != null) {
+				for (File file : fileList) {
+					if (file.isFile()) {
+						file.delete();
+					} else
+						deleteFile(file);
+				}
 			}
+			dir.delete();
+		} catch (Exception e) {
+			log.error("Error while deleting directory", e);
 		}
-		dir.delete();
 	}
 
 	/**
@@ -392,12 +408,7 @@ public class DownloadHandler {
 	 * @return
 	 */
 	private String removeSpecialChar(String value) {
-		Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
-		Matcher matcher = pattern.matcher(value);
-		while (matcher.find()) {
-			String match = matcher.group();
-			value = value.replaceAll("\\" + match, "_");
-		}
+		value = value.replaceAll("[$&+,:;=?@#|'<>.^*()%!-]", "_").replaceAll("\\\\", "").replaceAll("\\/", "");
 		return value;
 
 	}

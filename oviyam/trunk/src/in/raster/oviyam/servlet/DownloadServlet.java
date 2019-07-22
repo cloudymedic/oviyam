@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -81,7 +82,7 @@ public class DownloadServlet extends HttpServlet {
 		String tempFilePath = (String) session.getAttribute("tempFilePath");
 		downloadPath = downloadPath.trim();
 		sessionIDFilePath = sessionIDFilePath.trim();
-		fileName = fileName.trim();
+		fileName = URLEncoder.encode(fileName.trim(),"UTF-8");
 		File downloadFile = new File(downloadPath);
 		try {
 			if(download.equalsIgnoreCase("yes")) {
