@@ -731,8 +731,8 @@ function showWestPane(iPos) {
     var urlWado = $('.ui-tabs-selected').find('a').attr('wadoUrl');
     var imgType = $('.ui-tabs-selected').find('a').attr('imgType');
 
-    var tmpUrl = "westContainer1.jsp?patient=" + iPos[1] + "&study=" + iPos[8] + "&patientName=" + iPos[2];
-    tmpUrl += "&studyDesc=" + iPos[5] + "&studyDate=" + iPos[4]["display"].split(" ")[0] + "&totalSeries=" + iPos[10] + "&dcmURL=" + urlDcm;
+    var tmpUrl = "westContainer1.jsp?patient=" + iPos[1] + "&study=" + iPos[8] + "&patientName=" + encodeURIComponent(iPos[2]);
+    tmpUrl += "&studyDesc=" + encodeURIComponent(iPos[5]) + "&studyDate=" + iPos[4]["display"].split(" ")[0] + "&totalSeries=" + iPos[10] + "&dcmURL=" + urlDcm;
     tmpUrl += "&wadoUrl=" + urlWado;
     tmpUrl += "&contentType=image/" + imgType;
 

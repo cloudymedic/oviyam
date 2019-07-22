@@ -51,13 +51,15 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
                     <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
                         <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-
+							<%@ page import="java.net.URLDecoder"%>
                             <%
-String patName = new String(request.getParameter("patientName")
-        .getBytes("ISO-8859-1"), "UTF-8");
-String studyDesc = new String(request.getParameter("studyDesc")
-        .getBytes("ISO-8859-1"), "UTF-8");
-%>
+								String patName = new String(request.getParameter("patientName")
+        										.getBytes("ISO-8859-1"), "UTF-8");
+								String studyDesc = new String(request.getParameter("studyDesc")
+        										.getBytes("ISO-8859-1"), "UTF-8");
+								patName = URLDecoder.decode(patName,"UTF-8");
+								studyDesc = URLDecoder.decode(studyDesc,"UTF-8");
+							%>
 
                                 <html>
 
