@@ -52,9 +52,11 @@
                 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
                     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
                         <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+                        <%@ page import="java.net.URLDecoder"%>
 							<%
                         		String studyDesc = new String(request.getParameter("studyDesc")
                                 	.getBytes("ISO-8859-1"), "UTF-8");
+								studyDesc = URLDecoder.decode(studyDesc,"UTF-8");
                     		%>
                             <html>
 

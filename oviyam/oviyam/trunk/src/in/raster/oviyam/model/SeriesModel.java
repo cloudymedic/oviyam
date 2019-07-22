@@ -69,7 +69,7 @@ public class SeriesModel implements Serializable {
     private String modality;
     private String numberOfInstances;
     private String bodyPartExamined;
-
+    private String studyDescription;
 
 
     //Constructor
@@ -83,6 +83,7 @@ public class SeriesModel implements Serializable {
         setSeriesDate(ds.getString(Tags.SeriesDate));
         setSeriesTime(ds.getString(Tags.SeriesTime));
         setSeriesDescription(ds.getString(Tags.SeriesDescription));
+        setStudyDescription(ds.getString(Tags.StudyDescription));
         setModality(ds.getString(Tags.Modality));
         setNumberOfInstances(ds.getString(Tags.NumberOfSeriesRelatedInstances));
         setBodyPartExamined(ds.getString(Tags.BodyPartExamined));
@@ -152,6 +153,18 @@ public class SeriesModel implements Serializable {
 	}
 
     /**
+     * Getter for property studyDescription
+     * @return Value of property studyDescription
+     */
+    public String getStudyDescription() {
+		return studyDescription!=null? studyDescription.replace("^", " ") : "";
+	}
+
+	public void setStudyDescription(String studyDescription) {
+		this.studyDescription = studyDescription;
+	}
+
+	/**
      * Getter for property modality
      * @return Value of property modality
      */

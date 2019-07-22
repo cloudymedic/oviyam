@@ -168,6 +168,7 @@ public class SeriesDetailsHandler extends SimpleTagSupport {
                 getJspContext().setAttribute("seriesId", sm.getSeriesIUID());
                 getJspContext().setAttribute("seriesNumber", sm.getSeriesNumber());
                 getJspContext().setAttribute("seriesDesc", sm.getSeriesDescription());
+                getJspContext().setAttribute("studyDesc", sm.getStudyDescription());
                 getJspContext().setAttribute("modality", sm.getModality());
                 getJspContext().setAttribute("numberOfImages", sm.getNumberOfInstances());
                 getJspContext().setAttribute("bodyPart", sm.getBodyPartExamined());

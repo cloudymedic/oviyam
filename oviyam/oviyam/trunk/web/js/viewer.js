@@ -144,8 +144,8 @@ function convertDataURIToBinary(dataURI) {
 function loadStudy() {
     // load WestPane content
     var tmpUrl = "westContainer.jsp?patient=" + pat.pat_ID + "&study=" +
-        pat.studyUID + "&patientName=" + pat.pat_Name;
-    tmpUrl += "&studyDesc=" + pat.studyDesc + "&studyDate=" + pat.studyDate +
+        pat.studyUID + "&patientName=" + encodeURIComponent(pat.pat_Name);
+    tmpUrl += "&studyDesc=" + encodeURIComponent(pat.studyDesc) + "&studyDate=" + pat.studyDate +
         "&totalSeries=" + pat.totalSeries + "&dcmURL=" + pat.dicomURL;
     tmpUrl += "&wadoUrl=" + pat.serverURL;
     tmpUrl += "&contentType=image/" + pat.imgType;
@@ -165,8 +165,8 @@ function loadDownloadModal() {
         errorMsg.style.display = "none";
         $('#title').text("Download JPEG/DICOM files");
         var tempUrl = "downloadSelection.jsp?patient=" + pat.pat_ID + "&study=" +
-            pat.studyUID + "&patientName=" + pat.pat_Name;
-        tempUrl += "&studyDesc=" + pat.studyDesc + "&studyDate=" + pat.studyDate +
+            pat.studyUID + "&patientName=" + encodeURIComponent(pat.pat_Name);
+        tempUrl += "&studyDesc=" + encodeURIComponent(pat.studyDesc) + "&studyDate=" + pat.studyDate +
             "&totalSeries=" + pat.totalSeries + "&dcmURL=" + pat.dicomURL;
         tempUrl += "&wadoUrl=" + pat.serverURL;
         tempUrl += "&contentType=image/" + pat.imgType; // Image Type - png or Jpeg

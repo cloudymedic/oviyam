@@ -51,9 +51,11 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
                     <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
                         <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+                        <%@ page import="java.net.URLDecoder"%>
 							<%
                         		String studyDesc = new String(request.getParameter("studyDesc")
                                 	.getBytes("ISO-8859-1"), "UTF-8");
+								studyDesc = URLDecoder.decode(studyDesc,"UTF-8");
                     		%>
                             <html>
 
@@ -142,20 +144,6 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                                         <fmt:formatNumber var="middle" maxFractionDigits="0" value="${middle}" />
                                         <fmt:parseNumber var="total" type="number" value="${numberOfImages}" />
 
-                                        <script type="text/javascript">
-                                            series.push({
-                                                "seriesUID": '${seriesId}',
-                                                "totalInstances": '${numberOfImages}',
-                                                "seriesDesc": '${seriesDesc}',
-                                                "modality": '${modality}',
-                                                "seriesNumber": '${seriesNumber}',
-                                                "seriesDate": '${seriesDate}',
-                                                "bodyPart": '${bodyPart}',
-                                                "studyDesc": '${param.studyDesc}',
-                                                "studyDate": '${param.studyDate}'
-                                            });
-                                        </script>
-
                                         <table class="seriesTable" id="${fn:replace(seriesId, '.','_')}_table">
                                             <tbody>
                                                 <img:Image patientId="${param.patient}" study="${param.study}" series="${seriesId}" dcmURL="${param.dcmURL}" serverURL="${param.wadoUrl}">
@@ -163,7 +151,7 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                                                         <c:when test="${multiframe=='yes'}">
                                                             <tr style="cursor: default; color: #FF8A00; font-size: 12px;">
                                                                 <td style="width: 5%">
-                                                                    <input type="checkbox" name="multiCheck" id="${param.patient}|& ${param.studyDesc} |&${param.studyDate}|& ${param.study}|& ${seriesDesc} |&${seriesDate} |& ${seriesId} |& ${instanceNumber} |& ${numberOfFrames}" onchange="selectSeries()">
+                                                                    <input type="checkbox" name="multiCheck" id="${param.patient}|& ${studyDesc} |&${param.studyDate}|& ${param.study}|& ${seriesDesc} |&${seriesDate} |& ${seriesId} |& ${instanceNumber} |& ${numberOfFrames}" onchange="selectSeries()">
                                                                 </td>
                                                                 <td style="width: 16%">
 
@@ -192,7 +180,7 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                                                             <c:if test="${instanceNumber==1}">
                                                                 <tr style="cursor: default; color: #FF8A00">
                                                                     <td style="width: 5%">
-                                                                        <input type="checkbox" name="seriesCheck" id="${param.patient}|& ${param.studyDesc} |&${param.studyDate}|& ${param.study}|& ${seriesDesc} |&${seriesDate} |& ${seriesId} |& |& ${numberOfImages}" onchange="selectSeries()">
+                                                                        <input type="checkbox" name="seriesCheck" id="${param.patient}|& ${studyDesc} |&${param.studyDate}|& ${param.study}|& ${seriesDesc} |&${seriesDate} |& ${seriesId} |& |& ${numberOfImages}" onchange="selectSeries()">
                                                                     </td>
                                                                     <td style="width: 16%">
                                                             </c:if>
@@ -261,27 +249,6 @@ pageEncoding="UTF-8" isELIgnored="false"%>
                                         </table>
                                     </ser:Series>
                                 </div>
-                                <script type="text/javascript">
-                                    var studyId = '${param.study}';
-                                    if (sessionStorage[studyId] == undefined) {
-                                        var study = {
-                                            "studyUID": studyId,
-                                            "studyDesc": "${param.studyDesc}",
-                                            "studyDate": "${param.studyDate}"
-                                        };
-                                        var studyData = sessionStorage["${param.patient}"];
-
-                                        if (studyData == undefined) {
-                                            studyData = new Array();
-                                        } else {
-                                            studyData = JSON.parse(studyData);
-                                        }
-
-                                        studyData.push(study);
-                                        sessionStorage["${param.patient}"] = JSON.stringify(studyData);
-                                    }
-                                    sessionStorage[studyId] = JSON.stringify(series);
-                                </script>
                             </body>
 
                             </html>
