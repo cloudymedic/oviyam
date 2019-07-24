@@ -59,6 +59,12 @@
          <localeID>es_ES</localeID>
          <selected>false</selected>
       </language>
+      <language>
+         <lang>Russian</lang>
+         <country>Russia</country>
+         <localeID>ru_RU</localeID>
+         <selected>false</selected>
+      </language>
    </languages>
    
    <ioviyam-context>/ioviyam2</ioviyam-context>
