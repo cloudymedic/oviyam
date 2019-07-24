@@ -62,17 +62,26 @@ public class LanguageHandler {
     private static Logger log = Logger.getLogger(LanguageHandler.class);
     private Serializer serializer = null;
     public static File source = null;
-    private Configuration config = null;
+    public Configuration config = null;
 
     public LanguageHandler(String tmpDir) {
         try {
             serializer = new Persister();
             source = new File(new XMLFileHandler().getXMLFilePath(tmpDir));            
-            config = serializer.read(Configuration.class, source);            
+            config = serializer.read(Configuration.class, source);      
         } catch (Exception ex) {
 				log.error("Unable to read XML document", ex);            
         }
     }
+
+	public LanguageHandler(File xmlFile) {
+		try {
+			serializer = new Persister();
+			config = serializer.read(Configuration.class, xmlFile);
+		} catch (Exception e) {
+			log.error("Unable to read XML document", e);
+		}
+	}
 
     public void updateLanguage(String language) {
         try {
@@ -93,7 +102,7 @@ public class LanguageHandler {
 
     public List<Language> getLanguage() {
     	List<Language> list = config.getLanguagesList();
-    	upgrade(list);
+    	upgrade();
         return list;
     }
 
@@ -125,24 +134,31 @@ public class LanguageHandler {
 //    	}
 //    }
     
-    
-    public void upgrade(List<Language> list) {
-    	// For version 2.1 to 2.2
-    	for (Language lang : list) {
-    		if(lang.getLocaleID().equals("ja_JP")) {
-    			return;
-    		}
-    	}
-    	Language language = new Language();
-    	language.setCountry("Japan");
-    	language.setLanguage("Japanese");
-    	language.setLocaleID("ja_JP");
-    	language.setSelected(false);
-    	list.add(language);    	
-    	try {
-			serializer.write(config,source);
+	public void upgrade() {
+		try {
+			File srcFile = new File(this.getClass()
+					.getResource("/conf/oviyam2-7-config.xml").toURI());
+			LanguageHandler srcLanguageHandler = new LanguageHandler(srcFile);
+			List<Language> list = config.getLanguagesList();
+			Configuration srcConfig = srcLanguageHandler.config;
+			List<Language> srcLanguage = srcConfig.getLanguagesList();
+			for (Language lang : srcLanguage) {
+				if (!isLanguageAvailable(lang, list))
+					list.add(lang);
+			}
+			config.setLanguagesList(list);
+			serializer.write(config, source);
 		} catch (Exception e) {
-			log.error("Unable to upgrade to version 2.2 : " + e.getMessage());
+			log.error("Unable to upgrade : " + e.getMessage());
 		}
-    }
+	}
+
+	public boolean isLanguageAvailable(Language lang, List<Language> list) {
+		for (Language language : list) {
+			if (lang.getLanguage().equalsIgnoreCase(language.getLanguage())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
