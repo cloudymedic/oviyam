@@ -209,7 +209,7 @@ public class DownloadStudyServlet extends HttpServlet {
 	 */
 	private void setDownloadInfo(HttpSession session) {
 		String requestedTime = getRequestedTime();
-		returnValue += downloadModel.getZipFileName();
+		returnValue = downloadModel.getZipFileName();
 		returnValue += "|" + downloadModel.getFileSize();
 		returnValue += "|" + requestedTime;
 		session.setAttribute(requestedTime + "_downloadPath",
