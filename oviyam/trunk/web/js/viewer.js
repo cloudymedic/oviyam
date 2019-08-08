@@ -50,6 +50,8 @@ function getStudyDetails() {
             }
             directLaunch = true;
             pat = data;
+            data = JSON.stringify(data);
+            $.cookies.set('patient',data);
             loadStudy();
         }, "json");
     } else {
