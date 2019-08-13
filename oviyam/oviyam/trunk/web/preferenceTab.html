@@ -229,6 +229,7 @@
                         	displayMsg('success', languages.updateSuccess);
                             //put selected theme in cookies.
                             $.cookies.set('theme', selTheme);
+                            location.reload();
                         } else {
                         	displayMsg('error', languages.updateError);
                         }
@@ -245,6 +246,7 @@
                     if (data.trim() == 'Success') {
                         setCookie('language', $('#lblLocaleID').html(), 365);
                         displayMsg('success', languages.updateSuccess);
+                        location.reload();
                     } else {
                     	displayMsg('error', languages.updateError);
                     }

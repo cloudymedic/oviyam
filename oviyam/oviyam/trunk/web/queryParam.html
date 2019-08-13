@@ -40,15 +40,18 @@
                     var sel_item = $('#queryParamTable :checked');
                     if (sel_item.length == 1) {
                         var sel_label = sel_item.parent().next();
-                        $.ajax({
-                            url: 'QueryParams.do',
-                            data: { 'buttonLabel': sel_label.html(), 'todo': 'DELETE' },
-                            type: 'POST',
-                            success: function (msg) {
-                                qpTable.fnClearTable();
-                                loadQueryParamTable();
-                            }
-                        });
+                        let deleteQuery = confirm(languages.queryParamDelete);
+                        if (deleteQuery) {
+                        	$.ajax({
+                            	url: 'QueryParams.do',
+                            	data: { 'buttonLabel': sel_label.html(), 'todo': 'DELETE' },
+                            	type: 'POST',
+                            	success: function (msg) {
+                                	qpTable.fnClearTable();
+                                	loadQueryParamTable();
+                            	}
+                        	});
+                        }
                     } else {
                         var msg = languages.queryDeleteWarn;
                         $.ambiance({

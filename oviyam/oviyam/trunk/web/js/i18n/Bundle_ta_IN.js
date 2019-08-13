@@ -115,5 +115,7 @@ var languages = {
     downloadImgLbl: "பயனர்கள் படங்களை பதிவிறக்க முடியும்",
     updateSuccess: "வெற்றிகரமாக மேம்படுத்தப்பட்டது",
     updateError: "புதுப்பிப்பு தோல்வியடைந்தது",
-    dateFormat:"DD-MM-YYYY"
+    dateFormat:"DD-MM-YYYY",
+    serverDelete: "சேவையகத்தை நீக்க விரும்புகிறீர்களா?",
+    queryParamDelete: "Query Param-ஐ நீக்க விரும்புகிறீர்களா?"
 };

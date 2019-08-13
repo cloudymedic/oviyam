@@ -117,5 +117,7 @@ var languages = {
 		downloadImgLbl: "ユーザーは画像をダウンロードできます",
 		updateSuccess: "更新成功",
 		updateError: "アップデートに失敗しました",
-		dateFormat:"YYYY/MM/DD"
+		dateFormat:"YYYY/MM/DD",
+		serverDelete: "サーバーを削除しますか？",
+		queryParamDelete: "クエリパラメータを削除しますか？"
 };

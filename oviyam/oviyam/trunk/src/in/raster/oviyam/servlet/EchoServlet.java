@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.dcm4che.util.DcmURL;
 
 /**
@@ -63,6 +64,11 @@ import org.dcm4che.util.DcmURL;
 public class EchoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	/*
+     * Initialize the Logger.
+     */
+    private static Logger log = Logger.getLogger(EchoServlet.class);
+	
 	/**
 	 * Default constructor.
 	 */
@@ -84,10 +90,15 @@ public class EchoServlet extends HttpServlet {
 
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-		DcmURL url = new DcmURL(dcmURL);
-		EchoService echo = new EchoService();
-		echo.checkEcho(url);
-		status = echo.getStatus().trim();
+		try{
+			DcmURL url = new DcmURL(dcmURL);
+			EchoService echo = new EchoService();
+			echo.checkEcho(url);
+			status = echo.getStatus().trim();	
+		} catch (Exception e){
+			status = "EchoFailure";
+			log.error("Unable to Echo AET ", e);
+		}
 
 		out.print(status);
 		out.close();

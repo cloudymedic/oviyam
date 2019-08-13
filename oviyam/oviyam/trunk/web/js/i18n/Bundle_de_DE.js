@@ -115,5 +115,7 @@ var languages = {
     downloadImgLbl: "Benutzer können Bilder herunterladen",
     updateSuccess: "Erfolgreich geupdated",
     updateError: "Update fehlgeschlagen",
-    dateFormat:"DD.MM.YYYY"
+    dateFormat:"DD.MM.YYYY",
+    serverDelete: "Möchten Sie den Server löschen?",
+    queryParamDelete: "Möchten Sie den Abfrageparameter löschen?"
 };

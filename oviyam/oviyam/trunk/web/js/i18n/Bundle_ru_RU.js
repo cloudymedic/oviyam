@@ -115,5 +115,7 @@ var languages = {
     downloadImgLbl: "Пользователи могут скачать изображения",
     updateSuccess: "Успешно Обновлено",
     updateError: "Не удалось обновить",
-    dateFormat:"DD.MM.YYYY"
+    dateFormat:"DD.MM.YYYY",
+    serverDelete: "Вы хотите удалить сервер?",
+    queryParamDelete: "Вы хотите удалить параметр запроса?"
 };
