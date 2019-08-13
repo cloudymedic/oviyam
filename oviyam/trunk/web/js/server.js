@@ -15,7 +15,7 @@ $(document).ready(function() {
     }, 'text');
 
     $("#addBtn").click(function() {
-        if (!addBtnPressed) {
+        if (!addBtnPressed && !editBtnPressed) {
         	var str = '<tr style="width:100%"><td><input type="checkbox" disabled="true" /></td><td><input type="text" id="desc" style="width:100%"></td>' +
             	'<td><input type="text" id="aet" size=15 style="width:100%"></td>' +
             	'<td><input type="text" id="host" size=15 style="width:100%"></td><td><input type="text" id="port" size=15 style="width:100%"></td>' +
@@ -24,7 +24,8 @@ $(document).ready(function() {
             	'<td><input type="text" id="wadoPort" size=15 value="8080" style="width:100%" title="WADO Port">' +
             	'<td><select id="imgType" style="width:100%"><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select></td>' +
             	'<td><input type="checkbox" id="preview" style="width: 50%;" checked>' +
-            	'<a href="#" onClick="insertTable();"><img src="images/save.png"></a></td></tr>';
+            	'<a href="#" onClick="insertTable();"><img src="images/save.png" title="Save">' +
+            	'<a href="#" onClick="cancelAdd(this);"><img src="images/cancel.svg" style="max-width:18px;" title="Cancel"></a></td></tr>';
             //var wid = $("#serverTable").css('width');
             $("#serverTable > tbody:last").append(str);
             addBtnPressed = true;
@@ -79,7 +80,7 @@ $(document).ready(function() {
     });
 
     $("#editBtn").click(function() {
-        if (!editBtnPressed) {
+        if (!addBtnPressed && !editBtnPressed) {
             editSelectedRow();
         }
     });
@@ -87,6 +88,11 @@ $(document).ready(function() {
     $('.dataTables_wrapper').css('min-height', '200px');
 
 }); // for document.ready
+
+function cancelAdd(cancel) {
+    addBtnPressed = false;
+    oTable.fnDeleteRow($(cancel).closest('tr'));
+}
 
 // To create table
 function createTables(database) {
@@ -125,13 +131,18 @@ function insertTable() {
                     oTable.fnClearTable();
                     loadTable();
                     msg = languages.addSuccess;
+                    $.ambiance({
+                        message: msg,
+                        type: 'success'
+                    });
+                    addBtnPressed = false;
                 } else if (msg1.trim() == 'duplicate') {
                     msg = languages.existWarn;
+                    $.ambiance({
+                        message: msg,
+                        type: 'error'
+                    });
                 }
-                $.ambiance({
-                    message: msg,
-                    type: 'success'
-                });
             }
         });
     } else {
@@ -142,7 +153,6 @@ function insertTable() {
         });
         return;
     }
-    addBtnPressed = false;
 }
 
 function editTable() {
@@ -252,29 +262,33 @@ function deleteSelectedRow() {
         var port = selectRow.find('td:nth-child(5)').html();
         var wado = selectRow.find('td:nth-child(6)').html();
 
-        $.ajax({
-            url: 'ServerConfig.do',
-            data: {
-                'logicalName': logical,
-                'aeTitle': ae,
-                'hostName': host,
-                'port': port,
-                'wadoPort': wado,
-                'todo': 'DELETE'
-            },
-            type: 'POST',
-            dataType: 'text',
-            success: function(msg1) {
-                oTable.fnClearTable();
-                loadTable();
 
-                msg = languages.deleteSuccess;
-                $.ambiance({
-                    message: msg,
-                    type: 'success'
-                });
-            }
-        });
+        let deleteServer = confirm(languages.serverDelete);
+        if (deleteServer) {
+        	$.ajax({
+            	url: 'ServerConfig.do',
+            	data: {
+                	'logicalName': logical,
+                	'aeTitle': ae,
+                	'hostName': host,
+                	'port': port,
+                	'wadoPort': wado,
+                	'todo': 'DELETE'
+            	},
+            	type: 'POST',
+            	dataType: 'text',
+            	success: function(msg1) {
+            		oTable.fnClearTable();
+                	loadTable();
+
+                	msg = languages.deleteSuccess;
+                	$.ambiance({
+                    	message: msg,
+                    	type: 'success'
+                	});
+            	}
+        	});
+        }
     } else {
         msg = languages.deleteWarn;
         $.ambiance({
@@ -285,20 +299,29 @@ function deleteSelectedRow() {
     }
 }
 
+var currDesc;
+var currAET;
+var currHost;
+var currPort;
+var currRet;
+var currWadoCxt;
+var currWadoPort;
+var currImageType;
+var currentPreview;
 function editSelectedRow() {
     var $selRow = $('#serverTable :checked').not('.previewChk').parent().parent();
     if ($('#serverTable :checked').not('.previewChk').length == 1) {
 
-        var currDesc = $selRow.find('td:nth-child(2)').html();
-        var currAET = $selRow.find('td:nth-child(3)').html();
-        var currHost = $selRow.find('td:nth-child(4)').html();
-        var currPort = $selRow.find('td:nth-child(5)').html();
+        currDesc = $selRow.find('td:nth-child(2)').html();
+        currAET = $selRow.find('td:nth-child(3)').html();
+        currHost = $selRow.find('td:nth-child(4)').html();
+        currPort = $selRow.find('td:nth-child(5)').html();
 
-        var currRet = $selRow.find('td:nth-child(6)').html();
-        var currWadoCxt = $selRow.find('td:nth-child(7)').html();
-        var currWadoPort = $selRow.find('td:nth-child(8)').html();
-        var currImageType = $selRow.find('td:nth-child(9)').html();
-        var currentPreview = $selRow.find('td:nth-child(10)').find('.previewChk').prop('checked');
+        currRet = $selRow.find('td:nth-child(6)').html();
+        currWadoCxt = $selRow.find('td:nth-child(7)').html();
+        currWadoPort = $selRow.find('td:nth-child(8)').html();
+        currImageType = $selRow.find('td:nth-child(9)').html();
+        currentPreview = $selRow.find('td:nth-child(10)').find('.previewChk').prop('checked');
 
         var str = '<td><input type="checkbox" disabled="true" CHECKED /></td><td><input type="text" id="desc" disabled="true" value="' + currDesc + '"></td>' +
             '<td><input type="text" id="aet" value="' + currAET + '"></td>' +
@@ -331,7 +354,8 @@ function editSelectedRow() {
         } else {
             str += '<td><input type="checkbox" id="preview" checked class="previewChk">';
         }
-        str += '<a href="#" onClick="editTable(); $(this).parent().parent().remove();"><img src="images/save.png"></a></td>';
+        str += '<a href="#" onClick="editTable(); $(this).parent().parent().remove();"><img src="images/save.png" title="Save">' +
+        '<a href="#" onClick="cancelEdit(this);"><img src="images/cancel.svg" style="max-width:18px;" title="Cancel"></img></a></td>';
 
         $selRow.html(str);
 
@@ -344,6 +368,31 @@ function editSelectedRow() {
         });
         return;
     }
+}
+
+function cancelEdit(cancel) {
+    oTable.fnDeleteRow($(cancel).closest('tr'));
+    
+    var preview = "<input type='checkbox' class='previewChk' style='text-align:center' disabled ";
+
+    if (currentPreview != 'false') {
+        preview += "checked>";
+    } else {
+        preview += ">";
+    }
+    oTable.fnAddData([
+        "<input type='checkbox' style='text-align:center'>",
+        currDesc,
+        currAET,
+        currHost,
+        currPort,
+        currRet,
+        currWadoCxt,
+        currWadoPort,
+        currImageType,
+        preview
+    ]);
+    editBtnPressed = false;
 }
 
 function dataHandler(transaction, results) {
@@ -382,27 +431,29 @@ function dataHandler(transaction, results) {
 	}*/
 
 $("#serverTable tbody tr").live('click', function(e) {
-    var aet = $(this).find('td:nth-child(3)').html();
-    var host = $(this).find('td:nth-child(4)').html();
-    var port = $(this).find('td:nth-child(5)').html();
-
-    if (callingAET == '') {
-        $url = "dicom://" + aet + "@" + host + ":" + port;
-    } else {
-        $url = "dicom://" + aet + ":" + callingAET + "@" + host + ":" + port;
+	if (!addBtnPressed && !editBtnPressed) {
+		var aet = $(this).find('td:nth-child(3)').html();
+		var host = $(this).find('td:nth-child(4)').html();
+		var port = $(this).find('td:nth-child(5)').html();
+		
+		if (callingAET == '') {
+			$url = "dicom://" + aet + "@" + host + ":" + port;
+		} else {
+			$url = "dicom://" + aet + ":" + callingAET + "@" + host + ":" + port;
     }
-
-    //get checkbox current checkbox
-    var $checkbox = $(this).find(':checkbox').not('.previewChk');
-    //deselect the already selected checkbox
-    $("#serverTable :checkbox").not($checkbox).not('.previewChk').removeAttr("checked");
-    if (e.target.type == 'checkbox') {
-        //e.stopPropagation();
-        $(this).filter(':has(:checkbox)').toggleClass('selected', $checkbox.attr('checked'));
-    } else {
-        $checkbox.attr('checked', !$checkbox.attr('checked'));
-        //$(this).filter(':has(:checkbox)').toggleClass('selected', $checkbox.attr('checked'));
-    }
+		
+		//get checkbox current checkbox
+		var $checkbox = $(this).find(':checkbox').not('.previewChk');
+		//deselect the already selected checkbox
+		$("#serverTable :checkbox").not($checkbox).not('.previewChk').removeAttr("checked");
+		if (e.target.type == 'checkbox') {
+			//e.stopPropagation();
+			$(this).filter(':has(:checkbox)').toggleClass('selected', $checkbox.attr('checked'));
+		} else {
+			$checkbox.attr('checked', !$checkbox.attr('checked'));
+			//$(this).filter(':has(:checkbox)').toggleClass('selected', $checkbox.attr('checked'));
+		}
+	}
 });
 
 function hideWadoFields() {

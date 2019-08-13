@@ -115,5 +115,7 @@ var languages = {
     downloadImgLbl: "Users can download Images",
     updateSuccess: "Updated Successfully",
     updateError: "Update Failed",
-    dateFormat:"DD/MM/YYYY"
+    dateFormat:"DD/MM/YYYY",
+    serverDelete: "Do you want to delete the server?",
+    queryParamDelete: "Do you want to delete the Query Param?"
 };
